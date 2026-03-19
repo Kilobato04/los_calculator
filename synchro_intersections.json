@@ -1,0 +1,897 @@
+{
+  "project": "01-29-2026",
+  "report": "Lanes, Volumes, Timings",
+  "software": "Synchro 11",
+  "updated": "AM updated 4:30 pm 05-14-2025",
+  "intersections": [
+    {
+      "id": 1,
+      "label": "1",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 35.8,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBL", "volume_vph": 81, "future_vph": 81, "satd_flow_perm": 1702, "lane_group_flow": 104, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 23, "future_vph": 23, "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "NET", "volume_vph": 374,"future_vph": 386,"satd_flow_perm": 1824, "lane_group_flow": 445, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NER", "volume_vph": 59, "future_vph": 59, "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Free",  "lane_alignment": "Right" },
+        { "group": "SWL", "volume_vph": 9,  "future_vph": 9,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "SWT", "volume_vph": 166,"future_vph": 166,"satd_flow_perm": 1216, "lane_group_flow": 175, "sign_control": "Free",  "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 2,
+      "label": "2",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 16.0,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 104,"future_vph": 104,"satd_flow_perm": 1785, "lane_group_flow": 113, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "NBL", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 1648, "lane_group_flow": 0,   "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 68, "future_vph": 68, "satd_flow_perm": 1842, "lane_group_flow": 74,  "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "SBR", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Free",  "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 6,
+      "label": "6",
+      "control_type": "Roundabout",
+      "area_type": "Other",
+      "icu": 117.1,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBL", "volume_vph": 0,   "future_vph": 80,  "satd_flow_perm": 1581, "lane_group_flow": 1061, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 1988,"future_vph": 2801,"satd_flow_perm": 2850, "lane_group_flow": 2071, "sign_control": "Free",  "lane_alignment": "Right" },
+        { "group": "NET", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NER", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "SWL", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "SWT", "volume_vph": 4443,"future_vph": 6049,"satd_flow_perm": 5029, "lane_group_flow": 6575, "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 7,
+      "label": "7",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 22.0,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 1593, "lane_group_flow": 20,  "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 0,  "future_vph": 18, "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Stop", "lane_alignment": "Right" },
+        { "group": "NBL", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 326,"future_vph": 326,"satd_flow_perm": 3486, "lane_group_flow": 364, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0,  "future_vph": 9,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "SBT", "volume_vph": 677,"future_vph": 677,"satd_flow_perm": 3500, "lane_group_flow": 736, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NWL", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 1750, "lane_group_flow": 4,   "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "NWR", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,   "sign_control": "Stop", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 8,
+      "label": "8",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 0.0,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 0, "future_vph": 0,  "satd_flow_perm": 1593, "lane_group_flow": 8,  "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 0, "future_vph": 7,  "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "WBL", "volume_vph": 0, "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 0, "future_vph": 0,  "satd_flow_perm": 1842, "lane_group_flow": 0,  "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NBL", "volume_vph": 0, "future_vph": 12, "satd_flow_perm": 1659, "lane_group_flow": 33, "sign_control": "Stop",  "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0, "future_vph": 18, "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Stop",  "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 9,
+      "label": "9",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 61.3,
+      "icu_los": "B",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBL", "volume_vph": 1193,"future_vph": 1313,"satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 789, "future_vph": 995, "satd_flow_perm": 4888, "lane_group_flow": 2509, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "SBR", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Right" },
+        { "group": "SEL", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "SER", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 10,
+      "label": "10",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 28.4,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBT", "volume_vph": 8,  "future_vph": 8,  "satd_flow_perm": 1842, "lane_group_flow": 9,    "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "SBL", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NWL", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NWR", "volume_vph": 789,"future_vph": 995,"satd_flow_perm": 3535, "lane_group_flow": 1082, "sign_control": "Free",  "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 11,
+      "label": "11",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 27.2,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBL", "volume_vph": 0, "future_vph": 0, "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "WBR", "volume_vph": 0, "future_vph": 0, "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Stop", "lane_alignment": "Right" },
+        { "group": "SBL", "volume_vph": 8, "future_vph": 8, "satd_flow_perm": 1687, "lane_group_flow": 16, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBR", "volume_vph": 0, "future_vph": 6, "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "NEL", "volume_vph": 0, "future_vph": 0, "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "NER", "volume_vph": 0, "future_vph": 0, "satd_flow_perm": 0,    "lane_group_flow": 0,  "sign_control": "Stop", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 12,
+      "label": "12",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 104.4,
+      "icu_los": "G",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBT", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "SBL", "volume_vph": 1509, "future_vph": 2626, "satd_flow_perm": 3036, "lane_group_flow": 1912, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 0,    "future_vph": 6,    "satd_flow_perm": 1523, "lane_group_flow": 949,  "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NWL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Left" },
+        { "group": "NWR", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Stop", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 15,
+      "label": "15",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 61.3,
+      "icu_los": "B",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "SBL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBR", "volume_vph": 0,    "future_vph": 6,    "satd_flow_perm": 1593, "lane_group_flow": 7,    "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "NWL", "volume_vph": 1193, "future_vph": 1313, "satd_flow_perm": 3395, "lane_group_flow": 1427, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NWR", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 17,
+      "label": "17",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 89.0,
+      "icu_los": "E",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 4091, "future_vph": 5742, "satd_flow_perm": 5029, "lane_group_flow": 6241, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "WBL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NEL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NER", "volume_vph": 0,    "future_vph": 41,   "satd_flow_perm": 2756, "lane_group_flow": 45,   "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 18,
+      "label": "18",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 107.6,
+      "icu_los": "G",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "NBL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 3387, "future_vph": 4781, "satd_flow_perm": 3342, "lane_group_flow": 5306, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBR", "volume_vph": 999,  "future_vph": 999,  "satd_flow_perm": 1425, "lane_group_flow": 977,  "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 19,
+      "label": "19",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 36.3,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "EBT", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 1193, "future_vph": 1320, "satd_flow_perm": 3349, "lane_group_flow": 1441, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "WBR", "volume_vph": 0,    "future_vph": 54,   "satd_flow_perm": 1425, "lane_group_flow": 53,   "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "SEL", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SER", "volume_vph": 0,    "future_vph": 0,    "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 21,
+      "label": "21",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 56.2,
+      "icu_los": "B",
+      "signal_delay": 14.9,
+      "signal_los": "B",
+      "cycle_length": 55,
+      "actuated_cycle_length": 55,
+      "offset_s": 24,
+      "offset_pct": 44,
+      "natural_cycle": 50,
+      "max_vc": 0.73,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBL", "volume_vph": 121, "future_vph": 132, "satd_flow_perm": 4776, "lane_group_flow": 1110, "vc_ratio": 0.70, "control_delay": 12.2, "los": "B", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 187, "future_vph": 196, "satd_flow_perm": 1807, "lane_group_flow": 213,  "vc_ratio": 0.52, "control_delay": 29.9, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 479, "future_vph": 479, "satd_flow_perm": 3570, "lane_group_flow": 521,  "vc_ratio": 0.57, "control_delay": 20.6, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "SBR", "volume_vph": 198, "future_vph": 202, "satd_flow_perm": 1521, "lane_group_flow": 220,  "vc_ratio": 0.14, "control_delay": 0.2,  "los": "A", "sign_control": "—", "lane_alignment": "Right" }
+      ],
+      "phases": [
+        { "phase": "Ø8",  "total_split_s": 16.0,  "total_split_pct": 29.1, "max_green_s": 12.5 },
+        { "phase": "Ø2(R)","total_split_s": 21.3, "total_split_pct": 38.7, "max_green_s": 17.8 },
+        { "phase": "Ø4",  "total_split_s": 17.7,  "total_split_pct": 32.2, "max_green_s": 14.2 },
+        { "phase": "Ø10", "total_split_s": 32.5,  "total_split_pct": 59.0, "max_green_s": 29.0 },
+        { "phase": "Ø9",  "total_split_s": 22.5,  "total_split_pct": 41.0, "max_green_s": 19.0 }
+      ]
+    },
+    {
+      "id": 22,
+      "label": "22",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 6.7,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBT", "volume_vph": 23, "future_vph": 23, "satd_flow_perm": 3500, "lane_group_flow": 25, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 0,  "future_vph": 43, "satd_flow_perm": 1842, "lane_group_flow": 47, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 0,  "future_vph": 0,  "satd_flow_perm": 1842, "lane_group_flow": 0,  "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 23,
+      "label": "23",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 67.7,
+      "icu_los": "C",
+      "signal_delay": 11.3,
+      "signal_los": "B",
+      "cycle_length": 55,
+      "actuated_cycle_length": 55,
+      "offset_s": 24,
+      "offset_pct": 44,
+      "natural_cycle": 50,
+      "max_vc": 0.73,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 1209, "future_vph": 1731, "satd_flow_perm": 4999, "lane_group_flow": 1927, "vc_ratio": 0.73, "control_delay": 12.1, "los": "B", "sign_control": "—", "lane_alignment": "Right" },
+        { "group": "SBL", "volume_vph": 600,  "future_vph": 611,  "satd_flow_perm": 3429, "lane_group_flow": 611,  "vc_ratio": 0.52, "control_delay": 8.7,  "los": "A", "sign_control": "—", "lane_alignment": "Left" }
+      ],
+      "phases": [
+        { "phase": "Ø10", "total_split_s": 32.5, "total_split_pct": 59.1, "max_green_s": 29.0 },
+        { "phase": "Ø9",  "total_split_s": 22.5, "total_split_pct": 40.9, "max_green_s": 19.0 },
+        { "phase": "Ø2",  "total_split_s": 21.3, "total_split_pct": 39.0, "max_green_s": 17.8 },
+        { "phase": "Ø4",  "total_split_s": 17.7, "total_split_pct": 32.0, "max_green_s": 14.2 },
+        { "phase": "Ø8",  "total_split_s": 16.0, "total_split_pct": 29.0, "max_green_s": 12.5 }
+      ]
+    },
+    {
+      "id": 24,
+      "label": "24",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 36.3,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 73,   "future_vph": 214,  "satd_flow_perm": 1785, "lane_group_flow": 233,  "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NEL", "volume_vph": 1,    "future_vph": 140,  "satd_flow_perm": 0,    "lane_group_flow": 0,    "sign_control": "Free",  "lane_alignment": "Right" },
+        { "group": "NET", "volume_vph": 1323, "future_vph": 1749, "satd_flow_perm": 4971, "lane_group_flow": 2053, "sign_control": "Free",  "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 25,
+      "label": "25",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 25.7,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "SBT", "volume_vph": 734, "future_vph": 872, "satd_flow_perm": 4792, "lane_group_flow": 1027, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NWL", "volume_vph": 1,   "future_vph": 83,  "satd_flow_perm": 1785, "lane_group_flow": 90,   "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 26,
+      "label": "26",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 44.3,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 192, "future_vph": 192, "satd_flow_perm": 1733, "lane_group_flow": 192,  "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 1132,"future_vph": 1697,"satd_flow_perm": 4966, "lane_group_flow": 1977, "sign_control": "Free",  "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 27,
+      "label": "27",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 49.2,
+      "icu_los": "A",
+      "signal_delay": 18.1,
+      "signal_los": "B",
+      "cycle_length": 45,
+      "actuated_cycle_length": 45,
+      "offset_s": 0,
+      "offset_pct": 0,
+      "natural_cycle": 45,
+      "max_vc": 0.66,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 187, "future_vph": 187, "satd_flow_perm": 1838, "lane_group_flow": 225,  "vc_ratio": 0.63, "control_delay": 27.5, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 141, "future_vph": 141, "satd_flow_perm": 1684, "lane_group_flow": 274,  "vc_ratio": 0.64, "control_delay": 23.6, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 591, "future_vph": 811, "satd_flow_perm": 4704, "lane_group_flow": 1038, "vc_ratio": 0.66, "control_delay": 14.5, "los": "B", "sign_control": "—", "lane_alignment": "Left" }
+      ],
+      "phases": [
+        { "phase": "Ø6(R)", "total_split_s": 18.0, "total_split_pct": 40.0, "max_green_s": 14.5 },
+        { "phase": "Ø4",   "total_split_s": 12.0, "total_split_pct": 26.7, "max_green_s": 8.5 },
+        { "phase": "Ø8",   "total_split_s": 15.0, "total_split_pct": 33.3, "max_green_s": 11.5 }
+      ]
+    },
+    {
+      "id": 28,
+      "label": "28",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 46.7,
+      "icu_los": "A",
+      "signal_delay": 7.3,
+      "signal_los": "A",
+      "cycle_length": 55,
+      "actuated_cycle_length": 55,
+      "offset_s": 52,
+      "offset_pct": 95,
+      "natural_cycle": 55,
+      "max_vc": 0.67,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBL", "volume_vph": 168, "future_vph": 346, "satd_flow_perm": 2124, "lane_group_flow": 346,  "vc_ratio": 0.66, "control_delay": 26.2, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 1519,"future_vph": 1815,"satd_flow_perm": 5022, "lane_group_flow": 2105, "vc_ratio": 0.67, "control_delay": 4.1,  "los": "A", "sign_control": "—", "lane_alignment": "Right" }
+      ],
+      "phases": [
+        { "phase": "Ø9",   "total_split_s": 17.0, "total_split_pct": 30.9, "max_green_s": 13.5 },
+        { "phase": "Ø10",  "total_split_s": 38.0, "total_split_pct": 69.1, "max_green_s": 34.5 },
+        { "phase": "Ø2",   "total_split_s": 13.5, "total_split_pct": 25.0, "max_green_s": 10.0 },
+        { "phase": "Ø4",   "total_split_s": 19.0, "total_split_pct": 35.0, "max_green_s": 15.5 },
+        { "phase": "Ø8",   "total_split_s": 22.5, "total_split_pct": 41.0, "max_green_s": 19.0 }
+      ]
+    },
+    {
+      "id": 30,
+      "label": "30",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 40.2,
+      "icu_los": "A",
+      "signal_delay": 15.3,
+      "signal_los": "B",
+      "cycle_length": 55,
+      "actuated_cycle_length": 55,
+      "offset_s": 52,
+      "offset_pct": 95,
+      "natural_cycle": 55,
+      "max_vc": 0.67,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 128, "future_vph": 128, "satd_flow_perm": 1684, "lane_group_flow": 128, "vc_ratio": 0.42, "control_delay": 24.8, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "EBT", "volume_vph": 162, "future_vph": 162, "satd_flow_perm": 1879, "lane_group_flow": 162, "vc_ratio": 0.48, "control_delay": 25.5, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 166, "future_vph": 166, "satd_flow_perm": 1251, "lane_group_flow": 247, "vc_ratio": 0.64, "control_delay": 23.8, "los": "C", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 488, "future_vph": 510, "satd_flow_perm": 4933, "lane_group_flow": 512, "vc_ratio": 0.30, "control_delay": 14.0, "los": "B", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 271, "future_vph": 283, "satd_flow_perm": 1493, "lane_group_flow": 283, "vc_ratio": 0.19, "control_delay": 0.3,  "los": "A", "sign_control": "—", "lane_alignment": "Right" }
+      ],
+      "phases": [
+        { "phase": "Ø2",   "total_split_s": 13.5, "total_split_pct": 24.5, "max_green_s": 10.0 },
+        { "phase": "Ø4",   "total_split_s": 19.0, "total_split_pct": 34.5, "max_green_s": 15.5 },
+        { "phase": "Ø8",   "total_split_s": 22.5, "total_split_pct": 40.9, "max_green_s": 19.0 },
+        { "phase": "Ø9",   "total_split_s": 17.0, "total_split_pct": 31.0, "max_green_s": 13.5 },
+        { "phase": "Ø10",  "total_split_s": 38.0, "total_split_pct": 69.0, "max_green_s": 34.5 }
+      ]
+    },
+    {
+      "id": 31,
+      "label": "31",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 118.9,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBT", "volume_vph": 795,  "future_vph": 1561, "satd_flow_perm": 1842, "lane_group_flow": 1697, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NEL", "volume_vph": 1193, "future_vph": 1320, "satd_flow_perm": 3395, "lane_group_flow": 1435, "sign_control": "Free",  "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 32,
+      "label": "32",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 32.9,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 23,  "future_vph": 23,  "satd_flow_perm": 1842, "lane_group_flow": 25,  "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 0,   "future_vph": 129, "satd_flow_perm": 1779, "lane_group_flow": 187, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "SBL", "volume_vph": 0,   "future_vph": 0,   "satd_flow_perm": 1842, "lane_group_flow": 0,   "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 34,
+      "label": "34",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 39.2,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBL", "volume_vph": 23,   "future_vph": 23,   "satd_flow_perm": 3298, "lane_group_flow": 23,   "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 1509, "future_vph": 1983, "satd_flow_perm": 4794, "lane_group_flow": 1983, "sign_control": "Free",  "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 35,
+      "label": "35",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 32.9,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 23,  "future_vph": 23,  "satd_flow_perm": 1700, "lane_group_flow": 25,   "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "WBR", "volume_vph": 68,  "future_vph": 68,  "satd_flow_perm": 1593, "lane_group_flow": 74,   "sign_control": "Free",  "lane_alignment": "Right" },
+        { "group": "NBT", "volume_vph": 797, "future_vph": 831, "satd_flow_perm": 4943, "lane_group_flow": 1090, "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 37,
+      "label": "37",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 84.8,
+      "icu_los": "E",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 2707, "future_vph": 3037, "satd_flow_perm": 3500, "lane_group_flow": 3301, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SEL", "volume_vph": 0,    "future_vph": 42,   "satd_flow_perm": 2006, "lane_group_flow": 46,   "sign_control": "Free", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 38,
+      "label": "38",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 33.1,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBT", "volume_vph": 1193, "future_vph": 1319, "satd_flow_perm": 5029, "lane_group_flow": 1434, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NWL", "volume_vph": 0,    "future_vph": 95,   "satd_flow_perm": 1750, "lane_group_flow": 103,  "sign_control": "Free", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 40,
+      "label": "40",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 55.6,
+      "icu_los": "B",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 2707, "future_vph": 3041, "satd_flow_perm": 5019, "lane_group_flow": 3346, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0,    "future_vph": 38,   "satd_flow_perm": 1593, "lane_group_flow": 41,   "sign_control": "Yield", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 41,
+      "label": "41",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 38.6,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBT", "volume_vph": 515, "future_vph": 1267, "satd_flow_perm": 4731, "lane_group_flow": 1609, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SBR2","volume_vph": 280, "future_vph": 294,  "satd_flow_perm": 1533, "lane_group_flow": 320,  "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 42,
+      "label": "42",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 7.9,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBR", "volume_vph": 73, "future_vph": 214, "satd_flow_perm": 1593, "lane_group_flow": 233, "sign_control": "Free",  "lane_alignment": "Right" },
+        { "group": "NBL", "volume_vph": 0,  "future_vph": 0,   "satd_flow_perm": 1842, "lane_group_flow": 0,   "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NWL", "volume_vph": 1,  "future_vph": 140, "satd_flow_perm": 1750, "lane_group_flow": 152, "sign_control": "Free",  "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 45,
+      "label": "45",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 20.8,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBT", "volume_vph": 761, "future_vph": 795, "satd_flow_perm": 4902, "lane_group_flow": 922, "sign_control": "Free", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 47,
+      "label": "47",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 82.4,
+      "icu_los": "E",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 4091, "future_vph": 5558, "satd_flow_perm": 5009, "lane_group_flow": 6227, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0,    "future_vph": 116,  "satd_flow_perm": 1593, "lane_group_flow": 126,  "sign_control": "Yield", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 49,
+      "label": "49",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 30.8,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBT", "volume_vph": 697, "future_vph": 716, "satd_flow_perm": 4881, "lane_group_flow": 781, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 0,   "future_vph": 71,  "satd_flow_perm": 1789, "lane_group_flow": 191, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 0,   "future_vph": 74,  "satd_flow_perm": 1660, "lane_group_flow": 298, "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 51,
+      "label": "51",
+      "control_type": "Actuated-Coordinated",
+      "area_type": "Other",
+      "icu": 37.0,
+      "icu_los": "A",
+      "signal_delay": 6.0,
+      "signal_los": "A",
+      "cycle_length": 55,
+      "actuated_cycle_length": 55,
+      "offset_s": 8,
+      "offset_pct": 15,
+      "natural_cycle": 45,
+      "max_vc": 0.63,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "WBT", "volume_vph": 807, "future_vph": 945, "satd_flow_perm": 4831, "lane_group_flow": 953, "vc_ratio": 0.63, "control_delay": 5.9, "los": "A", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "NBT", "volume_vph": 0,   "future_vph": 34,  "satd_flow_perm": 1842, "lane_group_flow": 37,  "vc_ratio": 0.04, "control_delay": 7.0, "los": "A", "sign_control": "—", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 0,   "future_vph": 7,   "satd_flow_perm": 1842, "lane_group_flow": 8,   "vc_ratio": 0.01, "control_delay": 7.0, "los": "A", "sign_control": "—", "lane_alignment": "Left" }
+      ],
+      "phases": [
+        { "phase": "Ø2(R)", "total_split_s": 25.0, "total_split_pct": 45.5, "max_green_s": 21.5 },
+        { "phase": "Ø6(R)", "total_split_s": 25.0, "total_split_pct": 45.5, "max_green_s": 21.5 },
+        { "phase": "Ø8",   "total_split_s": 30.0, "total_split_pct": 54.5, "max_green_s": 26.5 }
+      ]
+    },
+    {
+      "id": 53,
+      "label": "53",
+      "control_type": "Pretimed",
+      "area_type": "Other",
+      "icu": 56.8,
+      "icu_los": "B",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 0,    "future_vph": 42,   "satd_flow_perm": 1842, "lane_group_flow": 46,   "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "WBT", "volume_vph": 0,    "future_vph": 394,  "satd_flow_perm": 1827, "lane_group_flow": 455,  "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NEL", "volume_vph": 1384, "future_vph": 1952, "satd_flow_perm": 3396, "lane_group_flow": 2349, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NER", "volume_vph": 0,    "future_vph": 538,  "satd_flow_perm": 1425, "lane_group_flow": 526,  "sign_control": "Yield", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 54,
+      "label": "54",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 33.0,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBR", "volume_vph": 0,    "future_vph": 676,  "satd_flow_perm": 1593, "lane_group_flow": 735,  "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "WBT", "volume_vph": 0,    "future_vph": 129,  "satd_flow_perm": 1842, "lane_group_flow": 140,  "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "SBT", "volume_vph": 1509, "future_vph": 1956, "satd_flow_perm": 5014, "lane_group_flow": 2180, "sign_control": "Free",  "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 59,
+      "label": "59",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 115.1,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NBR", "volume_vph": 0,    "future_vph": 10,   "satd_flow_perm": 1593, "lane_group_flow": 11,   "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "NET", "volume_vph": 1384, "future_vph": 2637, "satd_flow_perm": 5029, "lane_group_flow": 2866, "sign_control": "Free", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 62,
+      "label": "62",
+      "control_type": "Actuated-Uncoordinated",
+      "area_type": "Other",
+      "icu": 54.0,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBL", "volume_vph": 0,    "future_vph": 311,  "satd_flow_perm": 1641, "lane_group_flow": 868,  "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "EBR", "volume_vph": 1809, "future_vph": 2031, "satd_flow_perm": 2850, "lane_group_flow": 1678, "sign_control": "Free", "lane_alignment": "Right" },
+        { "group": "SWL", "volume_vph": 0,    "future_vph": 74,   "satd_flow_perm": 1750, "lane_group_flow": 80,   "sign_control": "Yield","lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 65,
+      "label": "65",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 37.0,
+      "icu_los": "A",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 1396, "future_vph": 1920, "satd_flow_perm": 5024, "lane_group_flow": 2124, "sign_control": "Free",  "lane_alignment": "Left" },
+        { "group": "SBL", "volume_vph": 0,    "future_vph": 7,    "satd_flow_perm": 1750, "lane_group_flow": 8,    "sign_control": "Yield", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 66,
+      "label": "66",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 89.0,
+      "icu_los": "E",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 4091, "future_vph": 5742, "satd_flow_perm": 4748, "lane_group_flow": 6283, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 352,  "future_vph": 387,  "satd_flow_perm": 1347, "lane_group_flow": 379,  "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 71,
+      "label": "71",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 81.5,
+      "icu_los": "D",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NWT", "volume_vph": 1193, "future_vph": 1320, "satd_flow_perm": 3500, "lane_group_flow": 1435, "sign_control": "Free", "lane_alignment": "Left" }
+      ]
+    },
+    {
+      "id": 74,
+      "label": "74",
+      "control_type": "Unsignalized",
+      "area_type": "Other",
+      "icu": 129.2,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "SBT", "volume_vph": 1679, "future_vph": 2796, "satd_flow_perm": 1842, "lane_group_flow": 3039, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "SER", "volume_vph": 2707, "future_vph": 2984, "satd_flow_perm": 2756, "lane_group_flow": 3243, "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 97,
+      "label": "97",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 115.1,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 0,    "future_vph": 95,   "satd_flow_perm": 1503, "lane_group_flow": 1692, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "EBR", "volume_vph": 2707, "future_vph": 2984, "satd_flow_perm": 1487, "lane_group_flow": 1654, "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 103,
+      "label": "103",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 82.4,
+      "icu_los": "E",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBT", "volume_vph": 4091, "future_vph": 5620, "satd_flow_perm": 5009, "lane_group_flow": 6286, "sign_control": "Yield", "lane_alignment": "Left" },
+        { "group": "NBR", "volume_vph": 0,    "future_vph": 109,  "satd_flow_perm": 1593, "lane_group_flow": 118,  "sign_control": "Yield", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 105,
+      "label": "105",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 115.1,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "NET", "volume_vph": 1384, "future_vph": 2637, "satd_flow_perm": 3188, "lane_group_flow": 4252, "sign_control": "Free", "lane_alignment": "Left" },
+        { "group": "NER", "volume_vph": 2707, "future_vph": 3037, "satd_flow_perm": 1425, "lane_group_flow": 1915, "sign_control": "Free", "lane_alignment": "Right" }
+      ]
+    },
+    {
+      "id": 149,
+      "label": "149",
+      "control_type": "Multiple",
+      "area_type": "Other",
+      "icu": 117.1,
+      "icu_los": "H",
+      "signal_delay": null,
+      "signal_los": null,
+      "cycle_length": null,
+      "analysis_period_min": 15,
+      "lane_groups": [
+        { "group": "EBR", "volume_vph": 0,    "future_vph": 41,   "satd_flow_perm": 1593, "lane_group_flow": 45,   "sign_control": "Yield", "lane_alignment": "Right" },
+        { "group": "SBT", "volume_vph": 4443, "future_vph": 6088, "satd_flow_perm": 6330, "lane_group_flow": 6662, "sign_control": "Free",  "lane_alignment": "Left" }
+      ]
+    }
+  ]
+}
