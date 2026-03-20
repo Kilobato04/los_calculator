@@ -1,97 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Synchro Intersection Auditor</title>
+<title>Synchro 11 — Auditoría LOS de Red</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;min-height:100vh;padding:16px;font-size:12px}
-.tabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid #2a3044}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #2a3044}
+.hdr-left h1{font-size:14px;color:#90caf9;letter-spacing:.8px;text-transform:uppercase}
+.hdr-left p{font-size:10px;color:#555;margin-top:3px}
+.hdr-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill-method{padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.pill-method.hcm{background:#0e2619;color:#81c784;border-color:#1b4d2e}
+.pill-method.icu{background:#153242;color:#29b6f6;border-color:#1a4a6a}
+.pill-method.active{filter:brightness(1.3);border-color:currentColor}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;margin-bottom:14px;border-bottom:1px solid #2a3044}
 .tab{padding:7px 18px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:#555;border-radius:6px 6px 0 0;transition:all .15s}
 .tab:hover{color:#aaa;background:#1a1f2e}
 .tab.active{color:#90caf9;background:#1a1f2e;border-bottom:2px solid #4a90d9}
 .page{display:none}.page.active{display:block}
-h1{font-size:13px;color:#90caf9;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.subtitle{font-size:10px;color:#555;margin-bottom:12px}
-.selector-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-label{font-size:11px;color:#888;white-space:nowrap}
-select{background:#1e2130;color:#e0e0e0;border:1px solid #334;border-radius:6px;padding:6px 11px;font-size:12px;cursor:pointer;outline:none;min-width:300px}
-select:focus{border-color:#4a90d9}
-/* CARDS */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.card{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px}
-.card-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.card-value{font-size:20px;font-weight:700;line-height:1}
-.card-sub{font-size:9px;color:#555;margin-top:3px}
-/* LOS HERO */
-.los-hero{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:14px;margin-bottom:12px}
-.hero-los{font-size:64px;font-weight:900;line-height:1;text-align:center}
-.hero-mid h3{font-size:13px;color:#e0e0e0;margin-bottom:5px}
-.hero-mid p{font-size:10px;color:#666;line-height:1.6}
-.hero-twsc{background:#1a1f2e;border:1px solid #2a3044;border-radius:6px;padding:10px;min-width:140px}
-.hero-twsc-title{font-size:9px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700}
-.twsc-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #1e2233}
-.twsc-row:last-child{border-bottom:none}
-.twsc-grp{font-size:10px;color:#888}
-.twsc-los{font-size:13px;font-weight:700}
-.twsc-d{font-size:9px;color:#555}
-/* PANELS */
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-@media(max-width:580px){.two-col{grid-template-columns:1fr}}
-.panel{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:12px;margin-bottom:10px}
-.panel.nobottom{margin-bottom:0}
-.panel-title{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:5px}
-.panel-title::before{content:'';display:inline-block;width:3px;height:11px;background:#4a90d9;border-radius:2px}
-.arow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1e2233;gap:8px}
-.arow:last-child{border-bottom:none}
-.akey{font-size:10px;color:#777;flex:1}
-.avals{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
-.vbox{text-align:center;min-width:44px}
-.vnum{font-size:12px;font-weight:700}
-.vlbl{font-size:8px;color:#555;margin-top:1px}
-/* CHIPS */
-.chip{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}
-.ok{background:#1b3a1e;color:#4caf50}.warn{background:#332d00;color:#ffc107}.err{background:#2d0e0e;color:#f44336}.na{background:#1a1a1a;color:#555}
-/* BADGES */
-.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700}
-.badge.lg{font-size:14px;padding:3px 9px}
-.A{background:#1b3a1e;color:#4caf50}.B{background:#253318;color:#8bc34a}.C{background:#332d00;color:#ffc107}.D{background:#332100;color:#ff9800}.E{background:#33160a;color:#ff5722}.F{background:#2d0e0e;color:#f44336}.G{background:#280b1a;color:#e91e63}.H{background:#1c0e26;color:#9c27b0}.NA{background:#1e2130;color:#555}
-/* GAUGE */
-.gbar{height:5px;background:#1e2130;border-radius:3px;overflow:hidden;margin:3px 0}
-.gfill{height:100%;border-radius:3px;transition:width .5s}
-/* APPROACH */
-.approach-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.appr-card{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:8px 12px;min-width:90px;text-align:center}
-.appr-dir{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
-.appr-los-val{font-size:24px;font-weight:900;line-height:1}
-.appr-sub{font-size:8px;color:#555;margin-top:2px}
-/* TABLE */
-.table-wrap{overflow-x:auto;margin-bottom:12px}
+
+/* ── SUMMARY FILTERS ── */
+.sfilt{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.fbtn{padding:4px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s}
+.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.sbox{padding:5px 10px;background:#1a1f2e;border:1px solid #2a3044;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;min-width:200px}
+.sbox:focus{border-color:#4a90d9}
+.sstats{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.schip{background:#1a1f2e;border:1px solid #2a3044;border-radius:5px;padding:3px 9px;font-size:10px;color:#888}
+.schip b{color:#e0e0e0}
+
+/* ── TABLE ── */
+.twrap{overflow-x:auto;margin-bottom:12px}
 table{width:100%;border-collapse:collapse;font-size:11px}
 thead tr{background:#1e2538}
 th{padding:6px 8px;text-align:left;color:#6a8ab0;font-weight:600;white-space:nowrap;border-bottom:1px solid #2a3044;cursor:pointer;user-select:none}
 th:hover{color:#90caf9}
-tbody tr{border-bottom:1px solid #1a1f2e}
+tbody tr{border-bottom:1px solid #1a1f2e;transition:background .1s}
 tbody tr:hover{background:#1e2538}
-td{padding:5px 8px;color:#ccc;white-space:nowrap}
-td.grp{font-weight:700;color:#90caf9}
-.sF{color:#4caf50}.sY{color:#ffc107}.sS{color:#f44336}
-/* SUMMARY */
-.sfilt{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.fbtn{padding:4px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s}
-.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
-.sbox{padding:5px 10px;background:#1a1f2e;border:1px solid #2a3044;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;min-width:180px}
-.sbox:focus{border-color:#4a90d9}
-.sstats{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.schip{background:#1a1f2e;border:1px solid #2a3044;border-radius:5px;padding:4px 10px;font-size:10px;color:#888}
-.schip b{color:#e0e0e0}
-/* DIAGRAM */
+td{padding:5px 8px;color:#ccc;white-space:nowrap;vertical-align:middle}
+
+/* ── BADGES / CHIPS ── */
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;border-radius:4px;font-size:11px;font-weight:700}
+.badge.lg{min-width:30px;height:30px;font-size:15px;border-radius:6px}
+.A{background:#1b3a1e;color:#4caf50}.B{background:#253318;color:#8bc34a}
+.C{background:#332d00;color:#ffc107}.D{background:#332100;color:#ff9800}
+.E{background:#33160a;color:#ff5722}.F{background:#2d0e0e;color:#f44336}
+.G{background:#280b1a;color:#e91e63}.H{background:#1c0e26;color:#9c27b0}
+.NA{background:#1e2130;color:#555}
+.chip{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;display:inline-block}
+.ok{background:#1b3a1e;color:#4caf50}.warn{background:#332d00;color:#ffc107}.err{background:#2d0e0e;color:#f44336}.na{background:#1a1a1a;color:#555}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
+.tS{background:#153242;color:#29b6f6}.tU{background:#2a2008;color:#ff9800}.tR{background:#1f1039;color:#ce93d8}.tM{background:#0e2619;color:#81c784}
+
+/* ── DETAIL ── */
+.sel-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.sel-row label{font-size:11px;color:#888}
+select.int-sel{background:#1e2130;color:#e0e0e0;border:1px solid #334;border-radius:6px;padding:6px 11px;font-size:12px;cursor:pointer;outline:none;min-width:320px}
+select.int-sel:focus{border-color:#4a90d9}
+
+.hero{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:14px;margin-bottom:12px}
+.hero-los{font-size:72px;font-weight:900;line-height:1;text-align:center;min-width:80px}
+.hero-mid h3{font-size:13px;color:#e0e0e0;margin-bottom:5px}
+.hero-mid p{font-size:10px;color:#666;line-height:1.7}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.card{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px}
+.card-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.card-value{font-size:20px;font-weight:700;line-height:1.1}
+.card-sub{font-size:9px;color:#555;margin-top:3px}
+.gbar{height:5px;background:#1e2130;border-radius:3px;overflow:hidden;margin:3px 0}
+.gfill{height:100%;border-radius:3px;transition:width .5s}
+
+.panel{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:12px;margin-bottom:10px}
+.ptitle{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.ptitle::before{content:'';display:inline-block;width:3px;height:11px;background:#4a90d9;border-radius:2px}
+.arow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1e2233;gap:8px}
+.arow:last-child{border-bottom:none}
+.akey{font-size:10px;color:#777;flex:1}
+.avals{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.vbox{text-align:center;min-width:38px}
+.vnum{font-size:12px;font-weight:700}
+.vlbl{font-size:8px;color:#555;margin-top:1px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+
 .diag-wrap{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:14px;margin-bottom:12px}
-.diag-title{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:5px}
-.diag-title::before{content:'';display:inline-block;width:3px;height:11px;background:#4a90d9;border-radius:2px}
-.diag-inner{display:flex;justify-content:center}
-/* PHASES */
+.appr-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.appr-card{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:8px 12px;min-width:80px;text-align:center}
+.appr-dir{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.appr-los{font-size:24px;font-weight:900;line-height:1}
+.appr-sub{font-size:8px;color:#555;margin-top:2px}
+
 .phases-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
 .pchip{background:#1e2130;border:1px solid #2a3044;border-radius:6px;padding:6px 10px;text-align:center;min-width:90px}
 .phl{font-size:10px;color:#90caf9;font-weight:700}
@@ -99,49 +105,71 @@ td.grp{font-weight:700;color:#90caf9}
 .phsub{font-size:9px;color:#666;margin-top:2px}
 .note{font-size:9px;color:#555;margin-top:6px;line-height:1.5}
 .sect{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin:12px 0 6px}
-.na-box{color:#555;font-size:11px;padding:10px;text-align:center;background:#14161e;border-radius:6px;line-height:1.6}
-.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
-.tS{background:#153242;color:#29b6f6}.tU{background:#2a2008;color:#ff9800}.tR{background:#1f1039;color:#ce93d8}.tM{background:#0e2619;color:#81c784}
-/* highlight row */
-.int-highlight{background:#0d1a28;border-radius:4px;padding:6px;margin-bottom:6px}
+
+/* ── DUAL RESULT STRIP ── */
+.dual{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.dcard{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;text-align:center}
+.dcard .dlabel{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.dcard .dval{font-size:32px;font-weight:900;line-height:1}
+.dcard .dsub{font-size:9px;color:#666;margin-top:3px}
+
+/* ── METHODOLOGY NOTE ── */
+.mbox{background:#0a1628;border:1px solid #1a3a5c;border-radius:6px;padding:10px 12px;font-size:10px;color:#4a7ab0;line-height:1.7;margin-bottom:12px}
+.mbox strong{color:#90caf9}
+
+/* ── HIGHLIGHT ── */
+.crit-row{background:#1b1212!important}
+.warn-row{background:#1a180a!important}
+
+footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px solid #1a1f2e;margin-top:16px}
 </style>
 </head>
 <body>
-<h1>Synchro 11 — Intersection Auditor</h1>
-<p class="subtitle">01-29-2026 · AM Peak · ICU + HCM Signalized + HCM TWSC · Reported vs. Calculated</p>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>🚦 Synchro 11 — Auditoría LOS de Red</h1>
+    <p id="hdr-sub">01-29-2026 · AM Peak · ICU + HCM Semaforizado + HCM TWSC · Reportado vs. Calculado</p>
+  </div>
+  <div class="hdr-right">
+    <span style="font-size:10px;color:#555">Método primario:</span>
+    <span class="pill-method icu active" id="pm-icu" onclick="setPrimary('icu')">ICU (Utilización)</span>
+    <span class="pill-method hcm" id="pm-hcm" onclick="setPrimary('hcm')">HCM (Demora)</span>
+  </div>
+</div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('summary',this)">Summary Table</div>
-  <div class="tab" onclick="switchTab('detail',this)">Intersection Detail</div>
+  <div class="tab active" onclick="swTab('summary',this)">Tabla Red</div>
+  <div class="tab" onclick="swTab('detail',this)">Detalle Intersección</div>
 </div>
 
 <!-- ════ SUMMARY ════ -->
 <div class="page active" id="page-summary">
   <div class="sfilt">
-    <input class="sbox" id="searchBox" placeholder="Search…" oninput="renderSummary()">
-    <button class="fbtn active" onclick="setF('ALL',this)">All</button>
-    <button class="fbtn" onclick="setF('Sig',this)">Signalized</button>
-    <button class="fbtn" onclick="setF('UnSig',this)">Unsignalized</button>
-    <button class="fbtn" onclick="setF('Crit',this)">Critical ≥90%</button>
+    <input class="sbox" id="srch" placeholder="Buscar intersección…" oninput="renderSum()">
+    <button class="fbtn active" onclick="setFilt('ALL',this)">Todas</button>
+    <button class="fbtn" onclick="setFilt('Sig',this)">Semaforizadas</button>
+    <button class="fbtn" onclick="setFilt('UnSig',this)">No semaforizadas</button>
+    <button class="fbtn" onclick="setFilt('Crit',this)">Críticas ≥90%</button>
+    <button class="fbtn" onclick="setFilt('Diff',this)">Con discrepancia</button>
   </div>
   <div class="sstats" id="sstats"></div>
-  <div class="table-wrap">
+  <div class="twrap">
     <table>
       <thead><tr>
-        <th onclick="sortS('id')">Int.#</th>
-        <th onclick="sortS('ct')">Control</th>
-        <th onclick="sortS('ir')">ICU% rptd</th>
-        <th onclick="sortS('ic')">ICU% calc</th>
+        <th onclick="doSort('id')">#</th>
+        <th onclick="doSort('ct')">Control</th>
+        <th onclick="doSort('ir')">ICU% rptd</th>
+        <th onclick="doSort('ic')">ICU% calc</th>
         <th>Δ ICU</th>
-        <th onclick="sortS('ilr')">LOS ICU rptd</th>
-        <th onclick="sortS('ilc')">LOS ICU calc</th>
-        <th onclick="sortS('sd')">Delay rptd</th>
-        <th onclick="sortS('cd')">Delay calc</th>
-        <th onclick="sortS('sl')">LOS HCM rptd</th>
-        <th onclick="sortS('cl')">LOS HCM calc</th>
-        <th>LOS Int. (primary)</th>
-        <th>TWSC worst mvt</th>
-        <th>Approach LOS</th>
+        <th>LOS ICU rptd</th>
+        <th>LOS ICU calc</th>
+        <th onclick="doSort('sd')">Demora rptd</th>
+        <th onclick="doSort('cd')">Demora calc</th>
+        <th>LOS HCM rptd</th>
+        <th>LOS HCM calc</th>
+        <th>LOS primario</th>
+        <th>Accesos</th>
         <th></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
@@ -151,509 +179,450 @@ td.grp{font-weight:700;color:#90caf9}
 
 <!-- ════ DETAIL ════ -->
 <div class="page" id="page-detail">
-  <div class="selector-row">
-    <label>Intersection:</label>
-    <select id="intSel"></select>
+  <div class="sel-row">
+    <label>Intersección:</label>
+    <select class="int-sel" id="intSel"></select>
   </div>
-  <div class="los-hero" id="losHero"></div>
+  <div class="dual" id="dualStrip"></div>
+  <div class="hero" id="hero"></div>
+  <div class="mbox" id="methBox"></div>
   <div class="cards" id="cards"></div>
-  <div class="diag-wrap"><div class="diag-title">Movement Diagram — LOS by Lane Group & Intersection</div><div class="diag-inner" id="diag"></div></div>
-  <div class="panel"><div class="panel-title">Approach (Leg) LOS</div><div class="approach-row" id="apprRow"></div><p class="note" id="apprNote"></p></div>
-  <div class="two-col" id="auditPanels"></div>
+  <div class="diag-wrap"><div class="ptitle" style="margin-bottom:8px">Diagrama — LOS por grupo de carriles</div><div id="diag" style="display:flex;justify-content:center"></div></div>
+  <div class="panel"><div class="ptitle">LOS por acceso (leg)</div><div class="appr-row" id="apprRow"></div><p class="note" id="apprNote"></p></div>
+  <div class="two-col" id="auditCols"></div>
   <div class="sect" id="lgSect"></div>
-  <div class="table-wrap"><table><thead><tr id="lgHead"></tr></thead><tbody id="lgBody"></tbody></table></div>
+  <div class="twrap"><table><thead><tr id="lgHead"></tr></thead><tbody id="lgBody"></tbody></table></div>
   <div id="phSect"></div>
 </div>
 
-<script>
-// ─────────────────────────────────────────────────────────────────────────────
-// DATA
-// ─────────────────────────────────────────────────────────────────────────────
-const D={"intersections":[{"id":1,"label":"1","control_type":"Unsignalized","icu":35.8,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBL","volume_vph":81,"future_vph":81,"satd_flow_perm":1702,"lane_group_flow":104,"sign_control":"Yield"},{"group":"NBR","volume_vph":23,"future_vph":23,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Yield"},{"group":"NET","volume_vph":374,"future_vph":386,"satd_flow_perm":1824,"lane_group_flow":445,"sign_control":"Free"},{"group":"NER","volume_vph":59,"future_vph":59,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Free"},{"group":"SWL","volume_vph":9,"future_vph":9,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Free"},{"group":"SWT","volume_vph":166,"future_vph":166,"satd_flow_perm":1216,"lane_group_flow":175,"sign_control":"Free"}]},{"id":2,"label":"2","control_type":"Unsignalized","icu":16.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","volume_vph":104,"future_vph":104,"satd_flow_perm":1785,"lane_group_flow":113,"sign_control":"Yield"},{"group":"NBT","volume_vph":0,"future_vph":0,"satd_flow_perm":1648,"lane_group_flow":0,"sign_control":"Free"},{"group":"SBT","volume_vph":68,"future_vph":68,"satd_flow_perm":1842,"lane_group_flow":74,"sign_control":"Free"}]},{"id":6,"label":"6","control_type":"Roundabout","icu":117.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBL","volume_vph":0,"future_vph":80,"satd_flow_perm":1581,"lane_group_flow":1061,"sign_control":"Free"},{"group":"NBR","volume_vph":1988,"future_vph":2801,"satd_flow_perm":2850,"lane_group_flow":2071,"sign_control":"Free"},{"group":"SWT","volume_vph":4443,"future_vph":6049,"satd_flow_perm":5029,"lane_group_flow":6575,"sign_control":"Yield"}]},{"id":7,"label":"7","control_type":"Unsignalized","icu":22.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","volume_vph":0,"future_vph":0,"satd_flow_perm":1593,"lane_group_flow":20,"sign_control":"Stop"},{"group":"NBT","volume_vph":326,"future_vph":326,"satd_flow_perm":3486,"lane_group_flow":364,"sign_control":"Free"},{"group":"SBT","volume_vph":677,"future_vph":677,"satd_flow_perm":3500,"lane_group_flow":736,"sign_control":"Free"},{"group":"NWL","volume_vph":0,"future_vph":0,"satd_flow_perm":1750,"lane_group_flow":4,"sign_control":"Stop"}]},{"id":8,"label":"8","control_type":"Pretimed","icu":0.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","volume_vph":0,"future_vph":0,"satd_flow_perm":1593,"lane_group_flow":8,"sign_control":"Yield"},{"group":"WBT","volume_vph":0,"future_vph":0,"satd_flow_perm":1842,"lane_group_flow":0,"sign_control":"Free"},{"group":"NBL","volume_vph":0,"future_vph":12,"satd_flow_perm":1659,"lane_group_flow":33,"sign_control":"Stop"}]},{"id":9,"label":"9","control_type":"Unsignalized","icu":61.3,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBL","volume_vph":1193,"future_vph":1313,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Free"},{"group":"NBT","volume_vph":789,"future_vph":995,"satd_flow_perm":4888,"lane_group_flow":2509,"sign_control":"Free"}]},{"id":10,"label":"10","control_type":"Unsignalized","icu":28.4,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBT","volume_vph":8,"future_vph":8,"satd_flow_perm":1842,"lane_group_flow":9,"sign_control":"Yield"},{"group":"NWR","volume_vph":789,"future_vph":995,"satd_flow_perm":3535,"lane_group_flow":1082,"sign_control":"Free"}]},{"id":11,"label":"11","control_type":"Unsignalized","icu":27.2,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBL","volume_vph":8,"future_vph":8,"satd_flow_perm":1687,"lane_group_flow":16,"sign_control":"Free"}]},{"id":12,"label":"12","control_type":"Unsignalized","icu":104.4,"icu_los":"G","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBL","volume_vph":1509,"future_vph":2626,"satd_flow_perm":3036,"lane_group_flow":1912,"sign_control":"Free"},{"group":"SBT","volume_vph":0,"future_vph":6,"satd_flow_perm":1523,"lane_group_flow":949,"sign_control":"Free"}]},{"id":15,"label":"15","control_type":"Pretimed","icu":61.3,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBR","volume_vph":0,"future_vph":6,"satd_flow_perm":1593,"lane_group_flow":7,"sign_control":"Free"},{"group":"NWL","volume_vph":1193,"future_vph":1313,"satd_flow_perm":3395,"lane_group_flow":1427,"sign_control":"Free"}]},{"id":17,"label":"17","control_type":"Unsignalized","icu":89.0,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","volume_vph":4091,"future_vph":5742,"satd_flow_perm":5029,"lane_group_flow":6241,"sign_control":"Free"},{"group":"NER","volume_vph":0,"future_vph":41,"satd_flow_perm":2756,"lane_group_flow":45,"sign_control":"Free"}]},{"id":18,"label":"18","control_type":"Pretimed","icu":107.6,"icu_los":"G","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBT","volume_vph":3387,"future_vph":4781,"satd_flow_perm":3342,"lane_group_flow":5306,"sign_control":"Free"},{"group":"SBR","volume_vph":999,"future_vph":999,"satd_flow_perm":1425,"lane_group_flow":977,"sign_control":"Free"}]},{"id":19,"label":"19","control_type":"Multiple","icu":36.3,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","volume_vph":1193,"future_vph":1320,"satd_flow_perm":3349,"lane_group_flow":1441,"sign_control":"Free"},{"group":"WBR","volume_vph":0,"future_vph":54,"satd_flow_perm":1425,"lane_group_flow":53,"sign_control":"Free"}]},{"id":21,"label":"21","control_type":"Pretimed","icu":56.2,"icu_los":"B","signal_delay":14.9,"signal_los":"B","cycle_length":55,"actuated_cycle_length":55,"offset_s":24,"natural_cycle":50,"max_vc":0.73,"analysis_period_min":15,"lane_groups":[{"group":"WBL","future_vph":132,"satd_flow_perm":4776,"lane_group_flow":1110,"vc_ratio":0.70,"control_delay":12.2,"los":"B","sign_control":"—"},{"group":"NBT","future_vph":196,"satd_flow_perm":1807,"lane_group_flow":213,"vc_ratio":0.52,"control_delay":29.9,"los":"C","sign_control":"—"},{"group":"SBT","future_vph":479,"satd_flow_perm":3570,"lane_group_flow":521,"vc_ratio":0.57,"control_delay":20.6,"los":"C","sign_control":"—"},{"group":"SBR","future_vph":202,"satd_flow_perm":1521,"lane_group_flow":220,"vc_ratio":0.14,"control_delay":0.2,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø8","total_split_s":16.0,"total_split_pct":29.1,"max_green_s":12.5},{"phase":"Ø2(R)","total_split_s":21.3,"total_split_pct":38.7,"max_green_s":17.8},{"phase":"Ø4","total_split_s":17.7,"total_split_pct":32.2,"max_green_s":14.2},{"phase":"Ø10","total_split_s":32.5,"total_split_pct":59.0,"max_green_s":29.0},{"phase":"Ø9","total_split_s":22.5,"total_split_pct":41.0,"max_green_s":19.0}]},{"id":22,"label":"22","control_type":"Multiple","icu":6.7,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":23,"satd_flow_perm":3500,"lane_group_flow":25,"sign_control":"Free"},{"group":"NBT","future_vph":43,"satd_flow_perm":1842,"lane_group_flow":47,"sign_control":"Yield"}]},{"id":23,"label":"23","control_type":"Pretimed","icu":67.7,"icu_los":"C","signal_delay":11.3,"signal_los":"B","cycle_length":55,"actuated_cycle_length":55,"offset_s":24,"natural_cycle":50,"max_vc":0.73,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":1731,"satd_flow_perm":4999,"lane_group_flow":1927,"vc_ratio":0.73,"control_delay":12.1,"los":"B","sign_control":"—"},{"group":"SBL","future_vph":611,"satd_flow_perm":3429,"lane_group_flow":611,"vc_ratio":0.52,"control_delay":8.7,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø10","total_split_s":32.5,"total_split_pct":59.1,"max_green_s":29.0},{"phase":"Ø9","total_split_s":22.5,"total_split_pct":40.9,"max_green_s":19.0},{"phase":"Ø2","total_split_s":21.3,"total_split_pct":39.0,"max_green_s":17.8},{"phase":"Ø4","total_split_s":17.7,"total_split_pct":32.0,"max_green_s":14.2},{"phase":"Ø8","total_split_s":16.0,"total_split_pct":29.0,"max_green_s":12.5}]},{"id":24,"label":"24","control_type":"Unsignalized","icu":36.3,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":214,"satd_flow_perm":1785,"lane_group_flow":233,"sign_control":"Yield"},{"group":"NET","future_vph":1749,"satd_flow_perm":4971,"lane_group_flow":2053,"sign_control":"Free"}]},{"id":25,"label":"25","control_type":"Unsignalized","icu":25.7,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBT","future_vph":872,"satd_flow_perm":4792,"lane_group_flow":1027,"sign_control":"Free"},{"group":"NWL","future_vph":83,"satd_flow_perm":1785,"lane_group_flow":90,"sign_control":"Yield"}]},{"id":26,"label":"26","control_type":"Unsignalized","icu":44.3,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":192,"satd_flow_perm":1733,"lane_group_flow":192,"sign_control":"Yield"},{"group":"NBT","future_vph":1697,"satd_flow_perm":4966,"lane_group_flow":1977,"sign_control":"Free"}]},{"id":27,"label":"27","control_type":"Pretimed","icu":49.2,"icu_los":"A","signal_delay":18.1,"signal_los":"B","cycle_length":45,"actuated_cycle_length":45,"offset_s":0,"natural_cycle":45,"max_vc":0.66,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":187,"satd_flow_perm":1838,"lane_group_flow":225,"vc_ratio":0.63,"control_delay":27.5,"los":"C","sign_control":"—"},{"group":"WBT","future_vph":141,"satd_flow_perm":1684,"lane_group_flow":274,"vc_ratio":0.64,"control_delay":23.6,"los":"C","sign_control":"—"},{"group":"SBT","future_vph":811,"satd_flow_perm":4704,"lane_group_flow":1038,"vc_ratio":0.66,"control_delay":14.5,"los":"B","sign_control":"—"}],"phases":[{"phase":"Ø6(R)","total_split_s":18.0,"total_split_pct":40.0,"max_green_s":14.5},{"phase":"Ø4","total_split_s":12.0,"total_split_pct":26.7,"max_green_s":8.5},{"phase":"Ø8","total_split_s":15.0,"total_split_pct":33.3,"max_green_s":11.5}]},{"id":28,"label":"28","control_type":"Pretimed","icu":46.7,"icu_los":"A","signal_delay":7.3,"signal_los":"A","cycle_length":55,"actuated_cycle_length":55,"offset_s":52,"natural_cycle":55,"max_vc":0.67,"analysis_period_min":15,"lane_groups":[{"group":"WBL","future_vph":346,"satd_flow_perm":2124,"lane_group_flow":346,"vc_ratio":0.66,"control_delay":26.2,"los":"C","sign_control":"—"},{"group":"SBT","future_vph":1815,"satd_flow_perm":5022,"lane_group_flow":2105,"vc_ratio":0.67,"control_delay":4.1,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø9","total_split_s":17.0,"total_split_pct":30.9,"max_green_s":13.5},{"phase":"Ø10","total_split_s":38.0,"total_split_pct":69.1,"max_green_s":34.5},{"phase":"Ø2","total_split_s":13.5,"total_split_pct":25.0,"max_green_s":10.0},{"phase":"Ø4","total_split_s":19.0,"total_split_pct":35.0,"max_green_s":15.5},{"phase":"Ø8","total_split_s":22.5,"total_split_pct":41.0,"max_green_s":19.0}]},{"id":30,"label":"30","control_type":"Pretimed","icu":40.2,"icu_los":"A","signal_delay":15.3,"signal_los":"B","cycle_length":55,"actuated_cycle_length":55,"offset_s":52,"natural_cycle":55,"max_vc":0.67,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":128,"satd_flow_perm":1684,"lane_group_flow":128,"vc_ratio":0.42,"control_delay":24.8,"los":"C","sign_control":"—"},{"group":"EBT","future_vph":162,"satd_flow_perm":1879,"lane_group_flow":162,"vc_ratio":0.48,"control_delay":25.5,"los":"C","sign_control":"—"},{"group":"WBT","future_vph":166,"satd_flow_perm":1251,"lane_group_flow":247,"vc_ratio":0.64,"control_delay":23.8,"los":"C","sign_control":"—"},{"group":"NBT","future_vph":510,"satd_flow_perm":4933,"lane_group_flow":512,"vc_ratio":0.30,"control_delay":14.0,"los":"B","sign_control":"—"},{"group":"NBR","future_vph":283,"satd_flow_perm":1493,"lane_group_flow":283,"vc_ratio":0.19,"control_delay":0.3,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø2","total_split_s":13.5,"total_split_pct":24.5,"max_green_s":10.0},{"phase":"Ø4","total_split_s":19.0,"total_split_pct":34.5,"max_green_s":15.5},{"phase":"Ø8","total_split_s":22.5,"total_split_pct":40.9,"max_green_s":19.0},{"phase":"Ø9","total_split_s":17.0,"total_split_pct":31.0,"max_green_s":13.5},{"phase":"Ø10","total_split_s":38.0,"total_split_pct":69.0,"max_green_s":34.5}]},{"id":31,"label":"31","control_type":"Unsignalized","icu":118.9,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBT","future_vph":1561,"satd_flow_perm":1842,"lane_group_flow":1697,"sign_control":"Yield"},{"group":"NEL","future_vph":1320,"satd_flow_perm":3395,"lane_group_flow":1435,"sign_control":"Free"}]},{"id":32,"label":"32","control_type":"Multiple","icu":32.9,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":23,"satd_flow_perm":1842,"lane_group_flow":25,"sign_control":"Yield"},{"group":"WBT","future_vph":129,"satd_flow_perm":1779,"lane_group_flow":187,"sign_control":"Yield"}]},{"id":34,"label":"34","control_type":"Unsignalized","icu":39.2,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBL","future_vph":23,"satd_flow_perm":3298,"lane_group_flow":23,"sign_control":"Yield"},{"group":"SBT","future_vph":1983,"satd_flow_perm":4794,"lane_group_flow":1983,"sign_control":"Free"}]},{"id":35,"label":"35","control_type":"Unsignalized","icu":32.9,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":23,"satd_flow_perm":1700,"lane_group_flow":25,"sign_control":"Yield"},{"group":"WBR","future_vph":68,"satd_flow_perm":1593,"lane_group_flow":74,"sign_control":"Free"},{"group":"NBT","future_vph":831,"satd_flow_perm":4943,"lane_group_flow":1090,"sign_control":"Yield"}]},{"id":37,"label":"37","control_type":"Multiple","icu":84.8,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":3037,"satd_flow_perm":3500,"lane_group_flow":3301,"sign_control":"Free"},{"group":"SEL","future_vph":42,"satd_flow_perm":2006,"lane_group_flow":46,"sign_control":"Free"}]},{"id":38,"label":"38","control_type":"Multiple","icu":33.1,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":1319,"satd_flow_perm":5029,"lane_group_flow":1434,"sign_control":"Free"},{"group":"NWL","future_vph":95,"satd_flow_perm":1750,"lane_group_flow":103,"sign_control":"Free"}]},{"id":40,"label":"40","control_type":"Multiple","icu":55.6,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":3041,"satd_flow_perm":5019,"lane_group_flow":3346,"sign_control":"Free"},{"group":"NBR","future_vph":38,"satd_flow_perm":1593,"lane_group_flow":41,"sign_control":"Yield"}]},{"id":41,"label":"41","control_type":"Unsignalized","icu":38.6,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":1267,"satd_flow_perm":4731,"lane_group_flow":1609,"sign_control":"Free"},{"group":"SBR2","future_vph":294,"satd_flow_perm":1533,"lane_group_flow":320,"sign_control":"Free"}]},{"id":42,"label":"42","control_type":"Unsignalized","icu":7.9,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBR","future_vph":214,"satd_flow_perm":1593,"lane_group_flow":233,"sign_control":"Free"},{"group":"NWL","future_vph":140,"satd_flow_perm":1750,"lane_group_flow":152,"sign_control":"Free"}]},{"id":45,"label":"45","control_type":"Unsignalized","icu":20.8,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBT","future_vph":795,"satd_flow_perm":4902,"lane_group_flow":922,"sign_control":"Free"}]},{"id":47,"label":"47","control_type":"Multiple","icu":82.4,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":5558,"satd_flow_perm":5009,"lane_group_flow":6227,"sign_control":"Yield"},{"group":"NBR","future_vph":116,"satd_flow_perm":1593,"lane_group_flow":126,"sign_control":"Yield"}]},{"id":49,"label":"49","control_type":"Unsignalized","icu":30.8,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":716,"satd_flow_perm":4881,"lane_group_flow":781,"sign_control":"Free"},{"group":"NBT","future_vph":71,"satd_flow_perm":1789,"lane_group_flow":191,"sign_control":"Yield"},{"group":"SBT","future_vph":74,"satd_flow_perm":1660,"lane_group_flow":298,"sign_control":"Yield"}]},{"id":51,"label":"51","control_type":"Actuated-Coordinated","icu":37.0,"icu_los":"A","signal_delay":6.0,"signal_los":"A","cycle_length":55,"actuated_cycle_length":55,"offset_s":8,"natural_cycle":45,"max_vc":0.63,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":945,"satd_flow_perm":4831,"lane_group_flow":953,"vc_ratio":0.63,"control_delay":5.9,"los":"A","sign_control":"—"},{"group":"NBT","future_vph":34,"satd_flow_perm":1842,"lane_group_flow":37,"vc_ratio":0.04,"control_delay":7.0,"los":"A","sign_control":"—"},{"group":"SBT","future_vph":7,"satd_flow_perm":1842,"lane_group_flow":8,"vc_ratio":0.01,"control_delay":7.0,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø2(R)","total_split_s":25.0,"total_split_pct":45.5,"max_green_s":21.5},{"phase":"Ø6(R)","total_split_s":25.0,"total_split_pct":45.5,"max_green_s":21.5},{"phase":"Ø8","total_split_s":30.0,"total_split_pct":54.5,"max_green_s":26.5}]},{"id":53,"label":"53","control_type":"Pretimed","icu":56.8,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":42,"satd_flow_perm":1842,"lane_group_flow":46,"sign_control":"Yield"},{"group":"WBT","future_vph":394,"satd_flow_perm":1827,"lane_group_flow":455,"sign_control":"Yield"},{"group":"NEL","future_vph":1952,"satd_flow_perm":3396,"lane_group_flow":2349,"sign_control":"Yield"},{"group":"NER","future_vph":538,"satd_flow_perm":1425,"lane_group_flow":526,"sign_control":"Yield"}]},{"id":54,"label":"54","control_type":"Unsignalized","icu":33.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBR","future_vph":676,"satd_flow_perm":1593,"lane_group_flow":735,"sign_control":"Yield"},{"group":"WBT","future_vph":129,"satd_flow_perm":1842,"lane_group_flow":140,"sign_control":"Yield"},{"group":"SBT","future_vph":1956,"satd_flow_perm":5014,"lane_group_flow":2180,"sign_control":"Free"}]},{"id":59,"label":"59","control_type":"Multiple","icu":115.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBR","future_vph":10,"satd_flow_perm":1593,"lane_group_flow":11,"sign_control":"Free"},{"group":"NET","future_vph":2637,"satd_flow_perm":5029,"lane_group_flow":2866,"sign_control":"Free"}]},{"id":62,"label":"62","control_type":"Actuated-Uncoordinated","icu":54.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":311,"satd_flow_perm":1641,"lane_group_flow":868,"sign_control":"Free"},{"group":"EBR","future_vph":2031,"satd_flow_perm":2850,"lane_group_flow":1678,"sign_control":"Free"},{"group":"SWL","future_vph":74,"satd_flow_perm":1750,"lane_group_flow":80,"sign_control":"Yield"}]},{"id":65,"label":"65","control_type":"Unsignalized","icu":37.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":1920,"satd_flow_perm":5024,"lane_group_flow":2124,"sign_control":"Free"},{"group":"SBL","future_vph":7,"satd_flow_perm":1750,"lane_group_flow":8,"sign_control":"Yield"}]},{"id":66,"label":"66","control_type":"Multiple","icu":89.0,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":5742,"satd_flow_perm":4748,"lane_group_flow":6283,"sign_control":"Free"},{"group":"EBR","future_vph":387,"satd_flow_perm":1347,"lane_group_flow":379,"sign_control":"Free"}]},{"id":71,"label":"71","control_type":"Multiple","icu":81.5,"icu_los":"D","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NWT","future_vph":1320,"satd_flow_perm":3500,"lane_group_flow":1435,"sign_control":"Free"}]},{"id":74,"label":"74","control_type":"Unsignalized","icu":129.2,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBT","future_vph":2796,"satd_flow_perm":1842,"lane_group_flow":3039,"sign_control":"Free"},{"group":"SER","future_vph":2984,"satd_flow_perm":2756,"lane_group_flow":3243,"sign_control":"Free"}]},{"id":97,"label":"97","control_type":"Multiple","icu":115.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":95,"satd_flow_perm":1503,"lane_group_flow":1692,"sign_control":"Free"},{"group":"EBR","future_vph":2984,"satd_flow_perm":1487,"lane_group_flow":1654,"sign_control":"Free"}]},{"id":103,"label":"103","control_type":"Multiple","icu":82.4,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":5620,"satd_flow_perm":5009,"lane_group_flow":6286,"sign_control":"Yield"},{"group":"NBR","future_vph":109,"satd_flow_perm":1593,"lane_group_flow":118,"sign_control":"Yield"}]},{"id":105,"label":"105","control_type":"Multiple","icu":115.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NET","future_vph":2637,"satd_flow_perm":3188,"lane_group_flow":4252,"sign_control":"Free"},{"group":"NER","future_vph":3037,"satd_flow_perm":1425,"lane_group_flow":1915,"sign_control":"Free"}]},{"id":149,"label":"149","control_type":"Multiple","icu":117.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBR","future_vph":41,"satd_flow_perm":1593,"lane_group_flow":45,"sign_control":"Yield"},{"group":"SBT","future_vph":6088,"satd_flow_perm":6330,"lane_group_flow":6662,"sign_control":"Free"}]}]};
+<footer>Metodología: ICU = Σ(v/s)×100 · HCM 7 d=d₁+d₂ · TWSC HCM Cap.20 · fHV & fLU ya incorporados en satd_flow_perm del JSON · Uso técnico de referencia</footer>
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LOS THRESHOLDS
-// ─────────────────────────────────────────────────────────────────────────────
+<script>
+// ── DATA (embedded — replace with fetch('data.json') if served from server) ──
+const DATA_URL = 'data.json'; // will fetch; fallback to inline below
+const INLINE = {"intersections":[{"id":1,"label":"1","control_type":"Unsignalized","icu":35.8,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBL","volume_vph":81,"future_vph":81,"satd_flow_perm":1702,"lane_group_flow":104,"sign_control":"Yield"},{"group":"NBR","volume_vph":23,"future_vph":23,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Yield"},{"group":"NET","volume_vph":374,"future_vph":386,"satd_flow_perm":1824,"lane_group_flow":445,"sign_control":"Free"},{"group":"NER","volume_vph":59,"future_vph":59,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Free"},{"group":"SWL","volume_vph":9,"future_vph":9,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Free"},{"group":"SWT","volume_vph":166,"future_vph":166,"satd_flow_perm":1216,"lane_group_flow":175,"sign_control":"Free"}]},{"id":2,"label":"2","control_type":"Unsignalized","icu":16.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","volume_vph":104,"future_vph":104,"satd_flow_perm":1785,"lane_group_flow":113,"sign_control":"Yield"},{"group":"NBT","volume_vph":0,"future_vph":0,"satd_flow_perm":1648,"lane_group_flow":0,"sign_control":"Free"},{"group":"SBT","volume_vph":68,"future_vph":68,"satd_flow_perm":1842,"lane_group_flow":74,"sign_control":"Free"}]},{"id":6,"label":"6","control_type":"Roundabout","icu":117.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBL","volume_vph":0,"future_vph":80,"satd_flow_perm":1581,"lane_group_flow":1061,"sign_control":"Free"},{"group":"NBR","volume_vph":1988,"future_vph":2801,"satd_flow_perm":2850,"lane_group_flow":2071,"sign_control":"Free"},{"group":"SWT","volume_vph":4443,"future_vph":6049,"satd_flow_perm":5029,"lane_group_flow":6575,"sign_control":"Yield"}]},{"id":7,"label":"7","control_type":"Unsignalized","icu":22.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","volume_vph":0,"future_vph":0,"satd_flow_perm":1593,"lane_group_flow":20,"sign_control":"Stop"},{"group":"NBT","volume_vph":326,"future_vph":326,"satd_flow_perm":3486,"lane_group_flow":364,"sign_control":"Free"},{"group":"SBT","volume_vph":677,"future_vph":677,"satd_flow_perm":3500,"lane_group_flow":736,"sign_control":"Free"},{"group":"NWL","volume_vph":0,"future_vph":0,"satd_flow_perm":1750,"lane_group_flow":4,"sign_control":"Stop"}]},{"id":8,"label":"8","control_type":"Pretimed","icu":0.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","volume_vph":0,"future_vph":0,"satd_flow_perm":1593,"lane_group_flow":8,"sign_control":"Yield"},{"group":"WBT","volume_vph":0,"future_vph":0,"satd_flow_perm":1842,"lane_group_flow":0,"sign_control":"Free"},{"group":"NBL","volume_vph":0,"future_vph":12,"satd_flow_perm":1659,"lane_group_flow":33,"sign_control":"Stop"}]},{"id":9,"label":"9","control_type":"Unsignalized","icu":61.3,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBL","volume_vph":1193,"future_vph":1313,"satd_flow_perm":0,"lane_group_flow":0,"sign_control":"Free"},{"group":"NBT","volume_vph":789,"future_vph":995,"satd_flow_perm":4888,"lane_group_flow":2509,"sign_control":"Free"}]},{"id":10,"label":"10","control_type":"Unsignalized","icu":28.4,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBT","volume_vph":8,"future_vph":8,"satd_flow_perm":1842,"lane_group_flow":9,"sign_control":"Yield"},{"group":"NWR","volume_vph":789,"future_vph":995,"satd_flow_perm":3535,"lane_group_flow":1082,"sign_control":"Free"}]},{"id":11,"label":"11","control_type":"Unsignalized","icu":27.2,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBL","volume_vph":8,"future_vph":8,"satd_flow_perm":1687,"lane_group_flow":16,"sign_control":"Free"}]},{"id":12,"label":"12","control_type":"Unsignalized","icu":104.4,"icu_los":"G","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBL","volume_vph":1509,"future_vph":2626,"satd_flow_perm":3036,"lane_group_flow":1912,"sign_control":"Free"},{"group":"SBT","volume_vph":0,"future_vph":6,"satd_flow_perm":1523,"lane_group_flow":949,"sign_control":"Free"}]},{"id":15,"label":"15","control_type":"Pretimed","icu":61.3,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBR","volume_vph":0,"future_vph":6,"satd_flow_perm":1593,"lane_group_flow":7,"sign_control":"Free"},{"group":"NWL","volume_vph":1193,"future_vph":1313,"satd_flow_perm":3395,"lane_group_flow":1427,"sign_control":"Free"}]},{"id":17,"label":"17","control_type":"Unsignalized","icu":89.0,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","volume_vph":4091,"future_vph":5742,"satd_flow_perm":5029,"lane_group_flow":6241,"sign_control":"Free"},{"group":"NER","volume_vph":0,"future_vph":41,"satd_flow_perm":2756,"lane_group_flow":45,"sign_control":"Free"}]},{"id":18,"label":"18","control_type":"Pretimed","icu":107.6,"icu_los":"G","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBT","volume_vph":3387,"future_vph":4781,"satd_flow_perm":3342,"lane_group_flow":5306,"sign_control":"Free"},{"group":"SBR","volume_vph":999,"future_vph":999,"satd_flow_perm":1425,"lane_group_flow":977,"sign_control":"Free"}]},{"id":19,"label":"19","control_type":"Multiple","icu":36.3,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","volume_vph":1193,"future_vph":1320,"satd_flow_perm":3349,"lane_group_flow":1441,"sign_control":"Free"},{"group":"WBR","volume_vph":0,"future_vph":54,"satd_flow_perm":1425,"lane_group_flow":53,"sign_control":"Free"}]},{"id":21,"label":"21","control_type":"Pretimed","icu":56.2,"icu_los":"B","signal_delay":14.9,"signal_los":"B","cycle_length":55,"actuated_cycle_length":55,"offset_s":24,"natural_cycle":50,"max_vc":0.73,"analysis_period_min":15,"lane_groups":[{"group":"WBL","future_vph":132,"satd_flow_perm":4776,"lane_group_flow":1110,"vc_ratio":0.70,"control_delay":12.2,"los":"B","sign_control":"—"},{"group":"NBT","future_vph":196,"satd_flow_perm":1807,"lane_group_flow":213,"vc_ratio":0.52,"control_delay":29.9,"los":"C","sign_control":"—"},{"group":"SBT","future_vph":479,"satd_flow_perm":3570,"lane_group_flow":521,"vc_ratio":0.57,"control_delay":20.6,"los":"C","sign_control":"—"},{"group":"SBR","future_vph":202,"satd_flow_perm":1521,"lane_group_flow":220,"vc_ratio":0.14,"control_delay":0.2,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø8","total_split_s":16.0,"total_split_pct":29.1,"max_green_s":12.5},{"phase":"Ø2(R)","total_split_s":21.3,"total_split_pct":38.7,"max_green_s":17.8},{"phase":"Ø4","total_split_s":17.7,"total_split_pct":32.2,"max_green_s":14.2},{"phase":"Ø10","total_split_s":32.5,"total_split_pct":59.0,"max_green_s":29.0},{"phase":"Ø9","total_split_s":22.5,"total_split_pct":41.0,"max_green_s":19.0}]},{"id":22,"label":"22","control_type":"Multiple","icu":6.7,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":23,"satd_flow_perm":3500,"lane_group_flow":25,"sign_control":"Free"},{"group":"NBT","future_vph":43,"satd_flow_perm":1842,"lane_group_flow":47,"sign_control":"Yield"}]},{"id":23,"label":"23","control_type":"Pretimed","icu":67.7,"icu_los":"C","signal_delay":11.3,"signal_los":"B","cycle_length":55,"actuated_cycle_length":55,"offset_s":24,"natural_cycle":50,"max_vc":0.73,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":1731,"satd_flow_perm":4999,"lane_group_flow":1927,"vc_ratio":0.73,"control_delay":12.1,"los":"B","sign_control":"—"},{"group":"SBL","future_vph":611,"satd_flow_perm":3429,"lane_group_flow":611,"vc_ratio":0.52,"control_delay":8.7,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø10","total_split_s":32.5,"total_split_pct":59.1,"max_green_s":29.0},{"phase":"Ø9","total_split_s":22.5,"total_split_pct":40.9,"max_green_s":19.0},{"phase":"Ø2","total_split_s":21.3,"total_split_pct":39.0,"max_green_s":17.8},{"phase":"Ø4","total_split_s":17.7,"total_split_pct":32.0,"max_green_s":14.2},{"phase":"Ø8","total_split_s":16.0,"total_split_pct":29.0,"max_green_s":12.5}]},{"id":24,"label":"24","control_type":"Unsignalized","icu":36.3,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":214,"satd_flow_perm":1785,"lane_group_flow":233,"sign_control":"Yield"},{"group":"NET","future_vph":1749,"satd_flow_perm":4971,"lane_group_flow":2053,"sign_control":"Free"}]},{"id":25,"label":"25","control_type":"Unsignalized","icu":25.7,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBT","future_vph":872,"satd_flow_perm":4792,"lane_group_flow":1027,"sign_control":"Free"},{"group":"NWL","future_vph":83,"satd_flow_perm":1785,"lane_group_flow":90,"sign_control":"Yield"}]},{"id":26,"label":"26","control_type":"Unsignalized","icu":44.3,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":192,"satd_flow_perm":1733,"lane_group_flow":192,"sign_control":"Yield"},{"group":"NBT","future_vph":1697,"satd_flow_perm":4966,"lane_group_flow":1977,"sign_control":"Free"}]},{"id":27,"label":"27","control_type":"Pretimed","icu":49.2,"icu_los":"A","signal_delay":18.1,"signal_los":"B","cycle_length":45,"actuated_cycle_length":45,"offset_s":0,"natural_cycle":45,"max_vc":0.66,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":187,"satd_flow_perm":1838,"lane_group_flow":225,"vc_ratio":0.63,"control_delay":27.5,"los":"C","sign_control":"—"},{"group":"WBT","future_vph":141,"satd_flow_perm":1684,"lane_group_flow":274,"vc_ratio":0.64,"control_delay":23.6,"los":"C","sign_control":"—"},{"group":"SBT","future_vph":811,"satd_flow_perm":4704,"lane_group_flow":1038,"vc_ratio":0.66,"control_delay":14.5,"los":"B","sign_control":"—"}],"phases":[{"phase":"Ø6(R)","total_split_s":18.0,"total_split_pct":40.0,"max_green_s":14.5},{"phase":"Ø4","total_split_s":12.0,"total_split_pct":26.7,"max_green_s":8.5},{"phase":"Ø8","total_split_s":15.0,"total_split_pct":33.3,"max_green_s":11.5}]},{"id":28,"label":"28","control_type":"Pretimed","icu":46.7,"icu_los":"A","signal_delay":7.3,"signal_los":"A","cycle_length":55,"actuated_cycle_length":55,"offset_s":52,"natural_cycle":55,"max_vc":0.67,"analysis_period_min":15,"lane_groups":[{"group":"WBL","future_vph":346,"satd_flow_perm":2124,"lane_group_flow":346,"vc_ratio":0.66,"control_delay":26.2,"los":"C","sign_control":"—"},{"group":"SBT","future_vph":1815,"satd_flow_perm":5022,"lane_group_flow":2105,"vc_ratio":0.67,"control_delay":4.1,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø9","total_split_s":17.0,"total_split_pct":30.9,"max_green_s":13.5},{"phase":"Ø10","total_split_s":38.0,"total_split_pct":69.1,"max_green_s":34.5},{"phase":"Ø2","total_split_s":13.5,"total_split_pct":25.0,"max_green_s":10.0},{"phase":"Ø4","total_split_s":19.0,"total_split_pct":35.0,"max_green_s":15.5},{"phase":"Ø8","total_split_s":22.5,"total_split_pct":41.0,"max_green_s":19.0}]},{"id":30,"label":"30","control_type":"Pretimed","icu":40.2,"icu_los":"A","signal_delay":15.3,"signal_los":"B","cycle_length":55,"actuated_cycle_length":55,"offset_s":52,"natural_cycle":55,"max_vc":0.67,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":128,"satd_flow_perm":1684,"lane_group_flow":128,"vc_ratio":0.42,"control_delay":24.8,"los":"C","sign_control":"—"},{"group":"EBT","future_vph":162,"satd_flow_perm":1879,"lane_group_flow":162,"vc_ratio":0.48,"control_delay":25.5,"los":"C","sign_control":"—"},{"group":"WBT","future_vph":166,"satd_flow_perm":1251,"lane_group_flow":247,"vc_ratio":0.64,"control_delay":23.8,"los":"C","sign_control":"—"},{"group":"NBT","future_vph":510,"satd_flow_perm":4933,"lane_group_flow":512,"vc_ratio":0.30,"control_delay":14.0,"los":"B","sign_control":"—"},{"group":"NBR","future_vph":283,"satd_flow_perm":1493,"lane_group_flow":283,"vc_ratio":0.19,"control_delay":0.3,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø2","total_split_s":13.5,"total_split_pct":24.5,"max_green_s":10.0},{"phase":"Ø4","total_split_s":19.0,"total_split_pct":34.5,"max_green_s":15.5},{"phase":"Ø8","total_split_s":22.5,"total_split_pct":40.9,"max_green_s":19.0},{"phase":"Ø9","total_split_s":17.0,"total_split_pct":31.0,"max_green_s":13.5},{"phase":"Ø10","total_split_s":38.0,"total_split_pct":69.0,"max_green_s":34.5}]},{"id":31,"label":"31","control_type":"Unsignalized","icu":118.9,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBT","future_vph":1561,"satd_flow_perm":1842,"lane_group_flow":1697,"sign_control":"Yield"},{"group":"NEL","future_vph":1320,"satd_flow_perm":3395,"lane_group_flow":1435,"sign_control":"Free"}]},{"id":32,"label":"32","control_type":"Multiple","icu":32.9,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":23,"satd_flow_perm":1842,"lane_group_flow":25,"sign_control":"Yield"},{"group":"WBT","future_vph":129,"satd_flow_perm":1779,"lane_group_flow":187,"sign_control":"Yield"}]},{"id":34,"label":"34","control_type":"Unsignalized","icu":39.2,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBL","future_vph":23,"satd_flow_perm":3298,"lane_group_flow":23,"sign_control":"Yield"},{"group":"SBT","future_vph":1983,"satd_flow_perm":4794,"lane_group_flow":1983,"sign_control":"Free"}]},{"id":35,"label":"35","control_type":"Unsignalized","icu":32.9,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":23,"satd_flow_perm":1700,"lane_group_flow":25,"sign_control":"Yield"},{"group":"WBR","future_vph":68,"satd_flow_perm":1593,"lane_group_flow":74,"sign_control":"Free"},{"group":"NBT","future_vph":831,"satd_flow_perm":4943,"lane_group_flow":1090,"sign_control":"Yield"}]},{"id":37,"label":"37","control_type":"Multiple","icu":84.8,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":3037,"satd_flow_perm":3500,"lane_group_flow":3301,"sign_control":"Free"},{"group":"SEL","future_vph":42,"satd_flow_perm":2006,"lane_group_flow":46,"sign_control":"Free"}]},{"id":38,"label":"38","control_type":"Multiple","icu":33.1,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":1319,"satd_flow_perm":5029,"lane_group_flow":1434,"sign_control":"Free"},{"group":"NWL","future_vph":95,"satd_flow_perm":1750,"lane_group_flow":103,"sign_control":"Free"}]},{"id":40,"label":"40","control_type":"Multiple","icu":55.6,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":3041,"satd_flow_perm":5019,"lane_group_flow":3346,"sign_control":"Free"},{"group":"NBR","future_vph":38,"satd_flow_perm":1593,"lane_group_flow":41,"sign_control":"Yield"}]},{"id":41,"label":"41","control_type":"Unsignalized","icu":38.6,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":1267,"satd_flow_perm":4731,"lane_group_flow":1609,"sign_control":"Free"},{"group":"SBR2","future_vph":294,"satd_flow_perm":1533,"lane_group_flow":320,"sign_control":"Free"}]},{"id":42,"label":"42","control_type":"Unsignalized","icu":7.9,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBR","future_vph":214,"satd_flow_perm":1593,"lane_group_flow":233,"sign_control":"Free"},{"group":"NWL","future_vph":140,"satd_flow_perm":1750,"lane_group_flow":152,"sign_control":"Free"}]},{"id":45,"label":"45","control_type":"Unsignalized","icu":20.8,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBT","future_vph":795,"satd_flow_perm":4902,"lane_group_flow":922,"sign_control":"Free"}]},{"id":47,"label":"47","control_type":"Multiple","icu":82.4,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":5558,"satd_flow_perm":5009,"lane_group_flow":6227,"sign_control":"Yield"},{"group":"NBR","future_vph":116,"satd_flow_perm":1593,"lane_group_flow":126,"sign_control":"Yield"}]},{"id":49,"label":"49","control_type":"Unsignalized","icu":30.8,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":716,"satd_flow_perm":4881,"lane_group_flow":781,"sign_control":"Free"},{"group":"NBT","future_vph":71,"satd_flow_perm":1789,"lane_group_flow":191,"sign_control":"Yield"},{"group":"SBT","future_vph":74,"satd_flow_perm":1660,"lane_group_flow":298,"sign_control":"Yield"}]},{"id":51,"label":"51","control_type":"Actuated-Coordinated","icu":37.0,"icu_los":"A","signal_delay":6.0,"signal_los":"A","cycle_length":55,"actuated_cycle_length":55,"offset_s":8,"natural_cycle":45,"max_vc":0.63,"analysis_period_min":15,"lane_groups":[{"group":"WBT","future_vph":945,"satd_flow_perm":4831,"lane_group_flow":953,"vc_ratio":0.63,"control_delay":5.9,"los":"A","sign_control":"—"},{"group":"NBT","future_vph":34,"satd_flow_perm":1842,"lane_group_flow":37,"vc_ratio":0.04,"control_delay":7.0,"los":"A","sign_control":"—"},{"group":"SBT","future_vph":7,"satd_flow_perm":1842,"lane_group_flow":8,"vc_ratio":0.01,"control_delay":7.0,"los":"A","sign_control":"—"}],"phases":[{"phase":"Ø2(R)","total_split_s":25.0,"total_split_pct":45.5,"max_green_s":21.5},{"phase":"Ø6(R)","total_split_s":25.0,"total_split_pct":45.5,"max_green_s":21.5},{"phase":"Ø8","total_split_s":30.0,"total_split_pct":54.5,"max_green_s":26.5}]},{"id":53,"label":"53","control_type":"Pretimed","icu":56.8,"icu_los":"B","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":42,"satd_flow_perm":1842,"lane_group_flow":46,"sign_control":"Yield"},{"group":"WBT","future_vph":394,"satd_flow_perm":1827,"lane_group_flow":455,"sign_control":"Yield"},{"group":"NEL","future_vph":1952,"satd_flow_perm":3396,"lane_group_flow":2349,"sign_control":"Yield"},{"group":"NER","future_vph":538,"satd_flow_perm":1425,"lane_group_flow":526,"sign_control":"Yield"}]},{"id":54,"label":"54","control_type":"Unsignalized","icu":33.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBR","future_vph":676,"satd_flow_perm":1593,"lane_group_flow":735,"sign_control":"Yield"},{"group":"WBT","future_vph":129,"satd_flow_perm":1842,"lane_group_flow":140,"sign_control":"Yield"},{"group":"SBT","future_vph":1956,"satd_flow_perm":5014,"lane_group_flow":2180,"sign_control":"Free"}]},{"id":59,"label":"59","control_type":"Multiple","icu":115.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NBR","future_vph":10,"satd_flow_perm":1593,"lane_group_flow":11,"sign_control":"Free"},{"group":"NET","future_vph":2637,"satd_flow_perm":5029,"lane_group_flow":2866,"sign_control":"Free"}]},{"id":62,"label":"62","control_type":"Actuated-Uncoordinated","icu":54.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBL","future_vph":311,"satd_flow_perm":1641,"lane_group_flow":868,"sign_control":"Free"},{"group":"EBR","future_vph":2031,"satd_flow_perm":2850,"lane_group_flow":1678,"sign_control":"Free"},{"group":"SWL","future_vph":74,"satd_flow_perm":1750,"lane_group_flow":80,"sign_control":"Yield"}]},{"id":65,"label":"65","control_type":"Unsignalized","icu":37.0,"icu_los":"A","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":1920,"satd_flow_perm":5024,"lane_group_flow":2124,"sign_control":"Free"},{"group":"SBL","future_vph":7,"satd_flow_perm":1750,"lane_group_flow":8,"sign_control":"Yield"}]},{"id":66,"label":"66","control_type":"Multiple","icu":89.0,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":5742,"satd_flow_perm":4748,"lane_group_flow":6283,"sign_control":"Free"},{"group":"EBR","future_vph":387,"satd_flow_perm":1347,"lane_group_flow":379,"sign_control":"Free"}]},{"id":71,"label":"71","control_type":"Multiple","icu":81.5,"icu_los":"D","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NWT","future_vph":1320,"satd_flow_perm":3500,"lane_group_flow":1435,"sign_control":"Free"}]},{"id":74,"label":"74","control_type":"Unsignalized","icu":129.2,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"SBT","future_vph":2796,"satd_flow_perm":1842,"lane_group_flow":3039,"sign_control":"Free"},{"group":"SER","future_vph":2984,"satd_flow_perm":2756,"lane_group_flow":3243,"sign_control":"Free"}]},{"id":97,"label":"97","control_type":"Multiple","icu":115.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":95,"satd_flow_perm":1503,"lane_group_flow":1692,"sign_control":"Free"},{"group":"EBR","future_vph":2984,"satd_flow_perm":1487,"lane_group_flow":1654,"sign_control":"Free"}]},{"id":103,"label":"103","control_type":"Multiple","icu":82.4,"icu_los":"E","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBT","future_vph":5620,"satd_flow_perm":5009,"lane_group_flow":6286,"sign_control":"Yield"},{"group":"NBR","future_vph":109,"satd_flow_perm":1593,"lane_group_flow":118,"sign_control":"Yield"}]},{"id":105,"label":"105","control_type":"Multiple","icu":115.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"NET","future_vph":2637,"satd_flow_perm":3188,"lane_group_flow":4252,"sign_control":"Free"},{"group":"NER","future_vph":3037,"satd_flow_perm":1425,"lane_group_flow":1915,"sign_control":"Free"}]},{"id":149,"label":"149","control_type":"Multiple","icu":117.1,"icu_los":"H","signal_delay":null,"signal_los":null,"cycle_length":null,"analysis_period_min":15,"lane_groups":[{"group":"EBR","future_vph":41,"satd_flow_perm":1593,"lane_group_flow":45,"sign_control":"Yield"},{"group":"SBT","future_vph":6088,"satd_flow_perm":6330,"lane_group_flow":6662,"sign_control":"Free"}]}]};
+
+// ── LOS THRESHOLDS (homologados con herramienta principal) ──────────────────
+// ICU: A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109
+function icuLOS(p){return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H';}
+// HCM Semaforizado: A≤10 B≤20 C≤35 D≤55 E≤80 F>80 s/veh (HCM 7 Tabla 19-7)
+function sigLOS(d){return d<=10?'A':d<=20?'B':d<=35?'C':d<=55?'D':d<=80?'E':'F';}
+// HCM TWSC menor (HCM Tabla 20-2): A≤10 B≤15 C≤25 D≤35 E≤50 F>50
+function twscLOS(d){return d<=10?'A':d<=15?'B':d<=25?'C':d<=35?'D':d<=50?'E':'F';}
+
 const LC={A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
 const lc=l=>LC[l]||'#888';
 const gc=p=>p<60?'#4caf50':p<80?'#ffc107':p<100?'#ff9800':'#f44336';
-// ICU: HCM thresholds
-function icuL(p){return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H';}
-// HCM signalized (Table 19-7)
-function sigL(d){return d<=10?'A':d<=20?'B':d<=35?'C':d<=55?'D':d<=80?'E':'F';}
-// HCM TWSC minor-movement (Table 20-2, s/veh)
-function twscL(d){return d<=10?'A':d<=15?'B':d<=25?'C':d<=35?'D':d<=50?'E':'F';}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CALC: ICU
-// ─────────────────────────────────────────────────────────────────────────────
+// ── ICU CALC (homologado: Σ v/s × 100 — igual que Synchro) ─────────────────
+// Nota: satd_flow_perm ya incluye fHV y fLU aplicados por Synchro
 function calcICU(d){
-  const r=d.lane_groups.filter(lg=>lg.satd_flow_perm>0&&lg.lane_group_flow>0)
-    .map(lg=>({g:lg.group,vs:lg.lane_group_flow/lg.satd_flow_perm}));
-  const icu=r.length?parseFloat((r.reduce((s,x)=>s+x.vs,0)*100).toFixed(1)):0;
-  return{icu,los:icuL(icu),ratios:r};
+  const ratios=d.lane_groups
+    .filter(lg=>lg.satd_flow_perm>0&&lg.lane_group_flow>0)
+    .map(lg=>({g:lg.group,vs:+(lg.lane_group_flow/lg.satd_flow_perm).toFixed(4),sc:lg.sign_control}));
+  const icu=ratios.length?+(ratios.reduce((s,r)=>s+r.vs,0)*100).toFixed(1):0;
+  return{icu,los:icuLOS(icu),ratios};
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CALC: HCM Signalized — per lane group (Webster d1 + HCM incremental d2)
-// ─────────────────────────────────────────────────────────────────────────────
+// ── HCM SEMAFORIZADO (d1+d2, Webster + HCM incremental) ────────────────────
+// Homologado con herramienta principal: misma fórmula d1+d2
 function calcSigLG(lg,C){
   if(lg.vc_ratio==null||!lg.satd_flow_perm||!C)return null;
   const X=lg.vc_ratio;
-  const gC=Math.min(0.99,lg.lane_group_flow/(lg.satd_flow_perm*Math.max(X,0.01)));
+  // Derivar g/C desde: c = s × g/C → X = v/c → g/C = v/(s×X)
+  const gC=Math.min(0.98,lg.lane_group_flow>0&&X>0?lg.lane_group_flow/(lg.satd_flow_perm*X):0.45);
   const c=lg.satd_flow_perm*gC;
   const T=0.25,k=0.5,I=1;
-  const d1=(0.5*C*Math.pow(1-gC,2))/(1-Math.min(1,X)*gC);
+  const dn=1-Math.min(1,X)*gC;
+  const d1=dn>0?(0.5*C*Math.pow(1-gC,2))/dn:C/2;
   const d2=900*T*((X-1)+Math.sqrt(Math.max(0,Math.pow(X-1,2)+(8*k*I*X)/(c*T))));
-  const delay=parseFloat((d1+d2).toFixed(1));
-  return{delay,los:sigL(delay),d1:+d1.toFixed(1),d2:+d2.toFixed(1),gC:+gC.toFixed(3)};
+  const delay=+(d1+d2).toFixed(1);
+  return{delay,los:sigLOS(delay),d1:+d1.toFixed(1),d2:+d2.toFixed(1),gC:+gC.toFixed(3)};
 }
-// Intersection: weighted avg delay → LOS
 function calcSig(d){
-  if(!d.signal_delay)return null;
+  if(d.signal_delay==null)return null;
   const C=d.actuated_cycle_length||d.cycle_length;
   if(!C)return null;
   const lgs=d.lane_groups.filter(lg=>lg.vc_ratio!=null&&lg.lane_group_flow>0);
   if(!lgs.length)return null;
   let tw=0,tf=0;
   const lgR=lgs.map(lg=>{const r=calcSigLG(lg,C);if(r){tw+=r.delay*lg.lane_group_flow;tf+=lg.lane_group_flow;}return{lg,r};});
-  const avg=tf>0?parseFloat((tw/tf).toFixed(1)):null;
-  // Approach LOS (signalized): weighted avg by leg
-  const appr=approachLOS_sig(d,lgR);
-  return{avgDelay:avg,los:avg!=null?sigL(avg):null,lgResults:lgR,C,appr};
+  const avg=tf>0?+(tw/tf).toFixed(1):null;
+  return{avgDelay:avg,los:avg!=null?sigLOS(avg):null,lgResults:lgR,C,appr:apprSig(d,lgR)};
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CALC: HCM TWSC (Ch.20) — per minor movement
-// Uses HCM Eq. 20-18: d = 3600/Cp + 900T[(v/c−1)+√((v/c−1)²+3600v/(Cp²T))] + 5
-// Cp (potential capacity) proxied as: Cp ≈ satd_flow_perm × (1 − vc_minor)
-// where vc_minor estimated from flow/satd. This is the best estimate without
-// full conflicting volume inputs.
-// ─────────────────────────────────────────────────────────────────────────────
-function calcTWSC_mov(lg){
+// ── HCM TWSC (homologado con modo no-semaforizado de herramienta principal) ─
+// d = 3600/Cp + 900T[(X-1)+√((X-1)²+(3600X)/(Cp²T))] 
+// Cp proxy via gap-acceptance: Cp = s × exp(-3.5 × v/s)
+function calcTWSC_mv(lg){
   if(!lg.satd_flow_perm||!lg.lane_group_flow)return null;
-  const v=lg.lane_group_flow;
-  const s=lg.satd_flow_perm;
-  // Potential capacity proxy: use gap-acceptance factor
-  // For Stop: Cp ≈ s × f_gap where f_gap = exp(−tc/3600 × vc) ≈ 0.25–0.65
-  // We use satd_flow directly scaled by headway acceptance factor
+  const v=lg.lane_group_flow,s=lg.satd_flow_perm;
   const vs=v/s;
-  // Cp proxy: Synchro potential capacity approx
-  const Cp=Math.max(30,s*Math.exp(-3.5*vs)); // gap acceptance model
-  const vc=v/Cp;
+  const Cp=Math.max(30,s*Math.exp(-3.5*vs));
+  const X=v/Cp;
   const T=0.25;
-  const inner=Math.pow(vc-1,2)+(3600*vc)/(Cp*Cp*T);
-  const d=3600/Cp+900*T*((vc-1)+Math.sqrt(Math.max(0,inner)))+5;
-  return{delay:parseFloat(d.toFixed(1)),los:twscL(d),Cp:Math.round(Cp),vc:parseFloat(vc.toFixed(3))};
+  const inner=Math.pow(X-1,2)+(3600*X)/(Cp*Cp*T);
+  const d=+(3600/Cp+900*T*((X-1)+Math.sqrt(Math.max(0,inner)))+5).toFixed(1);
+  return{delay:d,los:twscLOS(d),Cp:Math.round(Cp),vc:+X.toFixed(3)};
 }
-
-// TWSC per intersection: collect all controlled movements
 function calcTWSC(d){
-  if(d.signal_delay!=null)return null; // signalized uses HCM sig
+  if(d.signal_delay!=null)return null;
   const mvts=d.lane_groups
     .filter(lg=>(lg.sign_control==='Stop'||lg.sign_control==='Yield')&&lg.lane_group_flow>0)
-    .map(lg=>{const r=calcTWSC_mov(lg);return{lg,r};});
+    .map(lg=>{const r=calcTWSC_mv(lg);return{lg,r};});
   if(!mvts.length)return null;
-  // Worst movement LOS (highest delay)
   const worst=mvts.filter(m=>m.r).reduce((w,m)=>(!w||m.r.delay>w.r.delay)?m:w,null);
-  // Approach LOS for controlled approaches
-  const appr=approachLOS_twsc(d,mvts);
-  return{mvts,worst,appr};
+  return{mvts,worst,appr:apprTWSC(d,mvts)};
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// APPROACH LOS helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// ── APPROACH LOS ────────────────────────────────────────────────────────────
 function legOf(g){
-  if(/^EB/.test(g))return'EB';if(/^WB/.test(g))return'WB';
-  if(/^NB/.test(g))return'NB';if(/^SB/.test(g))return'SB';
-  if(/^NE/.test(g))return'NE';if(/^NW/.test(g))return'NW';
-  if(/^SE/.test(g))return'SE';if(/^SW/.test(g))return'SW';
-  return'OTH';
+  const pfx=['EB','WB','NB','SB','NE','NW','SE','SW'];
+  return pfx.find(p=>g.startsWith(p))||'OTH';
 }
-function approachLOS_sig(d,lgResults){
+function apprSig(d,lgR){
   const legs={};
-  lgResults.forEach(({lg,r})=>{
+  lgR.forEach(({lg,r})=>{
     const l=legOf(lg.group);if(!legs[l])legs[l]={tw:0,tf:0};
     const dly=r?r.delay:(lg.control_delay||0);
     if(dly&&lg.lane_group_flow>0){legs[l].tw+=dly*lg.lane_group_flow;legs[l].tf+=lg.lane_group_flow;}
   });
-  return Object.entries(legs).map(([l,v])=>{const avg=v.tf>0?parseFloat((v.tw/v.tf).toFixed(1)):null;return{leg:l,avgDelay:avg,los:avg!=null?sigL(avg):null};});
+  return Object.entries(legs).map(([l,v])=>{const a=v.tf>0?+(v.tw/v.tf).toFixed(1):null;return{leg:l,avgDelay:a,los:a!=null?sigLOS(a):null};});
 }
-function approachLOS_twsc(d,mvts){
+function apprTWSC(d,mvts){
   const legs={};
   d.lane_groups.forEach(lg=>{
     if(!lg.lane_group_flow)return;
-    const l=legOf(lg.group);if(!legs[l])legs[l]={tw:0,tf:0,controlled:false};
+    const l=legOf(lg.group);if(!legs[l])legs[l]={tw:0,tf:0};
     let dly=null;
     if(lg.sign_control==='Stop'||lg.sign_control==='Yield'){
       const m=mvts.find(x=>x.lg.group===lg.group);
       if(m&&m.r)dly=m.r.delay;
-      legs[l].controlled=true;
-    } else dly=1.5; // free movement: negligible delay
+    } else dly=1.5;
     if(dly!=null){legs[l].tw+=dly*lg.lane_group_flow;legs[l].tf+=lg.lane_group_flow;}
   });
-  return Object.entries(legs).map(([l,v])=>{const avg=v.tf>0?parseFloat((v.tw/v.tf).toFixed(1)):null;return{leg:l,avgDelay:avg,los:avg!=null?twscL(avg):null,controlled:v.controlled};});
+  return Object.entries(legs).map(([l,v])=>{const a=v.tf>0?+(v.tw/v.tf).toFixed(1):null;return{leg:l,avgDelay:a,los:a!=null?twscLOS(a):null};});
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PRIMARY INTERSECTION LOS
-// Signalized: HCM avg delay → LOS (A–F)
-// Unsignalized: ICU (primary) displayed first; TWSC worst movement shown as note
-// ─────────────────────────────────────────────────────────────────────────────
-function primaryLOS(d,icuR,sigR,twscR){
-  if(sigR&&sigR.avgDelay!=null){
-    return{method:'HCM Signalized',los:sigR.los,value:sigR.avgDelay+'s avg delay',thresholds:'A≤10 B≤20 C≤35 D≤55 E≤80 F>80 s/veh'};
-  }
-  // Non-signalized: ICU is primary
-  const note=twscR&&twscR.worst?` · TWSC worst mvt: ${twscR.worst.lg.group} LOS ${twscR.worst.r.los} (${twscR.worst.r.delay}s)`:'';
-  return{method:'ICU',los:icuR.los,value:icuR.icu+'% ICU utilization'+note,thresholds:'A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109'};
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PRE-COMPUTE ALL
-// ─────────────────────────────────────────────────────────────────────────────
-const RES=D.intersections.map(d=>{
-  const icuR=calcICU(d);
-  const sigR=calcSig(d);
-  const twscR=calcTWSC(d);
-  const pLOS=primaryLOS(d,icuR,sigR,twscR);
-  return{id:d.id,label:d.label,ct:d.control_type,
-    ir:d.icu,ic:icuR.icu,ilr:d.icu_los,ilc:icuR.los,
-    sd:d.signal_delay,cd:sigR?sigR.avgDelay:null,
-    sl:d.signal_los,cl:sigR?sigR.los:null,
-    pLOS,twscR,sigR,icuR,d};
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// UI HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-function bd(l,big=false){if(!l)return`<span class="badge NA${big?' lg':''}">—</span>`;return`<span class="badge ${l}${big?' lg':''}">${l}</span>`;}
-function ctTag(ct){const c=(ct.includes('Pretimed')||ct.includes('Actuated'))?'tS':ct==='Roundabout'?'tR':ct==='Multiple'?'tM':'tU';return`<span class="tag ${c}">${ct}</span>`;}
-function mChip(r,c,cont=false){
-  if(c==null)return`<span class="chip na">N/A</span>`;
-  if(cont){const d=Math.abs(r-c),p=r?d/Math.abs(r)*100:0;const cl=p<2?'ok':p<8?'warn':'err';const s=c>r?'+':c<r?'−':'';return`<span class="chip ${cl}">${s}${d.toFixed(1)} (${p.toFixed(0)}%)</span>`;}
-  const cl=r===c?'ok':'err';return`<span class="chip ${cl}">${r===c?'✓':'✗ '+c}</span>`;
-}
-function lgLOS_display(lg,isSignal,twscR){
+// ── LOS DISPLAY PER LANE GROUP ───────────────────────────────────────────────
+function lgLOS(lg,isSig,twscR){
   if(lg.los)return lg.los;
-  if(isSignal){
+  if(isSig){
     const vs=lg.satd_flow_perm>0&&lg.lane_group_flow>0?lg.lane_group_flow/lg.satd_flow_perm:0;
-    if(vs<=0)return null;
-    return vs<=0.3?'A':vs<=0.45?'B':vs<=0.6?'C':vs<=0.75?'D':vs<=0.9?'E':'F';
+    return vs<=0?null:vs<=0.3?'A':vs<=0.45?'B':vs<=0.6?'C':vs<=0.75?'D':vs<=0.9?'E':'F';
   }
   if((lg.sign_control==='Stop'||lg.sign_control==='Yield')&&twscR){
     const m=twscR.mvts.find(x=>x.lg.group===lg.group);
     if(m&&m.r)return m.r.los;
   }
-  // Free movement: LOS from v/s
   const vs=lg.satd_flow_perm>0&&lg.lane_group_flow>0?lg.lane_group_flow/lg.satd_flow_perm:0;
-  return vs<=0.2?'A':vs<=0.4?'B':vs<=0.6?'C':vs<=0.75?'D':vs<=0.9?'E':'F';
+  return vs<=0?null:vs<=0.2?'A':vs<=0.4?'B':vs<=0.6?'C':vs<=0.75?'D':vs<=0.9?'E':'F';
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TABS
-// ─────────────────────────────────────────────────────────────────────────────
-function switchTab(t,el){
+// ── PRE-COMPUTE ──────────────────────────────────────────────────────────────
+let D=INLINE;
+const RES=()=>D.intersections.map(d=>{
+  const icuR=calcICU(d),sigR=calcSig(d),twscR=calcTWSC(d);
+  const isSig=d.signal_delay!=null;
+  // Primary: HCM delay if signalized, ICU otherwise
+  const pLOS=isSig&&sigR&&sigR.los?{method:'HCM',los:sigR.los,val:sigR.avgDelay+'s'}
+    :{method:'ICU',los:icuR.los,val:icuR.icu+'%'};
+  const cd=sigR?sigR.avgDelay:null,cl=sigR?sigR.los:null;
+  const discr=(d.icu_los!==icuR.los)||(d.signal_los&&d.signal_los!==cl);
+  return{id:d.id,label:d.label,ct:d.control_type,
+    ir:d.icu,ic:icuR.icu,ilr:d.icu_los,ilc:icuR.los,
+    sd:d.signal_delay,cd,sl:d.signal_los,cl,
+    pLOS,discr,icuR,sigR,twscR,d};
+});
+let results=[];
+
+// ── UI HELPERS ───────────────────────────────────────────────────────────────
+let primaryMethod='icu';
+function setPrimary(m){
+  primaryMethod=m;
+  document.getElementById('pm-icu').classList.toggle('active',m==='icu');
+  document.getElementById('pm-hcm').classList.toggle('active',m==='hcm');
+  renderSum();
+}
+function bd(l,big=false){if(!l)return`<span class="badge NA${big?' lg':''}">—</span>`;return`<span class="badge ${l}${big?' lg':''}">${l}</span>`;}
+function ctTag(ct){
+  const c=ct.includes('Pretimed')||ct.includes('Actuated')?'tS':ct==='Roundabout'?'tR':ct==='Multiple'?'tM':'tU';
+  return`<span class="tag ${c}">${ct}</span>`;
+}
+function dChip(r,c,cont=false){
+  if(c==null)return`<span class="chip na">N/D</span>`;
+  if(cont){const d=Math.abs(r-c),p=r?d/Math.abs(r)*100:0;const cl=p<2?'ok':p<8?'warn':'err';const s=c>r?'+':c<r?'−':'';return`<span class="chip ${cl}">${s}${d.toFixed(1)} (${p.toFixed(0)}%)</span>`;}
+  const cl=r===c?'ok':'err';return`<span class="chip ${cl}">${r===c?'✓':'✗ '+c}</span>`;
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function swTab(t,el){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('page-'+t).classList.add('active');
+  el.classList.add('active');document.getElementById('page-'+t).classList.add('active');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SUMMARY TABLE
-// ─────────────────────────────────────────────────────────────────────────────
+// ── SUMMARY ──────────────────────────────────────────────────────────────────
 let filt='ALL',srt={k:'id',asc:true};
-function setF(f,btn){filt=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSummary();}
-function sortS(k){srt={k,asc:srt.k===k?!srt.asc:true};renderSummary();}
-function renderSummary(){
-  const q=document.getElementById('searchBox').value.toLowerCase();
-  let rows=[...RES];
+function setFilt(f,btn){filt=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSum();}
+function doSort(k){srt={k,asc:srt.k===k?!srt.asc:true};renderSum();}
+function renderSum(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  let rows=[...results];
   if(filt==='Sig')rows=rows.filter(r=>r.sd!=null);
   if(filt==='UnSig')rows=rows.filter(r=>r.sd==null);
   if(filt==='Crit')rows=rows.filter(r=>r.ir>=90);
-  if(q)rows=rows.filter(r=>r.label.includes(q)||r.ct.toLowerCase().includes(q)||String(r.ir).includes(q));
-  rows.sort((a,b)=>{let va=a[srt.k]??-Infinity,vb=b[srt.k]??-Infinity;if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}return srt.asc?(va>vb?1:-1):(va<vb?1:-1);});
-  const sig=RES.filter(r=>r.sd!=null).length,crit=RES.filter(r=>r.ir>=90).length;
-  const avg=(RES.reduce((s,r)=>s+r.ir,0)/RES.length).toFixed(1);
-  document.getElementById('sstats').innerHTML=`<div class="schip"><b>${RES.length}</b> total</div><div class="schip"><b>${sig}</b> signalized</div><div class="schip"><b>${RES.length-sig}</b> other</div><div class="schip"><b>${crit}</b> critical ≥90%</div><div class="schip">avg ICU <b>${avg}%</b></div><div class="schip">showing <b>${rows.length}</b></div>`;
+  if(filt==='Diff')rows=rows.filter(r=>r.discr);
+  if(q)rows=rows.filter(r=>r.label.includes(q)||r.ct.toLowerCase().includes(q));
+  rows.sort((a,b)=>{let va=a[srt.k]??-Infinity,vb=b[srt.k]??-Infinity;return srt.asc?(va>vb?1:-1):(va<vb?1:-1);});
+  const sig=results.filter(r=>r.sd!=null).length,crit=results.filter(r=>r.ir>=90).length,diff=results.filter(r=>r.discr).length;
+  const avg=(results.reduce((s,r)=>s+r.ir,0)/results.length).toFixed(1);
+  document.getElementById('sstats').innerHTML=`<div class="schip"><b>${results.length}</b> intersecciones</div><div class="schip"><b>${sig}</b> semaforizadas</div><div class="schip"><b>${crit}</b> críticas ≥90%</div><div class="schip"><b>${diff}</b> con discrepancia</div><div class="schip">ICU promedio <b>${avg}%</b></div><div class="schip">mostrando <b>${rows.length}</b></div>`;
   let h='';
   rows.forEach(r=>{
-    const twscWorst=r.twscR&&r.twscR.worst?`<span style="color:${lc(r.twscR.worst.r.los)};font-weight:700">${r.twscR.worst.lg.group} ${r.twscR.worst.r.los}</span> (${r.twscR.worst.r.delay}s)`:'<span style="color:#444">—</span>';
-    const apprSig=r.sigR&&r.sigR.appr?r.sigR.appr.map(a=>`<b style="color:${lc(a.los)}">${a.leg}:${a.los}</b>`).join(' '):'';
-    const apprTwsc=r.twscR&&r.twscR.appr?r.twscR.appr.map(a=>`<b style="color:${lc(a.los)}">${a.leg}:${a.los}</b>`).join(' '):'';
-    const apprStr=apprSig||apprTwsc||'—';
-    h+=`<tr style="${r.ir>=90?'background:#1b1212':''}">
+    const prim=primaryMethod==='hcm'&&r.cl?r.cl:r.pLOS.los;
+    const apprStr=(r.sigR?.appr||r.twscR?.appr||[]).map(a=>`<b style="color:${lc(a.los)}">${a.leg}:${a.los||'?'}</b>`).join(' ')||'—';
+    const rowCls=r.ir>=90?'class="crit-row"':r.discr?'class="warn-row"':'';
+    h+=`<tr ${rowCls}>
       <td style="font-weight:700;color:#90caf9">${r.label}</td>
       <td>${r.ct}${ctTag(r.ct)}</td>
       <td style="color:${gc(r.ir)};font-weight:700">${r.ir}%</td>
       <td style="color:${gc(r.ic)};font-weight:700">${r.ic}%</td>
-      <td>${mChip(r.ir,r.ic,true)}</td>
+      <td>${dChip(r.ir,r.ic,true)}</td>
       <td>${bd(r.ilr)}</td><td>${bd(r.ilc)}</td>
       <td>${r.sd!=null?r.sd+'s':'<span style="color:#333">—</span>'}</td>
       <td>${r.cd!=null?r.cd+'s':'<span style="color:#333">—</span>'}</td>
       <td>${bd(r.sl)}</td><td>${bd(r.cl)}</td>
-      <td><span style="color:${lc(r.pLOS.los)};font-size:18px;font-weight:900">${r.pLOS.los}</span><span style="font-size:8px;color:#555;margin-left:4px">${r.pLOS.method}</span></td>
-      <td style="font-size:11px">${twscWorst}</td>
+      <td><span style="color:${lc(prim)};font-size:18px;font-weight:900">${prim}</span><span style="font-size:8px;color:#555;margin-left:4px">${primaryMethod==='hcm'&&r.cl?'HCM':'ICU'}</span></td>
       <td style="font-size:11px">${apprStr}</td>
-      <td><button onclick="goDet(${r.id})" style="padding:3px 8px;background:#1e3a5a;border:1px solid #4a90d9;border-radius:4px;color:#90caf9;cursor:pointer;font-size:10px">Detail →</button></td>
+      <td><button onclick="goDet(${r.id})" style="padding:3px 8px;background:#1e3a5a;border:1px solid #4a90d9;border-radius:4px;color:#90caf9;cursor:pointer;font-size:10px">Detalle →</button></td>
     </tr>`;
   });
   document.getElementById('tbody').innerHTML=h;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DIAGRAM
-// ─────────────────────────────────────────────────────────────────────────────
-function dirSlot(g){
-  if(/^EB/.test(g))return'E';if(/^WB/.test(g))return'W';
-  if(/^NB/.test(g))return'N';if(/^SB/.test(g))return'S';
-  if(/^NE/.test(g))return'NE';if(/^NW/.test(g))return'NW';
-  if(/^SE/.test(g))return'SE';if(/^SW/.test(g))return'SW';
-  return'C';
-}
+// ── DIAGRAM ──────────────────────────────────────────────────────────────────
+function dirSlot(g){const pfx=['EB','WB','NB','SB','NE','NW','SE','SW'];const p=pfx.find(x=>g.startsWith(x));return p?{EB:'E',WB:'W',NB:'N',SB:'S',NE:'NE',NW:'NW',SE:'SE',SW:'SW'}[p]:'C';}
 function buildDiag(d,icuR,sigR,twscR,pLOS){
-  const W=440,H=420,cx=W/2,cy=H/2,isSig=d.signal_delay!=null;
-  const iColor=lc(pLOS.los);
-  // Anchor positions for each direction
-  const A={N:{x:cx,y:72},S:{x:cx,y:H-72},E:{x:W-72,y:cy},W:{x:72,y:cy},
-    NE:{x:W-85,y:85},NW:{x:85,y:85},SE:{x:W-85,y:H-85},SW:{x:85,y:H-85},C:{x:cx,y:cy}};
-  let svg=`<svg viewBox="0 0 ${W} ${H}" width="440" height="420" style="max-width:100%">
+  const W=440,H=400,cx=W/2,cy=H/2,isSig=d.signal_delay!=null;
+  const iCol=lc(pLOS.los);
+  const A={N:{x:cx,y:68},S:{x:cx,y:H-68},E:{x:W-68,y:cy},W:{x:68,y:cy},NE:{x:W-80,y:80},NW:{x:80,y:80},SE:{x:W-80,y:H-80},SW:{x:80,y:H-80},C:{x:cx,y:cy}};
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="420" height="380" style="max-width:100%">
   <rect width="${W}" height="${H}" fill="#0f1117"/>
-  <rect x="${cx-30}" y="0" width="60" height="${H}" fill="#1e2538"/>
-  <rect x="0" y="${cy-30}" width="${W}" height="60" fill="#1e2538"/>
-  <rect x="${cx-30}" y="${cy-30}" width="60" height="60" fill="#252d45" stroke="${iColor}" stroke-width="2.5"/>
-  <line x1="${cx}" y1="0" x2="${cx}" y2="${cy-30}" stroke="#2a3248" stroke-width="1" stroke-dasharray="5,7"/>
-  <line x1="${cx}" y1="${cy+30}" x2="${cx}" y2="${H}" stroke="#2a3248" stroke-width="1" stroke-dasharray="5,7"/>
-  <line x1="0" y1="${cy}" x2="${cx-30}" y2="${cy}" stroke="#2a3248" stroke-width="1" stroke-dasharray="5,7"/>
-  <line x1="${cx+30}" y1="${cy}" x2="${W}" y2="${cy}" stroke="#2a3248" stroke-width="1" stroke-dasharray="5,7"/>`;
-
-  // ── INTERSECTION LOS — centre, BIG ──
-  svg+=`<text x="${cx}" y="${cy-8}" text-anchor="middle" font-size="26" font-weight="900" fill="${iColor}">${pLOS.los}</text>
-  <text x="${cx}" y="${cy+8}" text-anchor="middle" font-size="7" fill="${iColor}" opacity=".85">INT LOS</text>
-  <text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="6.5" fill="#555">#${d.label}</text>`;
-
-  // ── Approach rings ──
-  const apprList=sigR?sigR.appr:(twscR?twscR.appr:[]);
-  apprList.forEach(a=>{
-    const dir=a.leg.replace('EB','E').replace('WB','W').replace('NB','N').replace('SB','S');
-    const an=A[dir]||A.C;
-    const ac=lc(a.los);
-    svg+=`<circle cx="${an.x}" cy="${an.y}" r="30" fill="none" stroke="${ac}" stroke-width="1.5" stroke-opacity="0.4" stroke-dasharray="4,3"/>`;
-    svg+=`<text x="${an.x}" y="${an.y-(a.leg.length>2?34:32)}" text-anchor="middle" font-size="8.5" fill="${ac}" font-weight="700">${a.leg} LOS ${a.los||'?'}</text>`;
-    if(a.avgDelay!=null) svg+=`<text x="${an.x}" y="${an.y+(a.leg.length>2?36:34)}" text-anchor="middle" font-size="7" fill="#555">${a.avgDelay}s</text>`;
+  <rect x="${cx-28}" y="0" width="56" height="${H}" fill="#1e2538"/>
+  <rect x="0" y="${cy-28}" width="${W}" height="56" fill="#1e2538"/>
+  <rect x="${cx-28}" y="${cy-28}" width="56" height="56" fill="#252d45" stroke="${iCol}" stroke-width="2"/>
+  <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="24" font-weight="900" fill="${iCol}">${pLOS.los}</text>
+  <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="7" fill="${iCol}99">LOS Int.</text>
+  <text x="${cx}" y="${cy+21}" text-anchor="middle" font-size="6" fill="#444">#${d.label}</text>`;
+  // approach rings
+  const apList=sigR?sigR.appr:(twscR?twscR.appr:[]);
+  apList.forEach(a=>{const dir=a.leg.replace('EB','E').replace('WB','W').replace('NB','N').replace('SB','S');const an=A[dir]||A.C;const ac=lc(a.los);
+    s+=`<circle cx="${an.x}" cy="${an.y}" r="28" fill="none" stroke="${ac}" stroke-width="1.2" stroke-opacity=".35" stroke-dasharray="3,3"/>`;
+    s+=`<text x="${an.x}" y="${an.y-31}" text-anchor="middle" font-size="8" fill="${ac}" font-weight="700">${a.leg} ${a.los||'?'}</text>`;
+    if(a.avgDelay)s+=`<text x="${an.x}" y="${an.y+32}" text-anchor="middle" font-size="7" fill="#555">${a.avgDelay}s</text>`;
   });
-
-  // ── Lane group bubbles ──
-  const byDir={};
-  d.lane_groups.forEach(lg=>{const k=dirSlot(lg.group);if(!byDir[k])byDir[k]=[];byDir[k].push(lg);});
+  // lane group bubbles
+  const byDir={};d.lane_groups.forEach(lg=>{const k=dirSlot(lg.group);if(!byDir[k])byDir[k]=[];byDir[k].push(lg);});
   Object.entries(byDir).forEach(([dir,lgs])=>{
-    const an=A[dir]||A.C;
-    const n=lgs.length,sp=28;
-    const isNS=['N','S','NE','NW','SE','SW'].includes(dir);
+    const an=A[dir]||A.C,n=lgs.length,sp=26;
+    const ns=['N','S','NE','NW','SE','SW'].includes(dir);
     lgs.forEach((lg,i)=>{
-      const off=(i-(n-1)/2)*sp;
-      const bx=isNS?an.x+off:an.x, by=isNS?an.y:an.y+off;
-      const los=lgLOS_display(lg,isSig,twscR);
-      const col=lc(los);
+      const off=(i-(n-1)/2)*sp,bx=ns?an.x+off:an.x,by=ns?an.y:an.y+off;
+      const l=lgLOS(lg,isSig,twscR),col=lc(l);
       const vs=lg.satd_flow_perm>0&&lg.lane_group_flow>0?(lg.lane_group_flow/lg.satd_flow_perm).toFixed(2):'—';
-      svg+=`<line x1="${cx}" y1="${cy}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="0.6" opacity=".18"/>`;
-      svg+=`<circle cx="${bx}" cy="${by}" r="18" fill="${col}15" stroke="${col}" stroke-width="1.5"/>`;
-      svg+=`<text x="${bx}" y="${by-4}" text-anchor="middle" font-size="8" fill="${col}" font-weight="700">${lg.group.slice(2)||lg.group}</text>`;
-      svg+=`<text x="${bx}" y="${by+6}" text-anchor="middle" font-size="6.5" fill="${col}cc">v/s ${vs}</text>`;
-      if(los){svg+=`<rect x="${bx+13}" y="${by-19}" width="11" height="11" rx="2" fill="${col}"/>`;svg+=`<text x="${bx+18.5}" y="${by-9.5}" text-anchor="middle" font-size="7" fill="#000" font-weight="700">${los}</text>`;}
-      svg+=`<text x="${bx}" y="${by+20}" text-anchor="middle" font-size="6" fill="#444">${lg.lane_group_flow}vph</text>`;
+      s+=`<line x1="${cx}" y1="${cy}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width=".5" opacity=".15"/>`;
+      s+=`<circle cx="${bx}" cy="${by}" r="16" fill="${col}18" stroke="${col}" stroke-width="1.2"/>`;
+      s+=`<text x="${bx}" y="${by-3}" text-anchor="middle" font-size="7.5" fill="${col}" font-weight="700">${lg.group.slice(2)||lg.group}</text>`;
+      s+=`<text x="${bx}" y="${by+6}" text-anchor="middle" font-size="6" fill="${col}bb">v/s ${vs}</text>`;
+      if(l){s+=`<rect x="${bx+11}" y="${by-17}" width="10" height="10" rx="2" fill="${col}"/>`;s+=`<text x="${bx+16}" y="${by-8.5}" text-anchor="middle" font-size="6.5" fill="#000" font-weight="700">${l}</text>`;}
+      s+=`<text x="${bx}" y="${by+18}" text-anchor="middle" font-size="5.5" fill="#444">${lg.lane_group_flow}vph</text>`;
     });
   });
-
-  // ── Corner info ──
-  svg+=`<rect x="4" y="4" width="82" height="28" rx="4" fill="#14161e" stroke="#2a3044" stroke-width="1"/>
-  <text x="45" y="14" text-anchor="middle" font-size="7" fill="#555">ICU rptd / calc</text>
-  <text x="45" y="26" text-anchor="middle" font-size="10.5" fill="${gc(d.icu)}" font-weight="700">${d.icu}% / ${icuR.icu}%</text>`;
-  if(d.signal_delay){
-    const hc=sigR?sigR.avgDelay:'?';
-    svg+=`<rect x="4" y="36" width="82" height="28" rx="4" fill="#14161e" stroke="#2a3044" stroke-width="1"/>
-    <text x="45" y="46" text-anchor="middle" font-size="7" fill="#555">HCM delay rptd / calc</text>
-    <text x="45" y="58" text-anchor="middle" font-size="10.5" fill="${lc(d.signal_los)}" font-weight="700">${d.signal_delay}s / ${hc}s</text>`;
+  // info corner
+  s+=`<rect x="4" y="4" width="76" height="24" rx="3" fill="#14161e" stroke="#2a3044" stroke-width=".8"/>
+  <text x="42" y="12" text-anchor="middle" font-size="6.5" fill="#555">ICU rptd / calc</text>
+  <text x="42" y="23" text-anchor="middle" font-size="10" fill="${gc(d.icu)}" font-weight="700">${d.icu}% / ${icuR.icu}%</text>`;
+  if(d.signal_delay){const hc=sigR?sigR.avgDelay:'?';
+    s+=`<rect x="4" y="32" width="76" height="24" rx="3" fill="#14161e" stroke="#2a3044" stroke-width=".8"/>
+    <text x="42" y="40" text-anchor="middle" font-size="6.5" fill="#555">HCM demora rptd/calc</text>
+    <text x="42" y="51" text-anchor="middle" font-size="10" fill="${lc(d.signal_los)}" font-weight="700">${d.signal_delay}s / ${hc}s</text>`;
   }
-  // Legend
-  const LL=['A','B','C','D','E','F','G','H'];
-  svg+=`<g transform="translate(${W-88},${H-14})">`;
-  LL.forEach((l,i)=>{svg+=`<rect x="${i*10}" y="-11" width="9" height="9" rx="2" fill="${lc(l)}"/><text x="${i*10+4.5}" y="-3" text-anchor="middle" font-size="5.5" fill="#000" font-weight="700">${l}</text>`;});
-  svg+=`</g></svg>`;
-  return svg;
+  ['A','B','C','D','E','F','G','H'].forEach((l,i)=>{s+=`<rect x="${W-88+i*10}" y="${H-13}" width="9" height="9" rx="2" fill="${lc(l)}"/><text x="${W-88+i*10+4.5}" y="${H-5}" text-anchor="middle" font-size="5.5" fill="#000" font-weight="700">${l}</text>`;});
+  return s+'</svg>';
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DETAIL RENDER
-// ─────────────────────────────────────────────────────────────────────────────
-const iSel=document.getElementById('intSel');
-D.intersections.forEach(i=>{const o=document.createElement('option');o.value=i.id;o.textContent=`Int. ${i.label}  ·  ${i.control_type}  [ICU ${i.icu}% LOS ${i.icu_los}]`;iSel.appendChild(o);});
-iSel.addEventListener('change',()=>renderDet(+iSel.value));
-
+// ── DETAIL ────────────────────────────────────────────────────────────────────
 function renderDet(id){
-  const res=RES.find(r=>r.id===id);
-  if(!res)return;
+  const res=results.find(r=>r.id===id);if(!res)return;
   const{d,icuR,sigR,twscR,pLOS,cd,cl}=res;
   const C=d.actuated_cycle_length||d.cycle_length;
   const isSig=d.signal_delay!=null;
   const tot=d.lane_groups.reduce((s,lg)=>s+(lg.lane_group_flow||0),0);
-  const intColor=lc(pLOS.los);
+  const ic=lc(pLOS.los);
 
-  // ── HERO ──
-  // Left: big LOS letter = PRIMARY (ICU for unsig, HCM sig for signalized)
-  // Right side for non-signalized: TWSC panel
-  const twscPanel=(!isSig&&twscR&&twscR.mvts.length)?`
-    <div class="hero-twsc">
-      <div class="hero-twsc-title">HCM TWSC — Minor Movements</div>
-      ${twscR.mvts.filter(m=>m.r).map(m=>`
-        <div class="twsc-row">
-          <span class="twsc-grp">${m.lg.group} <span style="font-size:8px;color:#555">(${m.lg.sign_control})</span></span>
-          <span style="display:flex;align-items:center;gap:5px">
-            <span class="twsc-d">${m.r.delay}s</span>
-            <span class="twsc-los" style="color:${lc(m.r.los)}">${m.r.los}</span>
-            <span style="font-size:8px;color:#444">Cp≈${m.r.Cp}</span>
-          </span>
-        </div>`).join('')}
-      <p class="note" style="margin-top:5px">LOS by HCM Ch.20 Table 20-2. Primary = ICU.</p>
-    </div>`:'';
-
-  const heroCols=twscPanel?`grid-template-columns:auto 1fr auto`:`grid-template-columns:auto 1fr`;
-  document.getElementById('losHero').style.gridTemplateColumns=isSig?'auto 1fr':'auto 1fr auto';
-  document.getElementById('losHero').innerHTML=`
-    <div class="hero-los" style="color:${intColor}">${pLOS.los}</div>
-    <div class="hero-mid">
-      <h3>Intersection LOS — ${pLOS.method}</h3>
-      <p>${pLOS.value}</p>
-      <p style="margin-top:4px;color:#777;font-size:9px">Thresholds: ${pLOS.thresholds}</p>
-      ${isSig?`<p style="margin-top:5px">Reported: LOS ${d.signal_los} · ${d.signal_delay}s &nbsp;|&nbsp; Calculated: LOS ${cl||'—'} · ${cd||'?'}s</p>`
-        :`<p style="margin-top:5px">Reported ICU: ${d.icu}% LOS ${d.icu_los} &nbsp;|&nbsp; Calculated ICU: ${icuR.icu}% LOS ${icuR.los}</p>`}
+  // Dual strip
+  const icuCol=lc(icuR.los),sigCol=lc(cl||'NA');
+  document.getElementById('dualStrip').innerHTML=`
+    <div class="dcard" style="border-color:${icuCol}44">
+      <div class="dlabel">ICU — Utilización (Synchro)</div>
+      <div class="dval" style="color:${icuCol}">${icuR.los}</div>
+      <div class="dsub">${icuR.icu}% · rptd: ${d.icu}% LOS ${d.icu_los}</div>
     </div>
-    ${(!isSig&&twscR&&twscR.mvts.length)?twscPanel:''}`;
+    <div class="dcard" style="border-color:${sigCol}44">
+      <div class="dlabel">${isSig?'HCM 7 — Demora':'HCM TWSC — Mov. menor'}</div>
+      <div class="dval" style="color:${sigCol}">${isSig?(cl||'—'):(twscR?.worst?.r.los||'—')}</div>
+      <div class="dsub">${isSig?((cd||'?')+'s calc · rptd: '+(d.signal_delay||'—')+'s LOS '+(d.signal_los||'—')):(twscR?.worst?twscR.worst.lg.group+' '+twscR.worst.r.delay+'s':'Sin movimientos controlados')}</div>
+    </div>`;
 
-  // ── CARDS ──
+  // Hero
+  document.getElementById('hero').innerHTML=`
+    <div class="hero-los" style="color:${ic}">${pLOS.los}</div>
+    <div class="hero-mid">
+      <h3>Intersección #${d.label} — LOS Primario: ${pLOS.method}</h3>
+      <p>${pLOS.val} · ${d.control_type}${ctTag(d.ct||d.control_type)}</p>
+      <p style="margin-top:4px;color:#666;font-size:9px">${isSig?'HCM 7 Tabla 19-7: A≤10 B≤20 C≤35 D≤55 E≤80 F>80 s/veh':'ICU: A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109%'}</p>
+      ${res.discr?`<p style="margin-top:5px;color:#ffc107;font-size:10px">⚠ Discrepancia detectada entre Synchro y cálculo de auditoría</p>`:''}
+    </div>`;
+
+  // Method box
+  document.getElementById('methBox').innerHTML=isSig
+    ?`<strong>Metodología aplicada — HCM 7 Semaforizado:</strong> d = d₁ + d₂ · d₁ = demora uniforme Webster (con g/C derivado de v/c y flujo de saturación) · d₂ = demora incremental HCM · Demora intersección = Σ(dᵢ×vᵢ)/Σvᵢ. <strong>fHV y fLU ya incorporados en satd_flow_perm del JSON</strong> (Synchro los aplica internamente).<br>ICU = Σ(v/s)×100 usando future_vph / satd_flow_perm (homologado con Synchro).`
+    :`<strong>Metodología aplicada — ICU (primario):</strong> ICU = Σ(lane_group_flow / satd_flow_perm) × 100 — igual que Synchro. <strong>TWSC (complementario):</strong> capacidad potencial proxy Cp = s·exp(−3.5·v/s) · demora HCM Ec.20-18 · LOS por HCM Tabla 20-2 · aplica solo a movimientos con Stop/Yield. <strong>fHV y fLU ya están en satd_flow_perm del JSON.</strong>`;
+
+  // Cards
   document.getElementById('cards').innerHTML=`
-    <div class="card"><div class="card-label">Intersection</div><div class="card-value" style="font-size:18px">#${d.label}${ctTag(d.ct||d.control_type)}</div><div class="card-sub">${tot.toLocaleString()} vph · ${d.lane_groups.length} groups</div></div>
+    <div class="card"><div class="card-label">Intersección</div><div class="card-value" style="font-size:16px">#${d.label}</div><div class="card-sub">${tot.toLocaleString()} vph · ${d.lane_groups.length} grupos</div></div>
     <div class="card"><div class="card-label">ICU rptd</div><div class="card-value" style="color:${gc(d.icu)}">${d.icu}%</div><div class="gbar"><div class="gfill" style="width:${Math.min(d.icu,100)}%;background:${gc(d.icu)}"></div></div><div class="card-sub">LOS ${d.icu_los}</div></div>
-    <div class="card"><div class="card-label">ICU calc</div><div class="card-value" style="color:${gc(icuR.icu)}">${icuR.icu}%</div><div class="gbar"><div class="gfill" style="width:${Math.min(icuR.icu,100)}%;background:${gc(icuR.icu)}"></div></div><div class="card-sub">LOS ${icuR.los} ${mChip(d.icu_los,icuR.los)}</div></div>
-    ${isSig?`
-    <div class="card"><div class="card-label">HCM Delay rptd</div><div class="card-value" style="color:${lc(d.signal_los)}">${d.signal_delay}s</div><div class="card-sub">LOS ${d.signal_los}</div></div>
-    <div class="card"><div class="card-label">HCM Delay calc</div><div class="card-value" style="color:${lc(cl)}">${cd!=null?cd+'s':'N/A'}</div><div class="card-sub">LOS ${cl||'—'} ${cd!=null?mChip(d.signal_los,cl):''}</div></div>`:''}
-    <div class="card"><div class="card-label">Cycle</div><div class="card-value" style="font-size:17px">${C||'—'}<span style="font-size:9px;color:#555"> s</span></div><div class="card-sub">${d.analysis_period_min} min${d.max_vc?' · v/c '+d.max_vc:''}</div></div>`;
+    <div class="card"><div class="card-label">ICU calc</div><div class="card-value" style="color:${gc(icuR.icu)}">${icuR.icu}%</div><div class="gbar"><div class="gfill" style="width:${Math.min(icuR.icu,100)}%;background:${gc(icuR.icu)}"></div></div><div class="card-sub">LOS ${icuR.los} ${dChip(d.icu_los,icuR.los)}</div></div>
+    ${isSig?`<div class="card"><div class="card-label">HCM demora rptd</div><div class="card-value" style="color:${lc(d.signal_los)}">${d.signal_delay}s</div><div class="card-sub">LOS ${d.signal_los}</div></div>
+    <div class="card"><div class="card-label">HCM demora calc</div><div class="card-value" style="color:${lc(cl)}">${cd!=null?cd+'s':'N/D'}</div><div class="card-sub">LOS ${cl||'—'} ${cd!=null?dChip(d.signal_los,cl):''}</div></div>`:''}
+    <div class="card"><div class="card-label">Ciclo</div><div class="card-value" style="font-size:16px">${C||'—'}<span style="font-size:9px;color:#555"> s</span></div><div class="card-sub">${d.analysis_period_min} min análisis</div></div>`;
 
-  // ── DIAGRAM ──
   document.getElementById('diag').innerHTML=buildDiag(d,icuR,sigR,twscR,pLOS);
 
-  // ── APPROACH LOS ──
-  const apprList=sigR?sigR.appr:(twscR?twscR.appr:[]);
-  document.getElementById('apprRow').innerHTML=apprList.length?apprList.map(a=>`
-    <div class="appr-card">
-      <div class="appr-dir">${a.leg}</div>
-      <div class="appr-los-val" style="color:${lc(a.los)}">${a.los||'?'}</div>
-      <div class="appr-sub">${a.avgDelay!=null?a.avgDelay+'s':'—'}</div>
-    </div>`).join(''):'<div class="na-box">No approach data</div>';
+  // Approach
+  const apList=sigR?sigR.appr:(twscR?twscR.appr:[]);
+  document.getElementById('apprRow').innerHTML=apList.length?apList.map(a=>`
+    <div class="appr-card"><div class="appr-dir">${a.leg}</div>
+    <div class="appr-los" style="color:${lc(a.los)}">${a.los||'?'}</div>
+    <div class="appr-sub">${a.avgDelay!=null?a.avgDelay+'s':'—'}</div></div>`).join('')
+    :'<span style="color:#555;font-size:11px">Sin datos de acceso</span>';
   document.getElementById('apprNote').textContent=isSig
-    ?'Weighted avg of reported control delay by lane group flow. HCM Table 19-7 thresholds.'
-    :'Stop/Yield movements: HCM Ch.20 Eq.20-18 delay proxy. Free movements: residual ≈1.5s. Approach threshold per HCM Table 20-2.';
+    ?'Demora ponderada por flujo por grupo de carril. HCM 7 Tabla 19-7.'
+    :'Stop/Yield: HCM Cap.20 Ec.20-18. Movimientos libres: demora residual ≈1.5s. Umbral HCM Tabla 20-2.';
 
-  // ── AUDIT PANELS ──
-  const icuRows=icuR.ratios.map(r=>`<div class="arow"><span class="akey">${r.g} v/s</span><span class="avals"><div class="vbox"><div class="vnum" style="color:#ffc107">${r.vs.toFixed(3)}</div></div></span></div>`).join('');
-  const icuPanel=`<div class="panel">
-    <div class="panel-title">ICU Audit</div>
-    <div class="int-highlight">
-      <div class="arow"><span class="akey" style="color:#90caf9;font-weight:700">Intersection ICU LOS</span><span class="avals">${bd(d.icu_los,true)}${bd(icuR.los,true)}${mChip(d.icu_los,icuR.los)}</span></div>
+  // Audit panels
+  const icuRows=icuR.ratios.map(r=>`<div class="arow"><span class="akey">${r.g} (${r.sc}) v/s</span><span class="avals"><div class="vbox"><div class="vnum" style="color:#ffc107">${r.vs.toFixed(3)}</div></div></span></div>`).join('');
+  const icuPanel=`<div class="panel"><div class="ptitle">Auditoría ICU</div>
+    <div class="arow" style="background:#0d1a28;border-radius:4px;padding:6px;margin-bottom:6px">
+      <span class="akey" style="color:#90caf9;font-weight:700">LOS ICU Intersección</span>
+      <span class="avals">${bd(d.icu_los,true)}${bd(icuR.los,true)}${dChip(d.icu_los,icuR.los)}</span>
     </div>
-    <div class="arow"><span class="akey">ICU Utilization (%)</span><span class="avals"><div class="vbox"><div class="vnum">${d.icu}</div><div class="vlbl">rptd</div></div><div class="vbox"><div class="vnum">${icuR.icu}</div><div class="vlbl">calc</div></div>${mChip(d.icu,icuR.icu,true)}</span></div>
-    ${icuRows}
-    <p class="note">ICU = Σ(v/s) × 100 using future flows / satd.flow perm. Thresholds: A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109 (HCM 6th)</p>
+    <div class="arow"><span class="akey">ICU Utilización (%)</span>
+      <span class="avals"><div class="vbox"><div class="vnum">${d.icu}</div><div class="vlbl">rptd</div></div>
+      <div class="vbox"><div class="vnum">${icuR.icu}</div><div class="vlbl">calc</div></div>${dChip(d.icu,icuR.icu,true)}</span>
+    </div>${icuRows}
+    <p class="note">ICU = Σ(lane_group_flow/satd_flow_perm)×100. Umbrales: A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109</p>
   </div>`;
 
   let hcmPanel;
   if(isSig&&sigR){
-    const lgR=sigR.lgResults.map(({lg,r})=>{
-      if(!r)return'';
-      return`<div class="arow"><span class="akey">${lg.group} d₁=${r.d1} d₂=${r.d2} g/C=${r.gC}</span><span class="avals"><div class="vbox"><div class="vnum">${lg.control_delay}</div><div class="vlbl">rptd</div></div><div class="vbox"><div class="vnum">${r.delay}</div><div class="vlbl">calc</div></div>${mChip(lg.control_delay,r.delay,true)}${bd(lg.los)}${bd(r.los)}</span></div>`;
-    }).join('');
-    hcmPanel=`<div class="panel">
-      <div class="panel-title">HCM Signalized Delay Audit</div>
-      <div class="int-highlight">
-        <div class="arow"><span class="akey" style="color:#90caf9;font-weight:700">Intersection LOS (HCM)</span><span class="avals">${bd(d.signal_los,true)}${bd(cl,true)}${mChip(d.signal_los,cl)}</span></div>
-        <div class="arow"><span class="akey" style="color:#90caf9">Avg Intersection Delay</span><span class="avals"><div class="vbox"><div class="vnum">${d.signal_delay}</div><div class="vlbl">rptd</div></div><div class="vbox"><div class="vnum">${cd}</div><div class="vlbl">calc</div></div>${mChip(d.signal_delay,cd,true)}</span></div>
+    const lgRows=sigR.lgResults.map(({lg,r})=>r?`
+      <div class="arow"><span class="akey">${lg.group} d₁=${r.d1} d₂=${r.d2} g/C≈${r.gC}</span>
+      <span class="avals"><div class="vbox"><div class="vnum">${lg.control_delay}</div><div class="vlbl">rptd</div></div>
+      <div class="vbox"><div class="vnum">${r.delay}</div><div class="vlbl">calc</div></div>
+      ${dChip(lg.control_delay,r.delay,true)}${bd(lg.los)}${bd(r.los)}</span></div>`:''
+    ).join('');
+    hcmPanel=`<div class="panel"><div class="ptitle">Auditoría HCM Semaforizado</div>
+      <div class="arow" style="background:#0d1a28;border-radius:4px;padding:6px;margin-bottom:6px">
+        <span class="akey" style="color:#90caf9;font-weight:700">LOS HCM Intersección</span>
+        <span class="avals">${bd(d.signal_los,true)}${bd(cl,true)}${dChip(d.signal_los,cl)}</span>
       </div>
-      ${lgR}
-      <p class="note">d=d₁+d₂ (Webster uniform + HCM incremental). Int. delay = Σ(dᵢ·vᵢ)/Σvᵢ. Thresholds: A≤10 B≤20 C≤35 D≤55 E≤80 F>80 s/veh (HCM Table 19-7)</p>
+      <div class="arow"><span class="akey">Demora promedio (s/veh)</span>
+        <span class="avals"><div class="vbox"><div class="vnum">${d.signal_delay}</div><div class="vlbl">rptd</div></div>
+        <div class="vbox"><div class="vnum">${cd}</div><div class="vlbl">calc</div></div>${dChip(d.signal_delay,cd,true)}</span>
+      </div>${lgRows}
+      <p class="note">d=d₁+d₂. g/C derivado de v/c y satd_flow. Int. delay = Σ(dᵢvᵢ)/Σvᵢ. HCM 7 Tabla 19-7.</p>
     </div>`;
-  } else if(twscR&&twscR.mvts.length){
-    const mvtRows=twscR.mvts.filter(m=>m.r).map(m=>`
-      <div class="arow">
-        <span class="akey">${m.lg.group} (${m.lg.sign_control}) · Cp≈${m.r.Cp} · v/c=${m.r.vc}</span>
-        <span class="avals"><div class="vbox"><div class="vnum">${m.r.delay}s</div><div class="vlbl">delay calc</div></div>${bd(m.r.los)}</span>
-      </div>`).join('');
-    const worst=twscR.worst;
-    hcmPanel=`<div class="panel">
-      <div class="panel-title">HCM TWSC — Minor Movement LOS</div>
-      <div class="int-highlight">
-        <div class="arow"><span class="akey" style="color:#90caf9;font-weight:700">Worst Movement LOS</span><span class="avals">${worst?bd(worst.r.los,true):'—'}<span style="font-size:10px;color:#666;margin-left:5px">${worst?worst.lg.group+' · '+worst.r.delay+'s':''}</span></span></div>
-        <div class="arow"><span class="akey" style="color:#888">Primary Intersection LOS</span><span class="avals">${bd(d.icu_los,true)}<span style="font-size:9px;color:#555;margin-left:5px">ICU (primary for unsignalized)</span></span></div>
+  } else if(twscR?.mvts.length){
+    hcmPanel=`<div class="panel"><div class="ptitle">HCM TWSC — Movimientos controlados</div>
+      <div class="arow" style="background:#0d1a28;border-radius:4px;padding:6px;margin-bottom:6px">
+        <span class="akey" style="color:#90caf9;font-weight:700">Peor movimiento LOS</span>
+        <span class="avals">${twscR.worst?bd(twscR.worst.r.los,true):'—'}<span style="font-size:10px;color:#666;margin-left:5px">${twscR.worst?twscR.worst.lg.group+' · '+twscR.worst.r.delay+'s':''}</span></span>
       </div>
-      ${mvtRows}
-      <p class="note">HCM Ch.20 TWSC: LOS reported per controlled movement (worst case). Delay via Eq.20-18 proxy using satd.flow as potential capacity (Cp). Full model requires critical headway tc, follow-up tf, conflicting volumes—not in JSON. Thresholds per HCM Table 20-2: A≤10 B≤15 C≤25 D≤35 E≤50 F>50 s/veh.</p>
+      ${twscR.mvts.filter(m=>m.r).map(m=>`
+        <div class="arow"><span class="akey">${m.lg.group} (${m.lg.sign_control}) · Cp≈${m.r.Cp} · v/c=${m.r.vc}</span>
+        <span class="avals"><div class="vbox"><div class="vnum">${m.r.delay}s</div><div class="vlbl">calc</div></div>${bd(m.r.los)}</span></div>`).join('')}
+      <p class="note">TWSC HCM Cap.20 Ec.20-18 proxy. LOS primario de la intersección = ICU. Umbrales TWSC: A≤10 B≤15 C≤25 D≤35 E≤50 F>50 s/veh.</p>
     </div>`;
   } else {
-    hcmPanel=`<div class="panel"><div class="panel-title">HCM Delay Methodology</div>
-      <div class="na-box">No Stop/Yield controlled movements with flow.<br>ICU is the applicable methodology for this intersection.</div></div>`;
+    hcmPanel=`<div class="panel"><div class="ptitle">HCM — Metodología</div><p style="color:#555;font-size:11px;padding:8px">Sin movimientos controlados con flujo. ICU es la metodología aplicable.</p></div>`;
   }
-  document.getElementById('auditPanels').innerHTML=icuPanel+hcmPanel;
+  document.getElementById('auditCols').innerHTML=icuPanel+hcmPanel;
 
-  // ── LANE GROUPS TABLE ──
+  // Lane groups table
   const hasVC=d.lane_groups.some(lg=>lg.vc_ratio!=null);
   const hasDly=d.lane_groups.some(lg=>lg.control_delay!=null);
-  const hasLOS=d.lane_groups.some(lg=>lg.los!=null);
-  document.getElementById('lgSect').textContent='Lane Groups';
-  document.getElementById('lgHead').innerHTML=`<th>Group</th><th>Future (vph)</th><th>Satd.Flow Perm</th><th>LG Flow</th><th>v/s</th><th>Sign</th>${hasVC?'<th>v/c</th>':''}${hasDly?'<th>Delay rptd</th><th>Delay calc</th><th>Δ</th>':''}${hasLOS?'<th>LOS rptd</th>':''}<th>LOS calc</th>`;
+  document.getElementById('lgSect').textContent='Grupos de carriles';
+  document.getElementById('lgHead').innerHTML=`<th>Grupo</th><th>Vol. futuro</th><th>Satd.Flow Perm.</th><th>Flujo GC</th><th>v/s</th><th>Control</th>${hasVC?'<th>v/c</th>':''}${hasDly?'<th>Demora rptd</th><th>Demora calc</th><th>Δ</th>':''}<th>LOS rptd</th><th>LOS calc</th>`;
   let tb='';
   d.lane_groups.forEach(lg=>{
     const vs=lg.satd_flow_perm>0&&lg.lane_group_flow>0?(lg.lane_group_flow/lg.satd_flow_perm).toFixed(3):'—';
-    // Calc delay: signalized or TWSC
-    let calcD=null,calcL=null;
-    if(sigR){const f=sigR.lgResults.find(r=>r.lg.group===lg.group);if(f&&f.r){calcD=f.r.delay;calcL=f.r.los;}}
-    if(calcD==null&&twscR){const m=twscR.mvts.find(x=>x.lg.group===lg.group);if(m&&m.r){calcD=m.r.delay;calcL=m.r.los;}}
-    const dispLOS=lgLOS_display(lg,isSig,twscR);
-    tb+=`<tr>
-      <td class="grp">${lg.group}</td>
-      <td>${lg.future_vph??'—'}</td>
-      <td>${lg.satd_flow_perm?.toLocaleString()??'—'}</td>
-      <td>${lg.lane_group_flow??'—'}</td>
+    let cD=null,cL=null;
+    if(sigR){const f=sigR.lgResults.find(r=>r.lg.group===lg.group);if(f?.r){cD=f.r.delay;cL=f.r.los;}}
+    if(cD==null&&twscR){const m=twscR.mvts.find(x=>x.lg.group===lg.group);if(m?.r){cD=m.r.delay;cL=m.r.los;}}
+    const dl=lgLOS(lg,isSig,twscR);
+    tb+=`<tr><td style="font-weight:700;color:#90caf9">${lg.group}</td><td>${lg.future_vph??'—'}</td>
+      <td>${lg.satd_flow_perm?.toLocaleString()??'—'}</td><td>${lg.lane_group_flow??'—'}</td>
       <td style="color:#ffc107">${vs}</td>
-      <td class="s${(lg.sign_control||'F')[0]}">${lg.sign_control||'—'}</td>
+      <td class="s${(lg.sign_control||'F')[0]}" style="color:${lg.sign_control==='Stop'?'#f44336':lg.sign_control==='Yield'?'#ffc107':lg.sign_control==='Free'?'#4caf50':'#888'}">${lg.sign_control||'—'}</td>
       ${hasVC?`<td>${lg.vc_ratio??'—'}</td>`:''}
-      ${hasDly?`<td>${lg.control_delay??'—'}</td><td>${calcD??'—'}</td><td>${calcD!=null?mChip(lg.control_delay||0,calcD,true):'—'}</td>`:''}
-      ${hasLOS?`<td>${bd(lg.los)}</td>`:''}
-      <td>${bd(dispLOS)}</td>
-    </tr>`;
+      ${hasDly?`<td>${lg.control_delay??'—'}</td><td>${cD??'—'}</td><td>${cD!=null?dChip(lg.control_delay||0,cD,true):'—'}</td>`:''}
+      <td>${bd(lg.los)}</td><td>${bd(dl)}</td></tr>`;
   });
   document.getElementById('lgBody').innerHTML=tb;
 
-  // ── PHASES ──
+  // Phases
   const ps=document.getElementById('phSect');
   if(d.phases?.length){
-    let ph=`<div class="sect">Signal Phases</div><div class="panel nobottom"><div class="phases-wrap">`;
-    d.phases.forEach(p=>{ph+=`<div class="pchip"><div class="phl">${p.phase}</div><div class="phs">${p.total_split_s}s</div><div class="phsub">${p.total_split_pct}% · max G ${p.max_green_s}s</div></div>`;});
-    ph+=`</div></div>`;ps.innerHTML=ph;
+    ps.innerHTML=`<div class="sect">Fases semafóricas</div><div class="panel"><div class="phases-wrap">`+
+      d.phases.map(p=>`<div class="pchip"><div class="phl">${p.phase}</div><div class="phs">${p.total_split_s}s</div><div class="phsub">${p.total_split_pct}% · verde máx ${p.max_green_s}s</div></div>`).join('')+
+      `</div></div>`;
   } else ps.innerHTML='';
 }
 
-// ── INIT ──
+// ── SELECTOR ─────────────────────────────────────────────────────────────────
+function buildSelector(){
+  const sel=document.getElementById('intSel');sel.innerHTML='';
+  D.intersections.forEach(i=>{
+    const o=document.createElement('option');o.value=i.id;
+    o.textContent=`Int. ${i.label}  ·  ${i.control_type}  [ICU ${i.icu}% LOS ${i.icu_los}]`;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change',()=>renderDet(+sel.value));
+}
+
 function goDet(id){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab')[1].classList.add('active');
   document.getElementById('page-detail').classList.add('active');
-  iSel.value=id;renderDet(id);
+  document.getElementById('intSel').value=id;renderDet(id);
 }
-renderSummary();
-renderDet(D.intersections[0].id);
+
+// ── INIT — try fetch data.json, fallback to inline ───────────────────────────
+async function init(){
+  try{
+    const r=await fetch('data.json');
+    if(r.ok){D=await r.json();}
+  } catch(e){/* use inline */}
+  results=RES();
+  buildSelector();
+  renderSum();
+  renderDet(D.intersections[0].id);
+}
+init();
 </script>
 </body>
 </html>
