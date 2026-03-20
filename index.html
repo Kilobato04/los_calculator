@@ -3,729 +3,895 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora LOS — Intersecciones Urbanas</title>
+<title>Synchro 11 — Auditoría LOS de Red</title>
 <style>
-  :root{--bg:#0f1117;--sur:#1a1d27;--sur2:#22263a;--bor:#2e3350;--acc:#4f6ef7;--acc2:#7c3aed;--tx:#e8eaf6;--tx2:#8b92b8;--losA:#22c55e;--losB:#86efac;--losC:#facc15;--losD:#f97316;--losE:#ef4444;--losF:#7f1d1d;--r:10px;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;}
-  header{background:linear-gradient(135deg,var(--sur),#1a2040);border-bottom:1px solid var(--bor);padding:14px 26px;display:flex;align-items:center;gap:12px;}
-  header .logo{font-size:26px;}
-  header h1{font-size:18px;font-weight:700;}
-  header p{font-size:11px;color:var(--tx2);margin-top:2px;}
-  .main{display:grid;grid-template-columns:1fr 360px;gap:16px;padding:18px 26px;max-width:1480px;margin:0 auto;}
-  .panel{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px;}
-  .panel+.panel{margin-top:16px;}
-  .ptitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);margin-bottom:12px;}
-  .g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
-  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
-  .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;}
-  label{display:block;font-size:10px;color:var(--tx2);margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
-  input[type=number],select{width:100%;padding:6px 8px;background:var(--sur2);border:1px solid var(--bor);border-radius:6px;color:var(--tx);font-size:12px;outline:none;transition:border .15s;}
-  input[type=number]:focus,select:focus{border-color:var(--acc);}
-  input[type=checkbox]{width:14px;height:14px;accent-color:var(--acc);}
-  .sep{border:none;border-top:1px solid var(--bor);margin:12px 0;}
-  .slabel{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
-  .tabs{display:flex;gap:3px;margin-bottom:14px;flex-wrap:wrap;}
-  .tab-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--bor);background:transparent;color:var(--tx2);cursor:pointer;font-size:12px;transition:all .15s;}
-  .tab-btn.active{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700;}
-  .tab-btn:hover:not(.active){border-color:var(--acc);color:var(--tx);}
-  .tab-content{display:none;}.tab-content.active{display:block;}
-  .mvc{background:var(--sur2);border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid var(--bor);}
-  .mvc h4{font-size:10px;color:var(--tx2);font-weight:700;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-  .tr{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
-  .tr label{margin:0;text-transform:none;font-size:12px;color:var(--tx);font-weight:600;}
-  .phcard{background:var(--sur2);border-radius:8px;padding:10px;margin-bottom:7px;border-left:3px solid var(--acc);}
-  .phcard h4{font-size:11px;color:var(--acc);font-weight:700;margin-bottom:8px;}
-  .btn{padding:8px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;}
-  .btn-primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;}
-  .btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 5px 16px rgba(79,110,247,.4);}
-  .btn-sec{background:var(--sur2);color:var(--tx);border:1px solid var(--bor);}
-  .btn-sec:hover{border-color:var(--acc);color:var(--acc);}
-  .btn-exp{background:#064e3b;color:#6ee7b7;border:1px solid #065f46;padding:6px 12px;font-size:12px;}
-  .btn-exp:hover{background:#065f46;}
-  .actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;align-items:center;}
-  .res-area{display:flex;flex-direction:column;gap:14px;}
-  #iCanvas{width:100%;border-radius:8px;background:var(--sur2);border:1px solid var(--bor);display:block;}
-  .sum-card{display:flex;align-items:center;gap:12px;background:var(--sur2);border-radius:10px;padding:12px;border:1px solid var(--bor);margin-bottom:12px;}
-  .big-los{font-size:48px;font-weight:900;line-height:1;}
-  .sum-card .det h3{font-size:13px;font-weight:700;}
-  .sum-card .det p{font-size:11px;color:var(--tx2);margin-top:2px;}
-  .rtable{width:100%;border-collapse:collapse;font-size:11px;}
-  .rtable th{background:var(--sur2);color:var(--tx2);padding:6px 8px;text-align:left;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.06em;}
-  .rtable td{padding:6px 8px;border-bottom:1px solid var(--bor);vertical-align:middle;}
-  .rtable tr:last-child td{border-bottom:none;}
-  .lbadge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:900;}
-  .lA{background:var(--losA);color:#000;}.lB{background:var(--losB);color:#000;}.lC{background:var(--losC);color:#000;}
-  .lD{background:var(--losD);color:#000;}.lE{background:var(--losE);color:#fff;}.lF{background:var(--losF);color:#fff;}
-  .vcbar{height:4px;border-radius:2px;background:var(--bor);overflow:hidden;margin-top:3px;}
-  .vcfill{height:100%;border-radius:2px;transition:width .4s;}
-  .warn{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:8px 11px;font-size:11px;color:#fca5a5;margin-bottom:4px;display:flex;gap:6px;}
-  .rec{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:7px;padding:8px 11px;font-size:11px;color:#86efac;margin-bottom:4px;display:flex;gap:6px;}
-  .infob{background:rgba(79,110,247,.12);border:1px solid rgba(79,110,247,.3);border-radius:7px;padding:8px 11px;font-size:11px;color:#93c5fd;}
-  .cycmsg{margin-top:6px;border-radius:7px;padding:7px 10px;font-size:11px;}
-  .dN{color:#60a5fa;}.dS{color:#f87171;}.dE{color:#4ade80;}.dW{color:#fbbf24;}
-  /* ICU / HCM toggle */
-  .method-tabs{display:flex;gap:0;margin-bottom:12px;border:1px solid var(--bor);border-radius:7px;overflow:hidden;}
-  .method-tab{flex:1;padding:6px 0;text-align:center;font-size:11px;font-weight:700;cursor:pointer;background:transparent;border:none;color:var(--tx2);transition:all .15s;text-transform:uppercase;letter-spacing:.06em;}
-  .method-tab.active{background:var(--acc);color:#fff;}
-  /* dual result strip */
-  .dual-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-  .dcard{background:var(--sur2);border-radius:8px;padding:10px 12px;border:1px solid var(--bor);text-align:center;}
-  .dcard .dlabel{font-size:10px;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-  .dcard .dval{font-size:28px;font-weight:900;}
-  .dcard .dsub{font-size:10px;color:var(--tx2);margin-top:2px;}
-  footer{text-align:center;padding:12px;color:var(--tx2);font-size:10px;border-top:1px solid var(--bor);}
-  @media(max-width:860px){.main{grid-template-columns:1fr;}.g4,.g5{grid-template-columns:1fr 1fr;}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;min-height:100vh;padding:16px;font-size:12px}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #2a3044}
+.hdr h1{font-size:14px;color:#90caf9;letter-spacing:.8px;text-transform:uppercase}
+.hdr p{font-size:10px;color:#555;margin-top:3px}
+.tabs{display:flex;gap:2px;margin-bottom:14px;border-bottom:1px solid #2a3044}
+.tab{padding:7px 18px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:#555;border-radius:6px 6px 0 0;transition:all .15s}
+.tab:hover{color:#aaa;background:#1a1f2e}
+.tab.active{color:#90caf9;background:#1a1f2e;border-bottom:2px solid #4a90d9}
+.page{display:none}.page.active{display:block}
+.sfilt{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.fbtn{padding:4px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s}
+.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.sbox{padding:5px 10px;background:#1a1f2e;border:1px solid #2a3044;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;min-width:200px}
+.sbox:focus{border-color:#4a90d9}
+.sstats{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.schip{background:#1a1f2e;border:1px solid #2a3044;border-radius:5px;padding:3px 9px;font-size:10px;color:#888}
+.schip b{color:#e0e0e0}
+.twrap{overflow-x:auto;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:#1e2538}
+th{padding:6px 8px;text-align:left;color:#6a8ab0;font-weight:600;white-space:nowrap;border-bottom:1px solid #2a3044;cursor:pointer;user-select:none}
+th:hover{color:#90caf9}
+tbody tr{border-bottom:1px solid #1a1f2e;transition:background .1s}
+tbody tr:hover{background:#1e2538}
+td{padding:5px 8px;color:#ccc;white-space:nowrap;vertical-align:middle}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;border-radius:4px;font-size:11px;font-weight:700}
+.badge.lg{min-width:30px;height:30px;font-size:15px;border-radius:6px}
+.A{background:#1b3a1e;color:#4caf50}.B{background:#253318;color:#8bc34a}
+.C{background:#332d00;color:#ffc107}.D{background:#332100;color:#ff9800}
+.E{background:#33160a;color:#ff5722}.F{background:#2d0e0e;color:#f44336}
+.G{background:#280b1a;color:#e91e63}.H{background:#1c0e26;color:#9c27b0}
+.NA{background:#1e2130;color:#555}
+.chip{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;display:inline-block}
+.ok{background:#1b3a1e;color:#4caf50}.warn{background:#332d00;color:#ffc107}
+.err{background:#2d0e0e;color:#f44336}.na{background:#1a1a1a;color:#555}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
+.tS{background:#153242;color:#29b6f6}.tU{background:#2a2008;color:#ff9800}
+.tR{background:#1f1039;color:#ce93d8}.tM{background:#0e2619;color:#81c784}
+.yr-btn{background:transparent;border:1px solid #2a3044;border-radius:6px;padding:4px 12px;color:#888;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.yr-btn:hover{border-color:#90caf9;color:#e0e0e0}
+.yr-btn.active{border-color:#4a90d9;color:#90caf9;background:#0d1e38}
+.delta-up{font-size:9px;padding:1px 5px;border-radius:3px;background:#2d0e0e;color:#f44336;font-weight:700;margin-left:3px}
+.delta-dn{font-size:9px;padding:1px 5px;border-radius:3px;background:#1b3a1e;color:#4caf50;font-weight:700;margin-left:3px}
+.delta-eq{font-size:9px;padding:1px 5px;border-radius:3px;background:#1a1a1a;color:#666;font-weight:700;margin-left:3px}
+.conf{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700}
+.conf-hi{background:#0e2619;color:#4caf50;border:1px solid #1b4d2e}
+.conf-md{background:#2a2008;color:#ffc107;border:1px solid #4a3a00}
+.conf-lo{background:#1c1c2a;color:#7986cb;border:1px solid #2d3268}
+.step-btn{padding:0;width:28px;height:28px;background:#1a2a3a;border:1px solid #2a4060;border-radius:5px;color:#90caf9;cursor:pointer;font-size:18px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
+.step-btn:hover{background:#1e3a5a}
+.sel-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.sel-row label{font-size:11px;color:#888}
+select.int-sel{background:#1e2130;color:#e0e0e0;border:1px solid #334;border-radius:6px;padding:6px 11px;font-size:12px;cursor:pointer;outline:none;min-width:320px}
+select.int-sel:focus{border-color:#4a90d9}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:14px;margin-bottom:12px}
+.hero-los{font-size:72px;font-weight:900;line-height:1;text-align:center;min-width:80px}
+.hero-mid h3{font-size:13px;color:#e0e0e0;margin-bottom:5px}
+.hero-mid p{font-size:10px;color:#666;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.card{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px}
+.card-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.card-value{font-size:20px;font-weight:700;line-height:1.1}
+.card-sub{font-size:9px;color:#555;margin-top:3px}
+.gbar{height:5px;background:#1e2130;border-radius:3px;overflow:hidden;margin:3px 0}
+.gfill{height:100%;border-radius:3px;transition:width .5s}
+.panel{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:12px;margin-bottom:10px}
+.ptitle{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.ptitle::before{content:'';display:inline-block;width:3px;height:11px;background:#4a90d9;border-radius:2px}
+.arow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1e2233;gap:8px}
+.arow:last-child{border-bottom:none}
+.akey{font-size:10px;color:#777;flex:1}
+.avals{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.vbox{text-align:center;min-width:38px}
+.vnum{font-size:12px;font-weight:700}
+.vlbl{font-size:8px;color:#555;margin-top:1px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+.diag-wrap{background:#1a1f2e;border:1px solid #2a3044;border-radius:8px;padding:14px;margin-bottom:12px}
+.appr-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.appr-card{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:8px 12px;min-width:80px;text-align:center}
+.appr-dir{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.appr-los{font-size:24px;font-weight:900;line-height:1}
+.appr-sub{font-size:8px;color:#555;margin-top:2px}
+.phases-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.pchip{background:#1e2130;border:1px solid #2a3044;border-radius:6px;padding:6px 10px;text-align:center;min-width:90px}
+.phl{font-size:10px;color:#90caf9;font-weight:700}
+.phs{font-size:14px;font-weight:700;color:#ffc107}
+.phsub{font-size:9px;color:#666;margin-top:2px}
+.note{font-size:9px;color:#555;margin-top:6px;line-height:1.5}
+.sect{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin:12px 0 6px}
+.dual{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.dcard{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;text-align:center}
+.dcard .dlabel{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.dcard .dval{font-size:32px;font-weight:900;line-height:1}
+.dcard .dsub{font-size:9px;color:#666;margin-top:3px}
+.mbox{background:#0a1628;border:1px solid #1a3a5c;border-radius:6px;padding:10px 12px;font-size:10px;color:#4a7ab0;line-height:1.7;margin-bottom:12px}
+.mbox strong{color:#90caf9}
+.legend-box{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.legend-box span{font-size:10px;color:#888;display:flex;align-items:center;gap:5px}
+.crit-row{background:#1b1212!important}
+.warn-row{background:#1a180a!important}
+footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px solid #1a1f2e;margin-top:16px}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">🚦</div>
+
+<div class="hdr">
   <div>
-    <h1>Calculadora LOS — Intersecciones Urbanas</h1>
-    <p>HCM 7 (demora) + ICU (utilización) · fHV · fLU · Auditoría vs. Synchro · Contexto LATAM</p>
+    <h1>🚦 Synchro 11 — Auditoría LOS de Red</h1>
+    <p>01-29-2026 · AM Peak · ICU + HCM 7 · Reportado vs. Calculado</p>
   </div>
-</header>
+</div>
 
-<div class="main">
-  <div>
-    <!-- SIGNAL -->
-    <div class="panel">
-      <div class="ptitle">⏱ Plan Semafórico</div>
-      <!-- Intersection type selector -->
-      <div class="g2" style="margin-bottom:12px">
-        <div>
-          <label>Tipo de Intersección</label>
-          <select id="intType" onchange="onIntTypeChange()">
-            <option value="signalized">🚦 Semaforizada</option>
-            <option value="unsignalized">🛑 No semaforizada (Yield / Free)</option>
-          </select>
-        </div>
-        <div id="unsig-method-wrap" style="display:none">
-          <label>Método de control</label>
-          <select id="unsigMethod" onchange="renderUnsigPanel()">
-            <option value="yield">Ceda el paso (Yield)</option>
-            <option value="free">Paso libre (Free)</option>
-            <option value="stop">Alto total (All-way Stop)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- SIGNALIZED panel -->
-      <div id="sig-panel">
-        <div class="g3">
-          <div><label>Ciclo C (s)</label><input type="number" id="cycleLen" value="90" min="30" max="300" oninput="checkCycle()"></div>
-          <div><label>N° Fases</label>
-            <select id="numPhases" onchange="onPhaseChange()">
-              <option value="1">1</option><option value="2">2</option>
-              <option value="3">3</option><option value="4" selected>4</option>
-            </select>
-          </div>
-          <div><label>Control</label>
-            <select id="ctrlType"><option value="pretimed">Pre-temporizado</option><option value="actuated">Actuado</option></select>
-          </div>
-        </div>
-        <hr class="sep">
-        <div class="slabel">Fases</div>
-        <div id="phasesCont"></div>
-        <div id="cycMsg" class="cycmsg infob"></div>
-        <hr class="sep">
-        <div class="slabel">Distribución de verde por fase</div>
-        <div style="position:relative;width:100%;height:150px;margin-top:4px"><canvas id="phChart"></canvas></div>
-      </div>
-
-      <!-- UNSIGNALIZED panel -->
-      <div id="unsig-panel" style="display:none">
-        <div class="infob" id="unsig-info" style="margin-bottom:10px"></div>
-        <div class="g3">
-          <div>
-            <label>Volumen conflicto mayor (veh/h)</label>
-            <input type="number" id="unsig-vmaj" value="800" min="0" max="3000" oninput="calcUnsig()">
-          </div>
-          <div>
-            <label>Gap crítico tc (s)</label>
-            <input type="number" id="unsig-tc" value="6.5" min="3" max="12" step="0.5" oninput="calcUnsig()">
-          </div>
-          <div>
-            <label>Gap seguimiento tf (s)</label>
-            <input type="number" id="unsig-tf" value="3.3" min="1" max="8" step="0.1" oninput="calcUnsig()">
-          </div>
-        </div>
-        <div class="g2" style="margin-top:9px">
-          <div>
-            <label>Vol. movimiento menor (veh/h)</label>
-            <input type="number" id="unsig-vmin" value="100" min="0" max="1000" oninput="calcUnsig()">
-          </div>
-          <div>
-            <label>PHF movimiento menor</label>
-            <input type="number" id="unsig-phf" value="0.92" min="0.5" max="1" step="0.01" oninput="calcUnsig()">
-          </div>
-        </div>
-        <hr class="sep">
-        <div id="unsig-result" style="background:var(--sur2);border-radius:8px;padding:12px;border:1px solid var(--bor)">
-          <div class="slabel" style="margin-bottom:8px">Resultado — Método HCM Cap. Potencial</div>
-          <div class="g3">
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--tx2);margin-bottom:3px">Capacidad potencial</div>
-              <div id="ur-cp" style="font-size:22px;font-weight:700;color:var(--acc)">—</div>
-              <div style="font-size:10px;color:var(--tx2)">veh/h</div>
-            </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--tx2);margin-bottom:3px">Demora control</div>
-              <div id="ur-delay" style="font-size:22px;font-weight:700">—</div>
-              <div style="font-size:10px;color:var(--tx2)">seg/veh</div>
-            </div>
-            <div style="text-align:center">
-              <div style="font-size:10px;color:var(--tx2);margin-bottom:3px">LOS</div>
-              <div id="ur-los" style="font-size:32px;font-weight:900">—</div>
-            </div>
-          </div>
-          <div id="ur-note" style="font-size:10px;color:var(--tx2);margin-top:8px;line-height:1.5"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- APPROACHES -->
-    <div class="panel">
-      <div class="ptitle">🛣 Accesos &amp; Movimientos</div>
-      <!-- Growth factor strip -->
-      <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:11px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:.07em;">📈 Volumen Futuro — Incremento por acceso (%)</span>
-          <button class="btn btn-sec" style="padding:2px 9px;font-size:10px" onclick="applyGrowth()">Aplicar</button>
-        </div>
-        <div class="g4">
-          <div><label>Norte</label><input type="number" id="gr-N" value="0" min="0" max="200" step="1" placeholder="0%"></div>
-          <div><label>Sur</label><input type="number" id="gr-S" value="0" min="0" max="200" step="1" placeholder="0%"></div>
-          <div><label>Este</label><input type="number" id="gr-E" value="0" min="0" max="200" step="1" placeholder="0%"></div>
-          <div><label>Oeste</label><input type="number" id="gr-W" value="0" min="0" max="200" step="1" placeholder="0%"></div>
-        </div>
-        <div id="growthMsg" style="font-size:10px;color:var(--tx2);margin-top:6px;">Incremento sobre volumen base. Ej: 15 = +15% sobre volumen actual por dirección.</div>
-      </div>
-      <div class="tabs">
-        <button class="tab-btn active" onclick="swTab('N',this)">⬆ Norte</button>
-        <button class="tab-btn" onclick="swTab('S',this)">⬇ Sur</button>
-        <button class="tab-btn" onclick="swTab('E',this)">➡ Este</button>
-        <button class="tab-btn" onclick="swTab('W',this)">⬅ Oeste</button>
-      </div>
-      <div id="tab-N" class="tab-content active"></div>
-      <div id="tab-S" class="tab-content"></div>
-      <div id="tab-E" class="tab-content"></div>
-      <div id="tab-W" class="tab-content"></div>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="calculate()">▶ Calcular LOS</button>
-        <button class="btn btn-sec" onclick="resetAll()">↺ Reiniciar</button>
-        <button class="btn btn-exp" onclick="exportCSV()">⬇ CSV</button>
-      </div>
-    </div>
+<div class="legend-box">
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+    <span style="color:#aaa;font-weight:700;font-size:10px">Confianza HCM:</span>
+    <span><span class="conf conf-hi">● Alta</span> v/c + fases reales</span>
+    <span><span class="conf conf-md">◐ Media</span> Webster estimado</span>
+    <span><span class="conf conf-lo">○ Baja</span> Hipotético</span>
   </div>
-
-  <!-- RIGHT -->
-  <div class="res-area">
-    <div class="panel">
-      <div class="ptitle">🗺 Diagrama</div>
-      <canvas id="iCanvas" width="320" height="270"></canvas>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:8px;background:#0d1220;border:1px solid #2a3044;border-radius:8px;padding:7px 13px">
+      <span style="font-size:10px;color:#555;font-weight:700;white-space:nowrap">Horizonte:</span>
+      <button id="btn-2025" class="yr-btn active" onclick="setYear('current',this)">
+        <span style="font-size:11px;font-weight:700">2025</span>
+        <span style="font-size:9px;display:block;opacity:.7">base</span>
+      </button>
+      <div style="position:relative;width:36px;height:20px;cursor:pointer;flex-shrink:0" onclick="toggleYear()">
+        <div id="yr-track" style="width:36px;height:20px;border-radius:10px;background:#2a3044;transition:background .2s"></div>
+        <div id="yr-thumb" style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#90caf9;transition:left .2s;pointer-events:none"></div>
+      </div>
+      <button id="btn-2030" class="yr-btn" onclick="setYear('future',this)">
+        <span style="font-size:11px;font-weight:700">2030</span>
+        <span style="font-size:9px;display:block;opacity:.7">futuro</span>
+      </button>
+      <span id="yr-badge" style="font-size:9px;padding:2px 8px;border-radius:4px;background:#1b3a1e;color:#4caf50;font-weight:700;white-space:nowrap">AÑO BASE</span>
     </div>
-    <div class="panel" id="resPanel">
-      <div class="ptitle">📊 Resultados LOS</div>
-      <div class="infob">Configura los datos y presiona <strong>Calcular LOS</strong></div>
+    <div style="display:flex;align-items:center;gap:9px;background:#0d1220;border:1px solid #2a4060;border-radius:8px;padding:7px 13px;flex-wrap:wrap">
+      <span style="font-size:10px;color:#4a90d9;font-weight:700;white-space:nowrap">Sensibilidad vol.:</span>
+      <button class="step-btn" onclick="stepMult(-0.1)">−</button>
+      <span id="multDisplay" style="font-size:14px;font-weight:700;color:#e0e0e0;min-width:40px;text-align:center">×1.0</span>
+      <button class="step-btn" onclick="stepMult(0.1)">+</button>
+      <input type="range" id="multSlider" min="0.5" max="3.0" step="0.1" value="1.0"
+        style="width:120px;accent-color:#4a90d9" oninput="setMult(+this.value)">
+      <span id="multPct" style="font-size:11px;font-weight:700;color:#666;min-width:42px">+0%</span>
+      <button onclick="resetMult()" style="padding:4px 10px;background:#1a2030;border:1px solid #2a3044;border-radius:5px;color:#888;cursor:pointer;font-size:10px">Reset</button>
     </div>
   </div>
 </div>
-<footer>HCM 7 · ICU · fHV (ET=2.0) · fLU (HCM Table 19-14) · Uso técnico de referencia</footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<div class="tabs">
+  <div class="tab active" onclick="swTab('summary',this)">Tabla Red</div>
+  <div class="tab" onclick="swTab('detail',this)">Detalle Intersección</div>
+</div>
+
+<div class="page active" id="page-summary">
+  <div class="sfilt">
+    <input class="sbox" id="srch" placeholder="Buscar intersección…" oninput="renderSum()">
+    <button class="fbtn active" onclick="setFilt('ALL',this)">Todas</button>
+    <button class="fbtn" onclick="setFilt('Sig',this)">Semaforizadas</button>
+    <button class="fbtn" onclick="setFilt('UnSig',this)">No semaforizadas</button>
+    <button class="fbtn" onclick="setFilt('Crit',this)">Críticas ≥90%</button>
+    <button class="fbtn" onclick="setFilt('Diff',this)">Con discrepancia</button>
+    <button class="fbtn" onclick="setFilt('Hi',this)">HCM confianza alta</button>
+  </div>
+  <div class="sstats" id="sstats"></div>
+  <div class="twrap">
+    <table>
+      <thead><tr>
+        <th onclick="doSort('id')">#</th>
+        <th onclick="doSort('ct')">Control</th>
+        <th onclick="doSort('ir')">ICU% rptd</th>
+        <th onclick="doSort('ic')">ICU% calc</th>
+        <th>Δ ICU</th>
+        <th>LOS ICU rptd</th>
+        <th>LOS ICU calc</th>
+        <th>Demora rptd</th>
+        <th>Demora HCM calc</th>
+        <th>LOS HCM rptd</th>
+        <th>LOS HCM calc</th>
+        <th>Confianza</th>
+        <th>Ciclo</th>
+        <th>Accesos</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="page-detail">
+  <div class="sel-row">
+    <label>Intersección:</label>
+    <select class="int-sel" id="intSel"></select>
+  </div>
+  <div class="dual" id="dualStrip"></div>
+  <div class="hero" id="hero"></div>
+  <div class="mbox" id="methBox"></div>
+  <div class="cards" id="cards"></div>
+  <div class="diag-wrap">
+    <div class="ptitle" style="margin-bottom:8px">Diagrama — LOS por grupo de carriles</div>
+    <div id="diag" style="display:flex;justify-content:center"></div>
+  </div>
+  <div class="panel"><div class="ptitle">LOS por acceso (leg)</div><div class="appr-row" id="apprRow"></div><p class="note" id="apprNote"></p></div>
+  <div class="two-col" id="auditCols"></div>
+  <div class="sect" id="lgSect"></div>
+  <div class="twrap"><table><thead><tr id="lgHead"></tr></thead><tbody id="lgBody"></tbody></table></div>
+  <div id="phSect"></div>
+</div>
+
+<footer>ICU = Σ(v/s)×100 · HCM 7 d=d₁+d₂ real o Webster · TWSC HCM Cap.20 · fHV & fLU en satd_flow_perm · Uso técnico de referencia</footer>
+
 <script>
-// ── CONSTANTS ─────────────────────────────────────────────────────────────────
-const DIRS=['N','S','E','W'], DL={N:'Norte',S:'Sur',E:'Este',W:'Oeste'};
-const MVS=['LT','TH','RT','UT'], ML={LT:'Giro Izq.',TH:'Directo',RT:'Giro Der.',UT:'Vuelta U'}, MI={LT:'↰',TH:'↑',RT:'↱',UT:'↩'};
-const PF={1:1.333,2:1.067,3:1.000,4:0.900,5:0.800,6:0.667};
-// fLU table (HCM 7 Table 19-14) — indexed by number of lanes per group
-const FLU={1:1.000,2:0.971,3:0.952,4:0.944,5:0.938};
-// ET for heavy vehicles (passenger-car equivalent) — standard HCM urban = 2.0
-const ET=2.0;
+// ── GLOBAL STATE ──────────────────────────────────────────────────────────────
+let D = { intersections: [] };
+let results = [];
+let activeYear = 'current';
+let sensitivityMult = 1.0;
+let filt = 'ALL';
+let srt = { k: 'id', asc: true };
 
-function getLOS(d){if(d<=10)return'A';if(d<=20)return'B';if(d<=35)return'C';if(d<=55)return'D';if(d<=80)return'E';return'F';}
-function getICULOS(u){if(u<=0.55)return'A';if(u<=0.64)return'B';if(u<=0.73)return'C';if(u<=0.82)return'D';if(u<=0.91)return'E';return'F';}
-function losColor(l){return{A:'var(--losA)',B:'var(--losB)',C:'var(--losC)',D:'var(--losD)',E:'var(--losE)',F:'var(--losF)'}[l]||'#888';}
-function hexLos(l){return{A:'#22c55e',B:'#86efac',C:'#facc15',D:'#f97316',E:'#ef4444',F:'#7f1d1d'}[l]||'#888';}
-
-// ── STATE ─────────────────────────────────────────────────────────────────────
-function defMv(ph=0){return{enabled:true,lanes:1,volume:0,capacity:1900,phf:0.92,phv:0,phase:ph,freeRight:false,ltProtected:true};}
-function defAp(){
-  return{enabled:true,arrivalType:3,movements:{
-    LT:{...defMv(0),volume:80,lanes:1},
-    TH:{...defMv(0),volume:600,lanes:2},
-    RT:{...defMv(0),volume:100,lanes:1},
-    UT:{...defMv(0),volume:0,lanes:1,enabled:false}
-  }};
-}
-function defPhases(n){
-  const g=[20,25,22,19],l=[4,4,4,4];
-  return Array.from({length:n},(_,i)=>({green:g[i]??20,lost:l[i]??4}));
-}
-let state={phases:defPhases(4),approaches:Object.fromEntries(DIRS.map(d=>[d,defAp()]))};
-let phChartInst=null;
-
-// ── PHASES ────────────────────────────────────────────────────────────────────
-function onPhaseChange(){state.phases=defPhases(+document.getElementById('numPhases').value);renderPhases();renderAllTabs();}
-function renderPhases(){
-  const C=+document.getElementById('cycleLen').value||90;
-  const cont=document.getElementById('phasesCont');cont.innerHTML='';
-  state.phases.forEach((ph,i)=>{
-    const d=document.createElement('div');d.className='phcard';
-    d.innerHTML=`<h4>Fase ${i+1}</h4>
-    <div class="g3">
-      <div><label>Verde (s)</label><input type="number" value="${ph.green}" min="4" max="290" oninput="state.phases[${i}].green=+this.value;checkCycle()"></div>
-      <div><label>T. Perdido (s)</label><input type="number" value="${ph.lost}" min="0" max="10" oninput="state.phases[${i}].lost=+this.value;checkCycle()"></div>
-      <div style="display:flex;align-items:flex-end;padding-bottom:2px"><span style="font-size:11px;color:var(--tx2);line-height:1.8">
-        g ef: <strong id="ge-${i}" style="color:var(--tx)">${ph.green-ph.lost}s</strong><br>
-        g/C = <strong id="gc-${i}" style="color:var(--acc)">${((ph.green-ph.lost)/C).toFixed(3)}</strong>
-      </span></div>
-    </div>`;
-    cont.appendChild(d);
-  });
-  checkCycle();
-}
-
-function checkCycle(){
-  const C=+document.getElementById('cycleLen').value||90;
-  const sG=state.phases.reduce((a,p)=>a+p.green,0),diff=sG-C;
-  state.phases.forEach((ph,i)=>{
-    const ge=document.getElementById(`ge-${i}`),gc=document.getElementById(`gc-${i}`);
-    if(ge)ge.textContent=` ${ph.green-ph.lost}s`;
-    if(gc)gc.textContent=((ph.green-ph.lost)/C).toFixed(3);
-  });
-  const el=document.getElementById('cycMsg');
-  if(Math.abs(diff)>2){
-    el.style.cssText='margin-top:6px;border-radius:7px;padding:7px 10px;font-size:11px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;';
-    el.innerHTML=`⚠ Suma verdes (${sG}s) ≠ Ciclo (${C}s). Dif: <strong>${diff>0?'+':''}${diff}s</strong> &nbsp;
-      <button class="btn btn-sec" style="padding:2px 9px;font-size:10px;border-color:#ef4444;color:#fca5a5" onclick="autoBalance()">Auto-balancear</button>`;
-  } else {
-    el.style.cssText='margin-top:6px;border-radius:7px;padding:7px 10px;font-size:11px;background:rgba(79,110,247,.12);border:1px solid rgba(79,110,247,.3);color:#93c5fd;';
-    el.textContent=`✓ Suma: ${sG}s / Ciclo: ${C}s — OK`;
+// ── DATA LOADER ───────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const r = await fetch('datalos.json');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+    console.log('datalos.json cargado: ' + D.intersections.length + ' intersecciones');
+  } catch(e) {
+    console.warn('No se pudo cargar datalos.json:', e.message);
+    const el = document.getElementById('sstats');
+    if (el) el.innerHTML =
+      '<div class="schip" style="color:#f44336;border-color:#f44336">' +
+      '&#9888; No se cargó datalos.json — usa un servidor local ' +
+      '(<code>npx serve .</code> &nbsp;|&nbsp; <code>python -m http.server 8080</code> &nbsp;|&nbsp; Live Server).' +
+      '</div>';
   }
-  drawPhaseChart();
 }
 
-function autoBalance(){
-  const C=+document.getElementById('cycleLen').value||90,n=state.phases.length;
-  const base=Math.floor(C/n),rem=C-base*n;
-  state.phases.forEach((ph,i)=>{ph.green=base+(i===0?rem:0);});
-  renderPhases();
+// ── THRESHOLDS ────────────────────────────────────────────────────────────────
+function icuLOS(p){return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H';}
+function sigLOS(d){return d<=10?'A':d<=20?'B':d<=35?'C':d<=55?'D':d<=80?'E':'F';}
+function twscLOS(d){return d<=10?'A':d<=15?'B':d<=25?'C':d<=35?'D':d<=50?'E':'F';}
+const LC={A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
+const lc = l => LC[l] || '#888';
+const gc = p => p<60?'#4caf50':p<80?'#ffc107':p<100?'#ff9800':'#f44336';
+
+// ── SENSITIVITY CONTROLS ──────────────────────────────────────────────────────
+function setMult(v) {
+  sensitivityMult = Math.round(v * 10) / 10;
+  document.getElementById('multSlider').value = sensitivityMult;
+  document.getElementById('multDisplay').textContent = '×' + sensitivityMult.toFixed(1);
+  const pct = Math.round((sensitivityMult - 1) * 100);
+  const el = document.getElementById('multPct');
+  el.textContent = pct === 0 ? '+0%' : (pct > 0 ? '+' + pct + '%' : pct + '%');
+  el.style.color = pct > 0 ? '#f44336' : pct < 0 ? '#4caf50' : '#666';
+  refresh();
+}
+function stepMult(d){ setMult(Math.min(3.0, Math.max(0.5, sensitivityMult + d))); }
+function resetMult(){ setMult(1.0); }
+
+// ── YEAR TOGGLE ───────────────────────────────────────────────────────────────
+function setYear(y, btn) {
+  activeYear = y;
+  document.querySelectorAll('.yr-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const f = y === 'future';
+  document.getElementById('yr-track').style.background = f ? '#1b4d2e' : '#2a3044';
+  document.getElementById('yr-thumb').style.left = f ? '19px' : '3px';
+  document.getElementById('yr-badge').textContent = f ? 'AÑO 5 — 2030' : 'AÑO BASE';
+  document.getElementById('yr-badge').style.background = f ? '#332d00' : '#1b3a1e';
+  document.getElementById('yr-badge').style.color = f ? '#ffc107' : '#4caf50';
+  refresh();
+}
+function toggleYear() {
+  const next = activeYear === 'current' ? 'future' : 'current';
+  setYear(next, document.getElementById(next === 'future' ? 'btn-2030' : 'btn-2025'));
+}
+function refresh() {
+  buildResults();
+  renderSum();
+  const sel = document.getElementById('intSel');
+  if (sel && sel.value) renderDet(+sel.value);
+  buildSelector();
 }
 
-function drawPhaseChart(){
-  const C=+document.getElementById('cycleLen').value||90;
-  const labels=state.phases.map((_,i)=>`Fase ${i+1}`);
-  const greens=state.phases.map(p=>p.green-p.lost);
-  const losts=state.phases.map(p=>p.lost);
-  const COLS=['#4f6ef7','#7c3aed','#06b6d4','#10b981'];
-  const LCOLS=['#2a3080','#3d1a7a','#034f5e','#065f46'];
-  if(phChartInst){phChartInst.destroy();phChartInst=null;}
-  const cv=document.getElementById('phChart');
-  if(!cv||typeof Chart==='undefined')return;
-  phChartInst=new Chart(cv,{type:'bar',data:{labels,datasets:[
-    {label:'Verde efectivo',data:greens,backgroundColor:COLS.slice(0,state.phases.length),borderRadius:4,borderSkipped:false},
-    {label:'T. perdido',data:losts,backgroundColor:LCOLS.slice(0,state.phases.length),borderRadius:0,borderSkipped:false}
-  ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-    scales:{
-      x:{stacked:true,max:C,ticks:{color:'#8b92b8',font:{size:10}},grid:{color:'rgba(46,51,80,.5)'},
-         title:{display:true,text:`Ciclo: ${C}s`,color:'#8b92b8',font:{size:10}}},
-      y:{stacked:true,ticks:{color:'#8b92b8',font:{size:11}},grid:{display:false}}
-    },
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>{
-      const i=ctx.dataIndex;
-      return ctx.datasetIndex===0?` g ef: ${greens[i]}s | g/C: ${((greens[i]/C)*100).toFixed(1)}%`:` T. perdido: ${losts[i]}s`;
-    }}}}
-  }});
+// ── FLOW RESOLVERS ────────────────────────────────────────────────────────────
+function flowFor(lg) {
+  let base = activeYear === 'future' ? flowFut(lg) : (lg.lane_group_flow || 0);
+  return Math.round(base * sensitivityMult);
+}
+function flowBase(lg) { return lg.lane_group_flow || 0; }
+function flowFut(lg) {
+  const base = lg.lane_group_flow || 0;
+  if (!base) return 0;
+  const vCur = lg.volume_vph || 0;
+  const vFut = lg.future_vph != null ? lg.future_vph : vCur;
+  if (vCur > 0) return Math.round(base * (vFut / vCur));
+  if (vFut > 0) return vFut;
+  return base;
 }
 
-// ── APPROACH TABS ─────────────────────────────────────────────────────────────
-function renderAllTabs(){DIRS.forEach(d=>renderTab(d));}
-function renderTab(dir){
-  const ap=state.approaches[dir];
-  const phOpts=(sel)=>state.phases.map((_,i)=>`<option value="${i}"${sel===i?' selected':''}>Fase ${i+1}</option>`).join('');
-  const cont=document.getElementById(`tab-${dir}`);if(!cont)return;
-  cont.innerHTML=`
-    <div class="tr"><input type="checkbox" id="en-${dir}" ${ap.enabled?'checked':''} onchange="state.approaches['${dir}'].enabled=this.checked;renderTab('${dir}')"><label for="en-${dir}">Acceso activo</label></div>
-    ${ap.enabled?`
-    <div class="g2" style="margin-top:8px">
-      <div><label>Tipo Llegada (AT)</label>
-        <select onchange="state.approaches['${dir}'].arrivalType=+this.value">
-          ${[1,2,3,4,5,6].map(t=>`<option value="${t}"${ap.arrivalType===t?' selected':''}>${t} — ${['Muy desfavorable','Desfavorable','Aleatorio','Favorable','Muy favorable','Coordinado'][t-1]}</option>`).join('')}
-        </select>
-      </div>
-      <div style="display:flex;align-items:flex-end;padding-bottom:2px">
-        <span style="font-size:11px;color:var(--tx2)">PF = <strong style="color:var(--acc)">${PF[ap.arrivalType]}</strong></span>
-      </div>
-    </div>
-    <hr class="sep">
-    ${MVS.map(mv=>{
-      const m=ap.movements[mv];return`
-      <div class="mvc">
-        <h4><div class="tr" style="margin:0"><input type="checkbox" id="en-${dir}-${mv}" ${m.enabled?'checked':''}
-          onchange="state.approaches['${dir}'].movements['${mv}'].enabled=this.checked;renderTab('${dir}')">
-          <label for="en-${dir}-${mv}" style="font-weight:700;font-size:12px">${MI[mv]} ${ML[mv]}</label></div></h4>
-        ${m.enabled?`
-        <div class="g5">
-          <div><label>Vol (veh/h)</label><input type="number" value="${m.volume}" min="0" max="9999" oninput="state.approaches['${dir}'].movements['${mv}'].volume=+this.value"></div>
-          <div><label>Carriles</label><input type="number" value="${m.lanes}" min="1" max="6" oninput="state.approaches['${dir}'].movements['${mv}'].lanes=+this.value"></div>
-          <div><label>Cap/carril</label><input type="number" value="${m.capacity}" min="100" max="2200" step="50" oninput="state.approaches['${dir}'].movements['${mv}'].capacity=+this.value"></div>
-          <div><label>%V. Pesados</label><input type="number" value="${m.phv}" min="0" max="50" step="1" oninput="state.approaches['${dir}'].movements['${mv}'].phv=+this.value"></div>
-          <div><label>Fase</label><select onchange="state.approaches['${dir}'].movements['${mv}'].phase=+this.value">${phOpts(m.phase)}</select></div>
-        </div>
-        <div class="g3" style="margin-top:7px">
-          <div><label>PHF</label><input type="number" value="${m.phf}" min=".5" max="1" step=".01" oninput="state.approaches['${dir}'].movements['${mv}'].phf=+this.value"></div>
-          ${mv==='RT'?`<div><label>Giro Libre</label><select onchange="state.approaches['${dir}'].movements['${mv}'].freeRight=(this.value==='true')"><option value="false"${!m.freeRight?' selected':''}>No</option><option value="true"${m.freeRight?' selected':''}>Sí (isla)</option></select></div>`:
-            mv==='LT'?`<div><label>Protección</label><select onchange="state.approaches['${dir}'].movements['${mv}'].ltProtected=(this.value==='true')"><option value="true"${m.ltProtected?' selected':''}>Protegido</option><option value="false"${!m.ltProtected?' selected':''}>Permitido</option></select></div>`:
-            `<div></div>`}
-          <div style="display:flex;align-items:flex-end;padding-bottom:2px">
-            <span style="font-size:10px;color:var(--tx2)">fHV=<strong style="color:var(--acc)">${(1/(1+m.phv/100*(ET-1))).toFixed(3)}</strong> · fLU=<strong style="color:var(--acc)">${(FLU[Math.min(m.lanes,5)]||0.938).toFixed(3)}</strong></span>
-          </div>
-        </div>`:
-        '<span style="font-size:11px;color:var(--tx2)">Movimiento desactivado</span>'}
-      </div>`;
-    }).join('')}
-    `:'<div class="infob" style="margin-top:8px">Acceso desactivado</div>'}`;
+// ── ICU ───────────────────────────────────────────────────────────────────────
+function calcICUwithFn(d, fn) {
+  const ratios = d.lane_groups
+    .filter(lg => lg.satd_flow_perm > 0 && fn(lg) > 0)
+    .map(lg => ({ g: lg.group, vs: +(fn(lg) / lg.satd_flow_perm).toFixed(4), sc: lg.sign_control }));
+  const icu = ratios.length ? +(ratios.reduce((s, r) => s + r.vs, 0) * 100).toFixed(1) : 0;
+  return { icu, los: icuLOS(icu), ratios };
+}
+function calcICU(d) { return calcICUwithFn(d, flowFor); }
+
+// ── WEBSTER ───────────────────────────────────────────────────────────────────
+function legOf(g) {
+  const dirs = ['EB','WB','NB','SB','NE','NW','SE','SW'];
+  const found = dirs.find(p => g.startsWith(p));
+  const map = {EB:'E',WB:'W',NB:'N',SB:'S',NE:'NE',NW:'NW',SE:'SE',SW:'SW'};
+  return map[found] || 'OTH';
+}
+function websterCycle(d) {
+  const lgs = d.lane_groups.filter(lg => lg.satd_flow_perm > 0 && flowFor(lg) > 0);
+  if (!lgs.length) return null;
+  const legs = {};
+  lgs.forEach(lg => {
+    const l = legOf(lg.group), vs = flowFor(lg) / lg.satd_flow_perm;
+    if (!legs[l] || vs > legs[l].vs) legs[l] = { vs, lg };
+  });
+  const Y = Object.values(legs).reduce((s, v) => s + v.vs, 0);
+  const nLegs = Object.keys(legs).length;
+  const L = nLegs * 4;
+  if (Y >= 1) return { C:120, gC_map:{}, note:'ΣY≥1 — sobresaturado, C=120s', oversat:true };
+  const C = Math.min(150, Math.max(40, Math.round((1.5*L+5)/(1-Y))));
+  const gC_map = {};
+  const ug = C - L;
+  Object.entries(legs).forEach(([l, v]) => { gC_map[l] = +(Math.max(5, Math.round(ug*(v.vs/Y)))/C).toFixed(3); });
+  return { C, gC_map, Y:+Y.toFixed(3), L, note:'C Webster='+C+'s · ΣY='+Y.toFixed(3)+' · L='+L+'s' };
 }
 
-function swTab(dir,btn){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-  DIRS.forEach(d=>{const t=document.getElementById(`tab-${d}`);if(t)t.classList.toggle('active',d===dir);});
+// ── HCM d1+d2 ─────────────────────────────────────────────────────────────────
+function hcmDelay(v, s, gC, C, X) {
+  const c = s*gC, T=0.25, k=0.5, I=1;
+  const d1 = ((1-gC)*(1-gC)*0.5*C) / (1 - Math.min(1,X)*gC);
+  const d2 = 900*T*((X-1) + Math.sqrt(Math.max(0,(X-1)*(X-1) + (8*k*I*X)/(c*T))));
+  return +(d1+d2).toFixed(1);
+}
+function calcSigHi(d) {
+  const C = d.actuated_cycle_length || d.cycle_length;
+  if (!C) return null;
+  const lgs = d.lane_groups.filter(lg => lg.vc_ratio != null && flowFor(lg) > 0);
+  if (!lgs.length) return null;
+  let tw=0, tf=0;
+  const lgR = lgs.map(lg => {
+    const vBase = lg.lane_group_flow || 0;
+    const vNow = flowFor(lg);
+    const scaleFactor = vBase > 0 ? vNow/vBase : 1;
+    const X = Math.min(1.5, lg.vc_ratio * scaleFactor);
+    const gC = Math.min(0.98, vNow>0 && X>0 ? vNow/(lg.satd_flow_perm*X) : 0.45);
+    const delay = hcmDelay(vNow, lg.satd_flow_perm, gC, C, X);
+    if (vNow > 0) { tw += delay*vNow; tf += vNow; }
+    return { lg, delay, los:sigLOS(delay), gC:+gC.toFixed(3), X:+X.toFixed(3) };
+  });
+  const avg = tf > 0 ? +(tw/tf).toFixed(1) : null;
+  const noteExtra = (activeYear==='future' ? ' · v/c escalado' : '') + (sensitivityMult!==1 ? ' · ×'+sensitivityMult.toFixed(1) : '');
+  return { avgDelay:avg, los:avg!=null?sigLOS(avg):null, lgResults:lgR, C, conf:'hi',
+    appr:apprSig(lgR), note:'v/c + ciclo JSON'+noteExtra };
+}
+function calcSigEst(d, conf) {
+  const wb = websterCycle(d);
+  if (!wb) return null;
+  const C = wb.C;
+  const lgs = d.lane_groups.filter(lg => lg.satd_flow_perm>0 && flowFor(lg)>0);
+  if (!lgs.length) return null;
+  let tw=0, tf=0;
+  const lgR = lgs.map(lg => {
+    const v = flowFor(lg);
+    const gC = wb.gC_map[legOf(lg.group)] || 0.40;
+    const X = Math.min(1.5, v/(lg.satd_flow_perm*gC));
+    const delay = hcmDelay(v, lg.satd_flow_perm, gC, C, X);
+    if (v > 0) { tw += delay*v; tf += v; }
+    return { lg, delay, los:sigLOS(delay), gC, X:+X.toFixed(3) };
+  });
+  const avg = tf > 0 ? +(tw/tf).toFixed(1) : null;
+  const noteExtra = (wb.oversat?' ⚠':'') + (sensitivityMult!==1?' · ×'+sensitivityMult.toFixed(1):'');
+  return { avgDelay:avg, los:avg!=null?sigLOS(avg):null, lgResults:lgR, C, conf, wb,
+    appr:apprSig(lgR), note:wb.note+noteExtra };
+}
+function calcHCM(d) {
+  if (d.control_type === 'Roundabout') return { avgDelay:null, los:null, conf:'n/a', note:'Roundabout: HCM Cap.22 no impl.' };
+  if (d.signal_delay != null) { const r = calcSigHi(d); if (r) return r; }
+  const sig = d.control_type.includes('Pretimed') || d.control_type.includes('Actuated');
+  const result = sig ? calcSigEst(d,'md') : calcSigEst(d,'lo');
+  return result || { avgDelay:null, los:null, conf:'lo', note:'Sin datos suficientes.' };
 }
 
-// ── CORE CALC ─────────────────────────────────────────────────────────────────
-function calculate(){
-  const C=+document.getElementById('cycleLen').value||90;
-  const phases=state.phases;
-  const res={byApproach:{},hcm:{},icu:{},warnings:[],recs:[]};
-  let twD=0,tV=0;
-  // ICU: track critical v/s per phase
-  const icuPhaseVS=Array(phases.length).fill(0);
-
-  DIRS.forEach(dir=>{
-    const ap=state.approaches[dir];if(!ap.enabled)return;
-    let apWD=0,apV=0;
-    const apR={movements:{},approachDelay:0,approachLOS:'',totalVol:0};
-
-    MVS.forEach(mv=>{
-      const m=ap.movements[mv];if(!m.enabled||m.volume<=0)return;
-      if(mv==='RT'&&m.freeRight){
-        const v=m.volume/m.phf;
-        apR.movements[mv]={v:Math.round(v),c:999,s:999,X:0,d1:0,d2:0,delay:0,los:'A',lanes:m.lanes,freeRight:true};
-        apV+=v;return;
-      }
-      const ph=phases[m.phase]||phases[0];
-      const g=Math.max(1,ph.green-ph.lost),gC=g/C;
-      const v=m.volume/m.phf;
-      // fHV
-      const fHV=1/(1+(m.phv/100)*(ET-1));
-      // fLU
-      const fLU=FLU[Math.min(m.lanes,5)]||0.938;
-      // adjusted saturation flow
-      const s_lane=m.capacity*fHV*fLU;
-      const s=s_lane*m.lanes;
-      const c=s*gC;
-      const X=c>0?v/c:99;
-      // d1
-      const dn=1-Math.min(1,X)*gC;
-      const d1raw=dn>0?(0.5*C*Math.pow(1-gC,2))/dn:C/2;
-      const d1=d1raw*(PF[ap.arrivalType]||1);
-      // d2
-      const T=0.25,k=0.5,I=1.0;
-      const d2=900*T*((X-1)+Math.sqrt(Math.max(0,Math.pow(X-1,2)+(8*k*I*X)/(c*T))));
-      const delay=d1+d2,los=getLOS(delay);
-      apWD+=delay*v;apV+=v;
-      // ICU: accumulate critical v/s per phase (max per phase across all movements)
-      const vs=s>0?v/s:0;
-      if(vs>icuPhaseVS[m.phase])icuPhaseVS[m.phase]=vs;
-      apR.movements[mv]={v:Math.round(v),s:Math.round(s),c:Math.round(c),X:+X.toFixed(3),d1:+d1.toFixed(1),d2:+d2.toFixed(1),delay:+delay.toFixed(1),los,lanes:m.lanes,fHV:+fHV.toFixed(3),fLU:+fLU.toFixed(3)};
-      if(X>1.0)res.warnings.push(`${DL[dir]} — ${ML[mv]}: v/c = ${X.toFixed(2)} → SOBRESATURADO`);
-      else if(X>0.85)res.warnings.push(`${DL[dir]} — ${ML[mv]}: v/c = ${X.toFixed(2)} — carga alta`);
-      if(gC<0.10)res.warnings.push(`${DL[dir]} — ${ML[mv]}: g/C = ${gC.toFixed(3)} muy bajo`);
+// ── TWSC ──────────────────────────────────────────────────────────────────────
+function calcTWSC(d) {
+  if (d.signal_delay != null) return null;
+  const mvts = d.lane_groups
+    .filter(lg => (lg.sign_control==='Stop' || lg.sign_control==='Yield') && lg.lane_group_flow>0)
+    .map(lg => {
+      const v=lg.lane_group_flow, s=lg.satd_flow_perm;
+      if (!s) return { lg, r:null };
+      const vs = v/s;
+      const Cp = Math.max(30, s*Math.exp(-3.5*vs));
+      const X = v/Cp;
+      const T = 0.25;
+      const delay = +(3600/Cp + 900*T*((X-1)+Math.sqrt(Math.max(0,(X-1)*(X-1)+(3600*X)/(Cp*Cp*T))))+5).toFixed(1);
+      return { lg, r:{ delay, los:twscLOS(delay), Cp:Math.round(Cp), vc:+X.toFixed(3) } };
     });
-    if(apV>0){
-      const ad=apWD/apV;
-      apR.approachDelay=+ad.toFixed(1);apR.approachLOS=getLOS(ad);apR.totalVol=Math.round(apV);
-      res.byApproach[dir]=apR;twD+=apWD;tV+=apV;
-    }
-  });
-
-  // HCM intersection delay
-  const iDelay=tV>0?twD/tV:0;
-  res.hcm={delay:+iDelay.toFixed(1),los:getLOS(iDelay),totalVol:Math.round(tV)};
-
-  // ICU = sum of critical v/s ratios / (1 - lost_time/C)
-  const totalLost=phases.reduce((a,p)=>a+p.lost,0);
-  const icuUtil=icuPhaseVS.reduce((a,v)=>a+v,0)/Math.max(0.01,(1-totalLost/C));
-  res.icu={util:+icuUtil.toFixed(4),utilPct:+(icuUtil*100).toFixed(1),los:getICULOS(icuUtil)};
-
-  // Recommendations
-  if(iDelay>80)res.recs.push('LOS F (HCM): amplía ciclo, agrega carriles o redistribuye volúmenes.');
-  else if(iDelay>55)res.recs.push('LOS E (HCM): aumenta verde en accesos críticos o revisa geometría.');
-  else if(iDelay>35)res.recs.push('LOS D (HCM): optimiza distribución de verde entre fases.');
-  if(icuUtil>0.91)res.recs.push('ICU > 91%: intersección operando sobre capacidad según método ICU.');
-  else if(icuUtil>0.82)res.recs.push('ICU 82–91%: capacidad límite — monitorear en hora pico.');
-  Object.entries(res.byApproach).forEach(([d,a])=>{
-    if(a.approachLOS==='F')res.recs.push(`Acceso ${DL[d]}: LOS F — revisa cap/carril o reasigna verde.`);
-  });
-  if(res.recs.length===0&&iDelay<=35)res.recs.push('Intersección operando con buen nivel de servicio en ambos métodos.');
-
-  renderResults(res);drawDiagram(res);window._lastRes=res;
+  if (!mvts.length) return null;
+  const worst = mvts.filter(m=>m.r).reduce((w,m)=>(!w||m.r.delay>w.r.delay)?m:w, null);
+  return { mvts, worst, appr:apprTWSC(d,mvts) };
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function renderResults(res){
-  const panel=document.getElementById('resPanel');
-  const hc=res.hcm,ic=res.icu;
-  const hCol=losColor(hc.los),iCol=losColor(ic.los);
-  let html=`<div class="ptitle">📊 Resultados LOS</div>`;
-  // Dual strip HCM + ICU
-  html+=`<div class="dual-strip">
-    <div class="dcard" style="border-color:${hCol}44">
-      <div class="dlabel">HCM 7 — Demora</div>
-      <div class="dval" style="color:${hCol}">${hc.los}</div>
-      <div class="dsub">${hc.delay} seg/veh promedio</div>
-    </div>
-    <div class="dcard" style="border-color:${iCol}44">
-      <div class="dlabel">ICU — Utilización</div>
-      <div class="dval" style="color:${iCol}">${ic.los}</div>
-      <div class="dsub">${ic.utilPct}% capacidad usada</div>
-    </div>
-  </div>`;
-  // Note on method difference
-  if(hc.los!==ic.los){
-    html+=`<div class="warn" style="margin-bottom:10px"><span>ℹ</span>HCM reporta LOS <strong>${hc.los}</strong> y ICU reporta LOS <strong>${ic.los}</strong>. Diferencia metodológica: HCM mide demora percibida; ICU mide utilización global de capacidad.</div>`;
+// ── APPROACH ──────────────────────────────────────────────────────────────────
+function apprSig(lgR) {
+  const legs = {};
+  lgR.forEach(({lg, delay}) => {
+    const l = legOf(lg.group);
+    if (!legs[l]) legs[l] = { tw:0, tf:0 };
+    const d = delay || (lg.control_delay||0);
+    if (d && lg.lane_group_flow>0) { legs[l].tw += d*lg.lane_group_flow; legs[l].tf += lg.lane_group_flow; }
+  });
+  return Object.entries(legs).map(([l,v]) => {
+    const a = v.tf>0 ? +(v.tw/v.tf).toFixed(1) : null;
+    return { leg:l, avgDelay:a, los:a!=null?sigLOS(a):null };
+  });
+}
+function apprTWSC(d, mvts) {
+  const legs = {};
+  d.lane_groups.forEach(lg => {
+    if (!lg.lane_group_flow) return;
+    const l = legOf(lg.group);
+    if (!legs[l]) legs[l] = { tw:0, tf:0 };
+    const sc = lg.sign_control==='Stop' || lg.sign_control==='Yield';
+    const mv = mvts.find(x => x.lg.group===lg.group);
+    const dly = sc ? (mv&&mv.r ? mv.r.delay : null) : 1.5;
+    if (dly != null) { legs[l].tw += dly*lg.lane_group_flow; legs[l].tf += lg.lane_group_flow; }
+  });
+  return Object.entries(legs).map(([l,v]) => {
+    const a = v.tf>0 ? +(v.tw/v.tf).toFixed(1) : null;
+    return { leg:l, avgDelay:a, los:a!=null?twscLOS(a):null };
+  });
+}
+function lgLOS_disp(lg, isSig, twscR) {
+  if (lg.los) return lg.los;
+  const vs = lg.satd_flow_perm>0 && lg.lane_group_flow>0 ? lg.lane_group_flow/lg.satd_flow_perm : 0;
+  if (!vs) return null;
+  if (isSig) return vs<=0.3?'A':vs<=0.45?'B':vs<=0.6?'C':vs<=0.75?'D':vs<=0.9?'E':'F';
+  if ((lg.sign_control==='Stop'||lg.sign_control==='Yield') && twscR) {
+    const m = twscR.mvts.find(x => x.lg.group===lg.group);
+    if (m && m.r) return m.r.los;
   }
-  // Warnings
-  if(res.warnings.length){html+=`<div style="margin-bottom:10px">`;res.warnings.forEach(w=>html+=`<div class="warn"><span>⚠</span>${w}</div>`);html+=`</div>`;}
-  // Table
-  html+=`<table class="rtable"><thead><tr><th>Acceso</th><th>Mov.</th><th>v</th><th>s·fHV·fLU</th><th>v/c</th><th>Demora</th><th>LOS</th></tr></thead><tbody>`;
-  DIRS.forEach(dir=>{
-    const ap=res.byApproach[dir];if(!ap)return;
-    const ents=Object.entries(ap.movements);
-    ents.forEach(([mv,m],mi)=>{
-      const pct=Math.min(100,m.X*100),vc=m.X>1?'#ef4444':m.X>0.85?'#f97316':'#4f6ef7';
-      html+=`<tr>
-        ${mi===0?`<td rowspan="${ents.length}" style="font-weight:700" class="d${dir}">${DL[dir]}<br>
-          <span class="lbadge l${ap.approachLOS}" style="margin-top:4px">${ap.approachLOS}</span><br>
-          <span style="font-size:10px;color:var(--tx2)">${ap.approachDelay}s</span></td>`:''}
-        <td>${MI[mv]} ${ML[mv]}${m.freeRight?' <span style="font-size:9px;color:var(--losA)">(libre)</span>':''}</td>
-        <td>${m.v}</td>
-        <td style="font-size:10px">${m.freeRight?'—':m.s}<br>${m.fHV?`<span style="color:var(--tx2)">fHV:${m.fHV} fLU:${m.fLU}</span>`:''}</td>
-        <td>${m.freeRight?'—':m.X.toFixed(2)}${!m.freeRight?`<div class="vcbar"><div class="vcfill" style="width:${pct}%;background:${vc}"></div></div>`:''}</td>
-        <td>${m.delay}s</td>
-        <td><span class="lbadge l${m.los}">${m.los}</span></td>
-      </tr>`;
-    });
-  });
-  html+=`</tbody></table>`;
-  if(res.recs.length){html+=`<div style="margin-top:11px">`;res.recs.forEach(r=>html+=`<div class="rec"><span>💡</span>${r}</div>`);html+=`</div>`;}
-  panel.innerHTML=html;
+  return vs<=0.2?'A':vs<=0.4?'B':vs<=0.6?'C':vs<=0.75?'D':vs<=0.9?'E':'F';
 }
 
-// ── CANVAS ────────────────────────────────────────────────────────────────────
-function drawDiagram(res){
-  const cv=document.getElementById('iCanvas'),ctx=cv.getContext('2d');
-  const W=cv.width,H=cv.height,cx=W/2,cy=H/2,rw=48,ar=32;
-  ctx.clearRect(0,0,W,H);ctx.fillStyle='#181b2a';ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#252840';ctx.fillRect(cx-rw,0,rw*2,H);ctx.fillRect(0,cy-rw,W,rw*2);
-  ctx.fillStyle='#2e3250';ctx.fillRect(cx-rw,cy-rw,rw*2,rw*2);
-  ctx.setLineDash([7,7]);ctx.strokeStyle='#44496a';ctx.lineWidth=1.2;
-  [[cx,0,cx,cy-rw],[cx,cy+rw,cx,H],[0,cy,cx-rw,cy],[cx+rw,cy,W,cy]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
-  ctx.setLineDash([]);
-  const pos={N:{x:cx,y:ar+6},S:{x:cx,y:H-ar-6},E:{x:W-ar-8,y:cy},W:{x:ar+8,y:cy}};
-  function hxC(c){return{A:'#22c55e',B:'#86efac',C:'#facc15',D:'#f97316',E:'#ef4444',F:'#7f1d1d'}[c]||'#555';}
-  DIRS.forEach(dir=>{
-    const p=pos[dir],ap=res?.byApproach[dir],l=ap?.approachLOS,hc=hxC(l);
-    ctx.beginPath();ctx.arc(p.x,p.y,ar,0,Math.PI*2);
-    ctx.fillStyle=l?hc+'28':'#ffffff08';ctx.fill();
-    ctx.strokeStyle=l?hc:'#444';ctx.lineWidth=2;ctx.stroke();
-    ctx.textAlign='center';
-    ctx.fillStyle=l?hc:'#666';ctx.font='bold 10px Segoe UI';ctx.fillText(DL[dir].substring(0,3).toUpperCase(),p.x,p.y-7);
-    if(l){ctx.font='bold 16px Segoe UI';ctx.fillStyle=hc;ctx.fillText(l,p.x,p.y+5);
-      ctx.font='9px Segoe UI';ctx.fillStyle='#aaa';ctx.fillText(ap.approachDelay+'s',p.x,p.y+17);}
-    else{ctx.font='10px Segoe UI';ctx.fillStyle='#555';ctx.fillText(state.approaches[dir].enabled?'—':'OFF',p.x,p.y+5);}
-  });
-  // Center — show both
-  if(res){
-    const hcl=res.hcm.los,icl=res.icu.los,hch=hxC(hcl),ich=hxC(icl);
-    ctx.beginPath();ctx.arc(cx,cy,20,0,Math.PI*2);ctx.fillStyle=hch+'44';ctx.fill();
-    ctx.strokeStyle=hch;ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle=hch;ctx.font='bold 18px Segoe UI';ctx.textAlign='center';ctx.fillText(hcl,cx,cy+6);
-    ctx.fillStyle='#aaa';ctx.font='8px Segoe UI';ctx.fillText('HCM',cx,cy-12);
-    // ICU mini badge top-right
-    ctx.beginPath();ctx.arc(cx+22,cy-22,12,0,Math.PI*2);ctx.fillStyle=ich+'66';ctx.fill();
-    ctx.strokeStyle=ich;ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=ich;ctx.font='bold 11px Segoe UI';ctx.fillText(icl,cx+22,cy-19);
-    ctx.fillStyle='#aaa';ctx.font='7px Segoe UI';ctx.fillText('ICU',cx+22,cy-30);
-  } else {
-    ctx.fillStyle='#555';ctx.font='bold 10px Segoe UI';ctx.textAlign='center';ctx.fillText('LOS',cx,cy+4);
+// ── BADGES ────────────────────────────────────────────────────────────────────
+function confBadge(c) {
+  if (c==='hi') return '<span class="conf conf-hi">● Alta</span>';
+  if (c==='md') return '<span class="conf conf-md">◐ Media</span>';
+  if (c==='lo') return '<span class="conf conf-lo">○ Baja</span>';
+  return '<span class="conf" style="background:#1a1a1a;color:#555;border:1px solid #333">— N/A</span>';
+}
+function confLabel(c){ return c==='hi'?'Alta':c==='md'?'Media':c==='lo'?'Baja':'N/A'; }
+function bd(l, big) {
+  if (!l) return '<span class="badge NA'+(big?' lg':'')+'">—</span>';
+  return '<span class="badge '+l+(big?' lg':'')+'">'+l+'</span>';
+}
+function ctTag(ct) {
+  const c = ct.includes('Pretimed')||ct.includes('Actuated')?'tS':ct==='Roundabout'?'tR':ct==='Multiple'?'tM':'tU';
+  return '<span class="tag '+c+'">'+ct+'</span>';
+}
+function dChip(r, c, cont) {
+  if (c == null) return '<span class="chip na">N/D</span>';
+  if (cont) {
+    const d=Math.abs(r-c), p=r?d/Math.abs(r)*100:0;
+    const cl = p<2?'ok':p<8?'warn':'err';
+    const s = c>r?'+':c<r?'−':'';
+    return '<span class="chip '+cl+'">'+s+d.toFixed(1)+' ('+p.toFixed(0)+'%)</span>';
   }
-  ['A','B','C','D','E','F'].forEach((l,i)=>{ctx.fillStyle=hxC(l);ctx.font='bold 9px Segoe UI';ctx.textAlign='center';ctx.fillText(l,18+i*22,H-7);});
-  ctx.fillStyle='#555';ctx.font='9px Segoe UI';ctx.textAlign='left';ctx.fillText('LOS:',0,H-7);
+  return '<span class="chip '+(r===c?'ok':'err')+'">'+(r===c?'✓':'✗ '+c)+'</span>';
 }
 
-// ── EXPORT ────────────────────────────────────────────────────────────────────
-function exportCSV(){
-  const res=window._lastRes;if(!res){alert('Primero calcula el LOS.');return;}
-  const rows=[['Acceso','Movimiento','Flujo v','s ajustado','fHV','fLU','v/c','d1(s)','d2(s)','Demora(s)','LOS HCM'],
-    ['INTERSECCIÓN','HCM LOS','','','','','','','',res.hcm.delay,res.hcm.los],
-    ['INTERSECCIÓN','ICU LOS','ICU%',res.icu.utilPct+'%','','','','','','',res.icu.los]];
-  DIRS.forEach(dir=>{
-    const ap=res.byApproach[dir];if(!ap)return;
-    Object.entries(ap.movements).forEach(([mv,m])=>{
-      rows.push([DL[dir],ML[mv],m.v,m.s,m.fHV,m.fLU,m.X,m.d1,m.d2,m.delay,m.los]);
-    });
-    rows.push([DL[dir]+' — ACCESO','','','','','','','',ap.approachDelay,ap.approachLOS]);
+// ── BUILD RESULTS ─────────────────────────────────────────────────────────────
+function buildResults() {
+  results = D.intersections.map(d => {
+    const icuCalc   = calcICU(d);
+    const icuBase   = calcICUwithFn(d, flowBase);
+    const icuFuture = calcICUwithFn(d, flowFut);
+    const hcmR  = calcHCM(d);
+    const twscR = calcTWSC(d);
+    const isSig = d.signal_delay != null;
+    const pLOS  = isSig && hcmR.los && hcmR.conf==='hi'
+      ? { method:'HCM', los:hcmR.los, val:hcmR.avgDelay+'s' }
+      : { method:'ICU', los:icuCalc.los, val:icuCalc.icu+'%' };
+    const discr = (d.icu_los !== icuCalc.los) ||
+      (d.signal_los && d.signal_los !== hcmR.los && hcmR.conf==='hi');
+    return {
+      id:d.id, label:d.label, ct:d.control_type,
+      ir:d.icu, ic:icuCalc.icu, ilr:d.icu_los, ilc:icuCalc.los,
+      sd:d.signal_delay, cd:hcmR.avgDelay, sl:d.signal_los, cl:hcmR.los,
+      conf:hcmR.conf, websterC:hcmR.C,
+      icuBase, icuFuture,
+      icuDelta: +(icuFuture.icu - icuBase.icu).toFixed(1),
+      pLOS, discr, icuR:icuCalc, hcmR, twscR, d
+    };
   });
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));
-  a.download='LOS_auditoria.csv';a.click();
 }
 
-// ── INTERSECTION TYPE ─────────────────────────────────────────────────────────
-function onIntTypeChange(){
-  const sig = document.getElementById('intType').value === 'signalized';
-  document.getElementById('sig-panel').style.display    = sig ? '' : 'none';
-  document.getElementById('unsig-panel').style.display  = sig ? 'none' : '';
-  document.getElementById('unsig-method-wrap').style.display = sig ? 'none' : '';
-  // Hide calculate button label hint
-  if(!sig){ renderUnsigPanel(); calcUnsig(); }
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function swTab(t, el) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('page-'+t).classList.add('active');
 }
 
-function renderUnsigPanel(){
-  const m = document.getElementById('unsigMethod').value;
-  const info = {
-    yield: '⚠ Intersección con ceda el paso — el movimiento menor cede ante el flujo mayor. Se calcula capacidad potencial por brechas (HCM Cap. 20).',
-    free:  '✓ Paso libre — sin control formal. La demora es prácticamente cero. Se reporta LOS A por convención.',
-    stop:  '🛑 Alto total — todos los accesos se detienen. Demora calculada por método de 2-vías o 4-vías (HCM Cap. 20).'
+// ── SUMMARY ───────────────────────────────────────────────────────────────────
+function setFilt(f, btn) {
+  filt = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSum();
+}
+function doSort(k){ srt = { k, asc: srt.k===k ? !srt.asc : true }; renderSum(); }
+
+function renderSum() {
+  const q = (document.getElementById('srch')||{}).value || '';
+  const ql = q.toLowerCase();
+  let rows = [...results];
+  if (filt==='Sig')   rows = rows.filter(r => r.sd != null);
+  if (filt==='UnSig') rows = rows.filter(r => r.sd == null);
+  if (filt==='Crit')  rows = rows.filter(r => r.ic >= 90);
+  if (filt==='Diff')  rows = rows.filter(r => r.discr);
+  if (filt==='Hi')    rows = rows.filter(r => r.conf === 'hi');
+  if (ql) rows = rows.filter(r => r.label.includes(ql) || r.ct.toLowerCase().includes(ql));
+  rows.sort((a, b) => {
+    let va=a[srt.k], vb=b[srt.k];
+    if (va==null) va=-Infinity; if (vb==null) vb=-Infinity;
+    return srt.asc ? (va>vb?1:-1) : (va<vb?1:-1);
+  });
+  const sig  = results.filter(r => r.sd != null).length;
+  const crit = results.filter(r => r.ic >= 90).length;
+  const diff = results.filter(r => r.discr).length;
+  const hi   = results.filter(r => r.conf === 'hi').length;
+  const avg  = results.length ? +(results.reduce((s,r)=>s+r.ic,0)/results.length).toFixed(1) : 0;
+  const multInfo = sensitivityMult!==1
+    ? ' · <span style="color:'+(sensitivityMult>1?'#f44336':'#4caf50')+'">×'+sensitivityMult.toFixed(1)+' sensibilidad</span>' : '';
+  const yrLabel = activeYear==='future'
+    ? '<span style="color:#ffc107">2030</span>'
+    : '<span style="color:#4caf50">2025</span>';
+
+  document.getElementById('sstats').innerHTML =
+    '<div class="schip"><b>'+results.length+'</b> intersecciones</div>'+
+    '<div class="schip"><b>'+sig+'</b> semaforizadas</div>'+
+    '<div class="schip"><b>'+crit+'</b> ICU calc ≥90%</div>'+
+    '<div class="schip"><b>'+diff+'</b> discrepancias</div>'+
+    '<div class="schip"><b>'+hi+'</b> HCM alta</div>'+
+    '<div class="schip">ICU calc prom. <b>'+avg+'%</b></div>'+
+    '<div class="schip">Año: '+yrLabel+multInfo+'</div>'+
+    '<div class="schip">mostrando <b>'+rows.length+'</b></div>';
+
+  const ORDER = 'ABCDEFGH';
+  let h = '';
+  rows.forEach(r => {
+    const multPill = sensitivityMult!==1
+      ? '<span class="'+(sensitivityMult>1?'delta-up':'delta-dn')+'">×'+sensitivityMult.toFixed(1)+'</span>' : '';
+    const deltaPill = r.icuDelta!==0
+      ? '<span class="'+(r.icuDelta>0?'delta-up':'delta-dn')+'">'+(r.icuDelta>0?'+':'')+r.icuDelta+'%</span>' : '';
+    const lb=r.icuBase.los, lf=r.icuFuture.los;
+    const idxB=ORDER.indexOf(lb), idxF=ORDER.indexOf(lf);
+    const losChg = lb===lf
+      ? '<span class="delta-eq">= '+lf+'</span>'
+      : (idxF>idxB
+        ? '<span class="delta-up">↑'+lb+'→'+lf+'</span>'
+        : '<span class="delta-dn">↓'+lb+'→'+lf+'</span>');
+    const apprList = (r.hcmR&&r.hcmR.appr ? r.hcmR.appr : [])
+      .concat(!r.hcmR.appr && r.twscR&&r.twscR.appr ? r.twscR.appr : []);
+    const apprStr = apprList.map(a => '<b style="color:'+lc(a.los)+'">'+a.leg+':'+(a.los||'?')+'</b>').join(' ') || '—';
+    const rowCls  = r.ic>=90 ? 'class="crit-row"' : r.discr ? 'class="warn-row"' : '';
+    const cyc = r.websterC
+      ? (r.conf==='hi'
+        ? '<span style="color:#4caf50">'+r.websterC+'s✓</span>'
+        : '<span style="color:#ffc107">'+r.websterC+'s~</span>')
+      : '—';
+    h += '<tr '+rowCls+'>'+
+      '<td style="font-weight:700;color:#90caf9">'+r.label+'</td>'+
+      '<td>'+r.ct+ctTag(r.ct)+'</td>'+
+      '<td style="color:'+gc(r.ir)+';font-weight:700">'+r.ir+'%</td>'+
+      '<td style="color:'+gc(r.ic)+';font-weight:700">'+r.ic+'%'+multPill+'</td>'+
+      '<td>'+dChip(r.ir,r.ic,true)+'</td>'+
+      '<td>'+bd(r.ilr)+'</td>'+
+      '<td>'+bd(r.ilc)+losChg+'</td>'+
+      '<td>'+(r.sd!=null ? r.sd+'s' : '<span style="color:#333">—</span>')+'</td>'+
+      '<td style="color:'+(r.cd!=null?lc(r.cl):'#555')+';font-weight:700">'+(r.cd!=null?r.cd+'s':'—')+'</td>'+
+      '<td>'+bd(r.sl)+'</td>'+
+      '<td>'+(r.cl ? bd(r.cl)+(r.sd==null?'<span style="font-size:8px;color:#555">(est)</span>':'') : '—')+'</td>'+
+      '<td>'+confBadge(r.conf)+'</td>'+
+      '<td>'+cyc+'</td>'+
+      '<td style="font-size:11px">'+apprStr+'</td>'+
+      '<td><button onclick="goDet('+r.id+')" style="padding:3px 8px;background:#1e3a5a;border:1px solid #4a90d9;border-radius:4px;color:#90caf9;cursor:pointer;font-size:10px">→</button></td>'+
+      '</tr>';
+  });
+  document.getElementById('tbody').innerHTML = h;
+}
+
+// ── DIAGRAM ───────────────────────────────────────────────────────────────────
+function dirSlot(g) {
+  const dirs = ['EB','WB','NB','SB','NE','NW','SE','SW'];
+  const found = dirs.find(p => g.startsWith(p));
+  const map = {EB:'E',WB:'W',NB:'N',SB:'S',NE:'NE',NW:'NW',SE:'SE',SW:'SW'};
+  return map[found] || 'C';
+}
+function buildDiag(d, icuR, hcmR, twscR, pLOS) {
+  const W=440, H=400, cx=W/2, cy=H/2;
+  const isSig = d.signal_delay != null;
+  const ic = lc(pLOS.los);
+  const A = {
+    N:{x:cx,y:68}, S:{x:cx,y:H-68}, E:{x:W-68,y:cy}, W:{x:68,y:cy},
+    NE:{x:W-80,y:80}, NW:{x:80,y:80}, SE:{x:W-80,y:H-80}, SW:{x:80,y:H-80}, C:{x:cx,y:cy}
   };
-  document.getElementById('unsig-info').textContent = info[m];
-  const showCalc = m !== 'free';
-  document.getElementById('unsig-result').style.opacity = showCalc ? '1' : '0.4';
-  if(m === 'free'){
-    document.getElementById('ur-cp').textContent = '∞';
-    document.getElementById('ur-delay').textContent = '0';
-    document.getElementById('ur-los').textContent = 'A';
-    document.getElementById('ur-los').style.color = 'var(--losA)';
-    document.getElementById('ur-note').textContent = 'Paso libre: sin demora de control. LOS A por convención HCM.';
-  } else { calcUnsig(); }
-}
+  let s = '<svg viewBox="0 0 '+W+' '+H+'" width="420" height="380" style="max-width:100%">'+
+    '<rect width="'+W+'" height="'+H+'" fill="#0f1117"/>'+
+    '<rect x="'+(cx-28)+'" y="0" width="56" height="'+H+'" fill="#1e2538"/>'+
+    '<rect x="0" y="'+(cy-28)+'" width="'+W+'" height="56" fill="#1e2538"/>'+
+    '<rect x="'+(cx-28)+'" y="'+(cy-28)+'" width="56" height="56" fill="#252d45" stroke="'+ic+'" stroke-width="2"/>'+
+    '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" font-size="24" font-weight="900" fill="'+ic+'">'+pLOS.los+'</text>'+
+    '<text x="'+cx+'" y="'+(cy+10)+'" text-anchor="middle" font-size="7" fill="'+ic+'99">LOS</text>'+
+    '<text x="'+cx+'" y="'+(cy+21)+'" text-anchor="middle" font-size="6" fill="#444">#'+d.label+'</text>';
 
-function calcUnsig(){
-  const m   = document.getElementById('unsigMethod')?.value || 'yield';
-  if(m === 'free') return;
-  const Vc  = +document.getElementById('unsig-vmaj').value || 0;
-  const tc  = +document.getElementById('unsig-tc').value  || 6.5;
-  const tf  = +document.getElementById('unsig-tf').value  || 3.3;
-  const Vm  = +document.getElementById('unsig-vmin').value || 0;
-  const phf = +document.getElementById('unsig-phf').value || 0.92;
-  const vf  = Vm / phf; // demand flow rate minor
-
-  // HCM Potential Capacity: Cp = Vc * e^(-Vc*tc/3600) / (1 - e^(-Vc*tf/3600))
-  let Cp;
-  if(Vc === 0){ Cp = 3600/tf; }
-  else {
-    Cp = (Vc * Math.exp(-Vc * tc / 3600)) / (1 - Math.exp(-Vc * tf / 3600));
-  }
-  Cp = Math.round(Cp);
-  const X = vf / Math.max(1, Cp); // v/c
-
-  // HCM delay for TWSC/AWSC (simplified):
-  // d = 3600/Cp + 900*T*[(X-1)+sqrt((X-1)^2 + (3600/Cp)*X/(450*T))]  T=0.25
-  const T = 0.25;
-  const base = 3600 / Math.max(1, Cp);
-  const inner = Math.pow(X-1,2) + (base * X)/(450*T);
-  const delay = base + 900*T*((X-1)+Math.sqrt(Math.max(0,inner)));
-  const los = getLOS(delay);
-
-  document.getElementById('ur-cp').textContent    = Cp.toLocaleString();
-  document.getElementById('ur-delay').textContent = delay.toFixed(1);
-  document.getElementById('ur-los').textContent   = los;
-  document.getElementById('ur-los').style.color   = losColor(los);
-
-  const note = m==='stop'
-    ? `Alto total · v/c = ${X.toFixed(2)} · ${X>1?'⚠ Sobresaturado — cola residual esperada.':'Operación dentro de capacidad.'}`
-    : `Ceda el paso · Cap. potencial ${Cp} veh/h · v/c = ${X.toFixed(2)} · ${X>0.85?'⚠ Carga alta — evalúa semáforo.':'Sin necesidad de semaforización.'}`;
-  document.getElementById('ur-note').textContent = note;
-}
-
-
-// Store base volumes separately so growth is always applied to originals
-let baseVolumes = null;
-
-function applyGrowth(){
-  // Snapshot base volumes on first apply
-  if(!baseVolumes){
-    baseVolumes = {};
-    DIRS.forEach(dir=>{
-      baseVolumes[dir]={};
-      MVS.forEach(mv=>{
-        baseVolumes[dir][mv] = state.approaches[dir].movements[mv].volume;
-      });
-    });
-  }
-  let msgs=[];
-  DIRS.forEach(dir=>{
-    const pct = +document.getElementById(`gr-${dir}`).value||0;
-    if(pct===0) return;
-    const factor = 1 + pct/100;
-    MVS.forEach(mv=>{
-      const base = baseVolumes[dir][mv];
-      state.approaches[dir].movements[mv].volume = Math.round(base * factor);
-    });
-    msgs.push(`${DL[dir]}: +${pct}% → ×${factor.toFixed(2)}`);
+  const apprList = (hcmR.appr||[]).length ? (hcmR.appr||[]) : (twscR&&twscR.appr ? twscR.appr : []);
+  apprList.forEach(a => {
+    const dir = a.leg.replace('EB','E').replace('WB','W').replace('NB','N').replace('SB','S');
+    const an = A[dir] || A.C;
+    const ac = lc(a.los);
+    s += '<circle cx="'+an.x+'" cy="'+an.y+'" r="28" fill="none" stroke="'+ac+'" stroke-width="1.2" stroke-opacity=".35" stroke-dasharray="3,3"/>';
+    s += '<text x="'+an.x+'" y="'+(an.y-31)+'" text-anchor="middle" font-size="8" fill="'+ac+'" font-weight="700">'+a.leg+' '+(a.los||'?')+'</text>';
+    if (a.avgDelay) s += '<text x="'+an.x+'" y="'+(an.y+32)+'" text-anchor="middle" font-size="7" fill="#555">'+a.avgDelay+'s</text>';
   });
-  renderAllTabs();
-  const el=document.getElementById('growthMsg');
-  if(msgs.length){
-    el.style.color='#86efac';
-    el.textContent='✓ Aplicado — '+msgs.join(' · ')+'. Presiona Calcular LOS.';
-  } else {
-    el.style.color='var(--tx2)';
-    el.textContent='Sin cambios. Ingresa % de incremento por dirección y presiona Aplicar.';
-  }
-}
 
-function resetGrowth(){
-  if(baseVolumes){
-    DIRS.forEach(dir=>{
-      MVS.forEach(mv=>{
-        state.approaches[dir].movements[mv].volume = baseVolumes[dir][mv];
-      });
+  const byDir = {};
+  d.lane_groups.forEach(lg => {
+    const k = dirSlot(lg.group);
+    if (!byDir[k]) byDir[k] = [];
+    byDir[k].push(lg);
+  });
+  Object.entries(byDir).forEach(([dir, lgs]) => {
+    const an = A[dir] || A.C;
+    const n=lgs.length, sp=26;
+    const isNS = ['N','S','NE','NW','SE','SW'].includes(dir);
+    lgs.forEach((lg, i) => {
+      const off = (i-(n-1)/2)*sp;
+      const bx = isNS ? an.x+off : an.x;
+      const by = isNS ? an.y : an.y+off;
+      const l = lgLOS_disp(lg, isSig, twscR);
+      const col = lc(l);
+      const vs = lg.satd_flow_perm>0 && lg.lane_group_flow>0
+        ? (lg.lane_group_flow/lg.satd_flow_perm).toFixed(2) : '—';
+      s += '<line x1="'+cx+'" y1="'+cy+'" x2="'+bx+'" y2="'+by+'" stroke="'+col+'" stroke-width=".5" opacity=".15"/>';
+      s += '<circle cx="'+bx+'" cy="'+by+'" r="16" fill="'+col+'18" stroke="'+col+'" stroke-width="1.2"/>';
+      s += '<text x="'+bx+'" y="'+(by-3)+'" text-anchor="middle" font-size="7.5" fill="'+col+'" font-weight="700">'+(lg.group.slice(2)||lg.group)+'</text>';
+      s += '<text x="'+bx+'" y="'+(by+6)+'" text-anchor="middle" font-size="6" fill="'+col+'bb">v/s '+vs+'</text>';
+      if (l) {
+        s += '<rect x="'+(bx+11)+'" y="'+(by-17)+'" width="10" height="10" rx="2" fill="'+col+'"/>';
+        s += '<text x="'+(bx+16)+'" y="'+(by-8.5)+'" text-anchor="middle" font-size="6.5" fill="#000" font-weight="700">'+l+'</text>';
+      }
+      s += '<text x="'+bx+'" y="'+(by+18)+'" text-anchor="middle" font-size="5.5" fill="#444">'+lg.lane_group_flow+'vph</text>';
     });
-    baseVolumes=null;
+  });
+  s += '<rect x="4" y="4" width="82" height="24" rx="3" fill="#14161e" stroke="#2a3044" stroke-width=".8"/>'+
+    '<text x="45" y="12" text-anchor="middle" font-size="6.5" fill="#555">ICU rptd / calc</text>'+
+    '<text x="45" y="23" text-anchor="middle" font-size="10" fill="'+gc(d.icu)+'" font-weight="700">'+d.icu+'% / '+icuR.icu+'%</text>';
+  if (hcmR.avgDelay) {
+    s += '<rect x="4" y="32" width="82" height="24" rx="3" fill="#14161e" stroke="#2a3044" stroke-width=".8"/>'+
+      '<text x="45" y="40" text-anchor="middle" font-size="6.5" fill="#555">HCM / conf</text>'+
+      '<text x="45" y="51" text-anchor="middle" font-size="10" fill="'+lc(hcmR.los)+'" font-weight="700">'+hcmR.avgDelay+'s '+confLabel(hcmR.conf)+'</text>';
   }
-  DIRS.forEach(dir=>{ document.getElementById(`gr-${dir}`).value=0; });
-  renderAllTabs();
-  document.getElementById('growthMsg').style.color='var(--tx2)';
-  document.getElementById('growthMsg').textContent='Incremento sobre volumen base. Ej: 15 = +15% sobre volumen actual por dirección.';
+  ['A','B','C','D','E','F','G','H'].forEach((l,i) => {
+    s += '<rect x="'+(W-88+i*10)+'" y="'+(H-13)+'" width="9" height="9" rx="2" fill="'+lc(l)+'"/>'+
+      '<text x="'+(W-88+i*10+4.5)+'" y="'+(H-5)+'" text-anchor="middle" font-size="5.5" fill="#000" font-weight="700">'+l+'</text>';
+  });
+  return s + '</svg>';
 }
 
-// Wrap resetAll to also clear growth
-const _origResetAll = resetAll;
+// ── DETAIL ────────────────────────────────────────────────────────────────────
+function renderDet(id) {
+  const res = results.find(r => r.id === id);
+  if (!res) return;
+  const { d, icuR, hcmR, twscR, pLOS, icuBase, icuFuture } = res;
+  const C = hcmR.C || d.actuated_cycle_length || d.cycle_length;
+  const isSig = d.signal_delay != null;
+  const tot = d.lane_groups.reduce((s,lg) => s+(lg.lane_group_flow||0), 0);
+  const ic = lc(pLOS.los);
+  const icuCol = lc(icuR.los);
+  const hcmCol = lc(hcmR.los||'NA');
+  const ORDER = 'ABCDEFGH';
 
-function resetAll(){
-  baseVolumes=null;
-  DIRS.forEach(dir=>{ const el=document.getElementById(`gr-${dir}`); if(el) el.value=0; });
-  state={phases:defPhases(4),approaches:Object.fromEntries(DIRS.map(d=>[d,defAp()]))};
-  document.getElementById('cycleLen').value=90;document.getElementById('numPhases').value=4;document.getElementById('ctrlType').value='pretimed';
-  renderPhases();renderAllTabs();
-  document.getElementById('resPanel').innerHTML='<div class="ptitle">📊 Resultados LOS</div><div class="infob">Configura los datos y presiona <strong>Calcular LOS</strong></div>';
-  drawDiagram(null);window._lastRes=null;
-  const gm=document.getElementById('growthMsg');
-  if(gm){gm.style.color='var(--tx2)';gm.textContent='Incremento sobre volumen base. Ej: 15 = +15% sobre volumen actual por dirección.';}
+  document.getElementById('dualStrip').innerHTML =
+    '<div class="dcard" style="border-color:'+icuCol+'44">'+
+      '<div class="dlabel">ICU — '+(activeYear==='future'?'2030':'2025')+(sensitivityMult!==1?' ×'+sensitivityMult.toFixed(1):'')+'</div>'+
+      '<div class="dval" style="color:'+icuCol+'">'+icuR.los+'</div>'+
+      '<div class="dsub">'+icuR.icu+'% · rptd: '+d.icu+'% LOS '+d.icu_los+'</div>'+
+    '</div>'+
+    '<div class="dcard" style="border-color:'+hcmCol+'44">'+
+      '<div class="dlabel">HCM 7 — Demora '+confBadge(hcmR.conf)+'</div>'+
+      '<div class="dval" style="color:'+hcmCol+'">'+(hcmR.los||'—')+'</div>'+
+      '<div class="dsub">'+(hcmR.avgDelay!=null ? hcmR.avgDelay+'s/veh' : '—')+(isSig&&d.signal_delay?' · rptd: '+d.signal_delay+'s':'')+'</div>'+
+    '</div>'+
+    '<div class="dcard" style="border-color:#2a3044">'+
+      '<div class="dlabel">Proyección 2025 → 2030</div>'+
+      '<div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px">'+
+        '<div style="text-align:center"><div style="font-size:9px;color:#555">2025</div><div style="font-size:20px;font-weight:900;color:'+lc(icuBase.los)+'">'+icuBase.los+'</div><div style="font-size:9px;color:#666">'+icuBase.icu+'%</div></div>'+
+        '<div style="color:#444;font-size:16px">→</div>'+
+        '<div style="text-align:center"><div style="font-size:9px;color:#555">2030</div><div style="font-size:20px;font-weight:900;color:'+lc(icuFuture.los)+'">'+icuFuture.los+'</div><div style="font-size:9px;color:#666">'+icuFuture.icu+'%</div></div>'+
+        '<div style="text-align:center"><div style="font-size:9px;color:#555">Δ</div><div style="font-size:14px;font-weight:700;color:'+(res.icuDelta>0?'#f44336':res.icuDelta<0?'#4caf50':'#666')+'">'+(res.icuDelta>0?'+':'')+res.icuDelta+'%</div><div style="font-size:9px;color:#666">'+(ORDER.indexOf(icuFuture.los)>ORDER.indexOf(icuBase.los)?'Deterioro':'Estable')+'</div></div>'+
+      '</div>'+
+    '</div>';
+
+  document.getElementById('hero').innerHTML =
+    '<div class="hero-los" style="color:'+ic+'">'+pLOS.los+'</div>'+
+    '<div class="hero-mid">'+
+      '<h3>Int. #'+d.label+' — '+pLOS.method+' · '+d.control_type+ctTag(d.control_type)+'</h3>'+
+      '<p>'+pLOS.val+(sensitivityMult!==1?' · <span style="color:'+(sensitivityMult>1?'#f44336':'#4caf50')+'">Sensibilidad ×'+sensitivityMult.toFixed(1)+'</span>':'')+'</p>'+
+      '<p style="margin-top:3px;color:#666;font-size:9px">'+(isSig?'HCM 7 Tabla 19-7: A≤10 B≤20 C≤35 D≤55 E≤80 F>80 s/veh':'ICU: A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109%')+'</p>'+
+      (res.discr?'<p style="margin-top:4px;color:#ffc107;font-size:10px">⚠ Discrepancia vs. Synchro</p>':'')+
+    '</div>';
+
+  document.getElementById('methBox').innerHTML =
+    '<strong>HCM:</strong> '+(hcmR.note||'—')+' · <strong>ICU:</strong> Σ(v/s)×100. fHV/fLU en satd_flow_perm. '+
+    (twscR&&twscR.worst?'<strong>TWSC:</strong> '+twscR.worst.lg.group+' '+twscR.worst.r.delay+'s LOS '+twscR.worst.r.los+'.':'');
+
+  document.getElementById('cards').innerHTML =
+    '<div class="card"><div class="card-label">Intersección</div><div class="card-value" style="font-size:16px">#'+d.label+'</div><div class="card-sub">'+tot.toLocaleString()+' vph · '+d.lane_groups.length+' grupos</div></div>'+
+    '<div class="card"><div class="card-label">ICU rptd</div><div class="card-value" style="color:'+gc(d.icu)+'">'+d.icu+'%</div><div class="gbar"><div class="gfill" style="width:'+Math.min(d.icu,100)+'%;background:'+gc(d.icu)+'"></div></div><div class="card-sub">LOS '+d.icu_los+'</div></div>'+
+    '<div class="card"><div class="card-label">ICU calc</div><div class="card-value" style="color:'+gc(icuR.icu)+'">'+icuR.icu+'%</div><div class="gbar"><div class="gfill" style="width:'+Math.min(icuR.icu,100)+'%;background:'+gc(icuR.icu)+'"></div></div><div class="card-sub">LOS '+icuR.los+' '+dChip(d.icu_los,icuR.los)+'</div></div>'+
+    '<div class="card"><div class="card-label">HCM demora calc</div><div class="card-value" style="color:'+lc(hcmR.los)+'">'+(hcmR.avgDelay!=null?hcmR.avgDelay+'s':'—')+'</div><div class="card-sub">'+confBadge(hcmR.conf)+' '+(hcmR.los||'—')+'</div></div>'+
+    (isSig?'<div class="card"><div class="card-label">HCM rptd</div><div class="card-value" style="color:'+lc(d.signal_los)+'">'+d.signal_delay+'s</div><div class="card-sub">LOS '+d.signal_los+' '+dChip(d.signal_los,hcmR.los)+'</div></div>':'')+
+    '<div class="card"><div class="card-label">Ciclo</div><div class="card-value" style="font-size:16px">'+(C||'—')+'<span style="font-size:9px;color:#555"> s</span></div><div class="card-sub">'+(hcmR.conf==='hi'?'Dato real':'Webster est.')+'</div></div>';
+
+  document.getElementById('diag').innerHTML = buildDiag(d, icuR, hcmR, twscR, pLOS);
+
+  const apprList = (hcmR.appr&&hcmR.appr.length ? hcmR.appr : (twscR&&twscR.appr ? twscR.appr : []));
+  document.getElementById('apprRow').innerHTML = apprList.length
+    ? apprList.map(a => '<div class="appr-card"><div class="appr-dir">'+a.leg+'</div><div class="appr-los" style="color:'+lc(a.los)+'">'+(a.los||'?')+'</div><div class="appr-sub">'+(a.avgDelay!=null?a.avgDelay+'s':'—')+'</div></div>').join('')
+    : '<span style="color:#555;font-size:11px">Sin datos</span>';
+  document.getElementById('apprNote').textContent = isSig
+    ? 'Ponderado por flujo. HCM 7 Tabla 19-7.'
+    : 'Stop/Yield: HCM Cap.20. Free: ≈1.5s. Tabla 20-2.';
+
+  const icuRows = (icuR.ratios||[]).map(r =>
+    '<div class="arow"><span class="akey">'+r.g+' ('+r.sc+') v/s</span>'+
+    '<span class="avals"><div class="vbox"><div class="vnum" style="color:#ffc107">'+r.vs.toFixed(3)+'</div></div></span></div>'
+  ).join('');
+
+  const lgRowsHCM = (hcmR.lgResults||[]).map(({lg, delay, los, gC, X}) =>
+    '<div class="arow">'+
+      '<span class="akey">'+lg.group+' g/C='+gC+' X='+X+'</span>'+
+      '<span class="avals">'+
+        (lg.control_delay!=null?'<div class="vbox"><div class="vnum">'+lg.control_delay+'</div><div class="vlbl">rptd</div></div>':'')+
+        '<div class="vbox"><div class="vnum">'+delay+'</div><div class="vlbl">calc</div></div>'+
+        (lg.control_delay!=null?dChip(lg.control_delay,delay,true):'')+
+        bd(lg.los)+bd(los)+
+      '</span></div>'
+  ).join('');
+
+  document.getElementById('auditCols').innerHTML =
+    '<div class="panel"><div class="ptitle">Auditoría ICU</div>'+
+      '<div class="arow" style="background:#0d1a28;border-radius:4px;padding:6px;margin-bottom:6px">'+
+        '<span class="akey" style="color:#90caf9;font-weight:700">LOS ICU</span>'+
+        '<span class="avals">'+bd(d.icu_los,true)+bd(icuR.los,true)+dChip(d.icu_los,icuR.los)+'</span>'+
+      '</div>'+
+      '<div class="arow"><span class="akey">ICU (%)</span>'+
+        '<span class="avals">'+
+          '<div class="vbox"><div class="vnum">'+d.icu+'</div><div class="vlbl">rptd</div></div>'+
+          '<div class="vbox"><div class="vnum">'+icuR.icu+'</div><div class="vlbl">calc</div></div>'+
+          dChip(d.icu,icuR.icu,true)+
+        '</span></div>'+
+      icuRows+
+      '<p class="note">ICU=Σ(v/s)×100. A≤55 B≤64 C≤73 D≤82 E≤91 F≤100 G≤109 H>109</p>'+
+    '</div>'+
+    '<div class="panel"><div class="ptitle">Auditoría HCM 7</div>'+
+      '<div class="arow" style="background:#0d1a28;border-radius:4px;padding:6px;margin-bottom:4px">'+
+        '<span class="akey" style="color:#90caf9;font-weight:700">LOS HCM</span>'+
+        '<span class="avals">'+
+          (isSig?bd(d.signal_los,true):'')+
+          bd(hcmR.los,true)+
+          (isSig&&d.signal_los?dChip(d.signal_los,hcmR.los):'')+
+          confBadge(hcmR.conf)+
+        '</span>'+
+      '</div>'+
+      '<div class="arow"><span class="akey">Demora (s/veh)</span>'+
+        '<span class="avals">'+
+          (isSig&&d.signal_delay?'<div class="vbox"><div class="vnum">'+d.signal_delay+'</div><div class="vlbl">rptd</div></div>':'')+
+          '<div class="vbox"><div class="vnum">'+(hcmR.avgDelay!=null?hcmR.avgDelay:'—')+'</div><div class="vlbl">calc</div></div>'+
+          (isSig&&d.signal_delay&&hcmR.avgDelay?dChip(d.signal_delay,hcmR.avgDelay,true):'')+
+        '</span></div>'+
+      lgRowsHCM+
+      '<div class="arow"><span class="akey" style="color:#555">Ciclo</span>'+
+        '<span class="avals"><div class="vbox"><div class="vnum" style="font-size:11px">'+(C||'—')+'s</div><div class="vlbl">'+(hcmR.conf==='hi'?'real':'Webster')+'</div></div></span></div>'+
+      (hcmR.wb?'<p class="note">'+hcmR.wb.note+'</p>':'')+
+    '</div>';
+
+  const hasVC  = d.lane_groups.some(lg => lg.vc_ratio != null);
+  const hasDly = d.lane_groups.some(lg => lg.control_delay != null);
+  document.getElementById('lgSect').textContent = 'Grupos de carriles';
+  document.getElementById('lgHead').innerHTML =
+    '<th>Grupo</th><th>Vol. futuro</th><th>Satd.Flow</th><th>Flujo GC</th><th>v/s</th><th>Control</th>'+
+    (hasVC?'<th>v/c</th>':'')+
+    (hasDly?'<th>Dem. rptd</th><th>Dem. calc</th><th>Δ</th>':'') +
+    '<th>LOS rptd</th><th>LOS calc</th>';
+
+  let tb = '';
+  d.lane_groups.forEach(lg => {
+    const vs = lg.satd_flow_perm>0 && lg.lane_group_flow>0
+      ? (lg.lane_group_flow/lg.satd_flow_perm).toFixed(3) : '—';
+    const lhEntry  = (hcmR.lgResults||[]).find(r => r.lg.group===lg.group);
+    const tmEntry  = twscR ? twscR.mvts.find(x => x.lg.group===lg.group) : null;
+    const cD = lhEntry ? lhEntry.delay : (tmEntry&&tmEntry.r ? tmEntry.r.delay : null);
+    const cL = lhEntry ? lhEntry.los   : (tmEntry&&tmEntry.r ? tmEntry.r.los   : null);
+    const dl = lgLOS_disp(lg, isSig, twscR);
+    const sc = lg.sign_control==='Stop'?'#f44336':lg.sign_control==='Yield'?'#ffc107':lg.sign_control==='Free'?'#4caf50':'#888';
+    tb += '<tr>'+
+      '<td style="font-weight:700;color:#90caf9">'+lg.group+'</td>'+
+      '<td>'+(lg.future_vph!=null?lg.future_vph:'—')+'</td>'+
+      '<td>'+(lg.satd_flow_perm!=null?lg.satd_flow_perm.toLocaleString():'—')+'</td>'+
+      '<td>'+(lg.lane_group_flow!=null?lg.lane_group_flow:'—')+'</td>'+
+      '<td style="color:#ffc107">'+vs+'</td>'+
+      '<td style="color:'+sc+'">'+(lg.sign_control||'—')+'</td>'+
+      (hasVC?'<td>'+(lg.vc_ratio!=null?lg.vc_ratio:'—')+'</td>':'')+
+      (hasDly?'<td>'+(lg.control_delay!=null?lg.control_delay:'—')+'</td><td>'+(cD!=null?cD:'—')+'</td><td>'+(cD!=null?dChip(lg.control_delay||0,cD,true):'—')+'</td>':'')+
+      '<td>'+bd(lg.los)+'</td>'+
+      '<td>'+bd(dl)+'</td>'+
+      '</tr>';
+  });
+  document.getElementById('lgBody').innerHTML = tb;
+
+  const ps = document.getElementById('phSect');
+  if (d.phases && d.phases.length) {
+    ps.innerHTML = '<div class="sect">Fases</div><div class="panel"><div class="phases-wrap">'+
+      d.phases.map(p =>
+        '<div class="pchip"><div class="phl">'+p.phase+'</div><div class="phs">'+p.total_split_s+'s</div><div class="phsub">'+p.total_split_pct+'% · max G '+p.max_green_s+'s</div></div>'
+      ).join('') + '</div></div>';
+  } else {
+    ps.innerHTML = '';
+  }
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
-  renderPhases();renderAllTabs();drawDiagram(null);
-  document.getElementById('cycleLen').addEventListener('input',checkCycle);
-  setTimeout(drawPhaseChart,120);
-});
+// ── SELECTOR & INIT ───────────────────────────────────────────────────────────
+function buildSelector() {
+  const sel = document.getElementById('intSel');
+  const curVal = sel.value;
+  sel.innerHTML = '';
+  D.intersections.forEach(i => {
+    const r = results.find(x => x.id===i.id);
+    const o = document.createElement('option');
+    o.value = i.id;
+    o.textContent = 'Int. '+i.label+' · '+i.control_type+
+      ' [ICU '+i.icu+'% · HCM '+(r&&r.cd ? r.cd+'s' : 'est.')+
+      '  ('+confLabel(r&&r.conf)+')]';
+    sel.appendChild(o);
+  });
+  if (curVal) sel.value = curVal;
+  sel.removeEventListener('change', sel._changeHandler);
+  sel._changeHandler = function(){ renderDet(+sel.value); };
+  sel.addEventListener('change', sel._changeHandler);
+}
+
+function goDet(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  document.getElementById('page-detail').classList.add('active');
+  document.getElementById('intSel').value = id;
+  renderDet(id);
+}
+
+async function init() {
+  await loadData();
+  if (!D.intersections.length) return;
+  buildResults();
+  buildSelector();
+  renderSum();
+  renderDet(D.intersections[0].id);
+}
+
+init();
 </script>
 </body>
 </html>
