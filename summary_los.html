@@ -107,6 +107,12 @@ select.int-sel:focus{border-color:#4a90d9}
 .legend-box span{font-size:10px;color:#888;display:flex;align-items:center;gap:5px}
 .crit-row{background:#1b1212!important}
 .warn-row{background:#1a180a!important}
+.lovol-row{opacity:.45}
+.lovol-row:hover{opacity:.75}
+.vol-bar-wrap{display:inline-flex;align-items:center;gap:5px;min-width:90px}
+.vol-bar-bg{flex:1;height:5px;background:#1e2130;border-radius:3px;overflow:hidden;min-width:48px}
+.vol-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.vol-warn{font-size:8px;color:#ff9800;font-weight:700;white-space:nowrap}
 footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px solid #1a1f2e;margin-top:16px}
 </style>
 </head>
@@ -170,6 +176,7 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
     <button class="fbtn" onclick="setFilt('Crit',this)">Críticas ≥90%</button>
     <button class="fbtn" onclick="setFilt('Diff',this)">Con discrepancia</button>
     <button class="fbtn" onclick="setFilt('Hi',this)">HCM confianza alta</button>
+    <button class="fbtn" onclick="setFilt('LowVol',this)">Vol. bajo &lt;50</button>
   </div>
   <div class="sstats" id="sstats"></div>
   <div class="twrap">
@@ -188,6 +195,7 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
         <th>LOS HCM calc</th>
         <th>Confianza</th>
         <th>Ciclo</th>
+        <th onclick="doSort('tot')">Vol. total</th>
         <th>Accesos</th>
         <th></th>
       </tr></thead>
@@ -510,7 +518,8 @@ function buildResults() {
       conf:hcmR.conf, websterC:hcmR.C,
       icuBase, icuFuture,
       icuDelta: +(icuFuture.icu - icuBase.icu).toFixed(1),
-      pLOS, discr, icuR:icuCalc, hcmR, twscR, d
+      pLOS, discr, icuR:icuCalc, hcmR, twscR, d,
+      tot: d.lane_groups.reduce((s,lg) => s+(lg.lane_group_flow||0), 0)
     };
   });
 }
@@ -541,6 +550,7 @@ function renderSum() {
   if (filt==='Crit')  rows = rows.filter(r => r.ic >= 90);
   if (filt==='Diff')  rows = rows.filter(r => r.discr);
   if (filt==='Hi')    rows = rows.filter(r => r.conf === 'hi');
+  if (filt==='LowVol') rows = rows.filter(r => r.tot < 50);
   if (ql) rows = rows.filter(r => r.label.includes(ql) || r.ct.toLowerCase().includes(ql));
   rows.sort((a, b) => {
     let va=a[srt.k], vb=b[srt.k];
@@ -569,6 +579,8 @@ function renderSum() {
     '<div class="schip">mostrando <b>'+rows.length+'</b></div>';
 
   const ORDER = 'ABCDEFGH';
+  const maxVol = results.length ? Math.max(...results.map(r => r.tot)) : 1;
+
   let h = '';
   rows.forEach(r => {
     const multPill = sensitivityMult!==1
@@ -585,7 +597,24 @@ function renderSum() {
     const apprList = (r.hcmR&&r.hcmR.appr ? r.hcmR.appr : [])
       .concat(!r.hcmR.appr && r.twscR&&r.twscR.appr ? r.twscR.appr : []);
     const apprStr = apprList.map(a => '<b style="color:'+lc(a.los)+'">'+a.leg+':'+(a.los||'?')+'</b>').join(' ') || '—';
-    const rowCls  = r.ic>=90 ? 'class="crit-row"' : r.discr ? 'class="warn-row"' : '';
+    const isLowVol = r.tot < 50;
+    const rowCls = r.ic>=90
+      ? 'class="crit-row'+(isLowVol?' lovol-row':'')+'"'
+      : r.discr
+        ? 'class="warn-row'+(isLowVol?' lovol-row':'')+'"'
+        : isLowVol ? 'class="lovol-row"' : '';
+
+    // volume bar cell
+    const volPct  = maxVol > 0 ? Math.round((r.tot/maxVol)*100) : 0;
+    const volCol  = r.tot < 50  ? '#ff9800'
+                  : r.tot < 200 ? '#ffc107'
+                  : r.tot < 800 ? '#90caf9' : '#4caf50';
+    const volCell =
+      '<td><div class="vol-bar-wrap">'+
+        '<span style="font-size:11px;font-weight:700;color:'+volCol+';min-width:38px;text-align:right">'+r.tot.toLocaleString()+'</span>'+
+        '<div class="vol-bar-bg"><div class="vol-bar-fill" style="width:'+volPct+'%;background:'+volCol+'"></div></div>'+
+        (isLowVol ? '<span class="vol-warn">⚠ bajo</span>' : '')+
+      '</div></td>';
     const cyc = r.websterC
       ? (r.conf==='hi'
         ? '<span style="color:#4caf50">'+r.websterC+'s✓</span>'
@@ -605,6 +634,7 @@ function renderSum() {
       '<td>'+(r.cl ? bd(r.cl)+(r.sd==null?'<span style="font-size:8px;color:#555">(est)</span>':'') : '—')+'</td>'+
       '<td>'+confBadge(r.conf)+'</td>'+
       '<td>'+cyc+'</td>'+
+      volCell+
       '<td style="font-size:11px">'+apprStr+'</td>'+
       '<td><button onclick="goDet('+r.id+')" style="padding:3px 8px;background:#1e3a5a;border:1px solid #4a90d9;border-radius:4px;color:#90caf9;cursor:pointer;font-size:10px">→</button></td>'+
       '</tr>';
