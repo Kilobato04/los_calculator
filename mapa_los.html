@@ -7,181 +7,270 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-    /* ── top bar ── */
-    .topbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000}
-    .topbar h1{font-size:12px;color:#90caf9;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-right:6px}
-    .fbtn{padding:3px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
-    .fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
-    .yr-toggle{display:flex;align-items:center;gap:6px;background:#0d1220;border:1px solid #2a3044;border-radius:6px;padding:4px 10px;margin-left:auto}
-    .yr-toggle span{font-size:10px;color:#888}
-    #stats{font-size:10px;color:#555;white-space:nowrap}
+.topbar{display:flex;align-items:center;gap:7px;padding:7px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000}
+.topbar h1{font-size:11px;color:#90caf9;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-right:4px}
+.fbtn{padding:3px 9px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.yr-toggle{display:flex;align-items:center;gap:6px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:3px 9px;margin-left:auto}
+.yr-toggle span,.yr-toggle label{font-size:10px;color:#888;cursor:pointer;white-space:nowrap}
+.yr-toggle label{color:#90caf9}
+.yr-toggle input{accent-color:#4a90d9;cursor:pointer}
+#stats{font-size:10px;color:#555;white-space:nowrap;padding-left:4px}
 
-    /* ── map ── */
-    #map{flex:1;width:100%;background:#1a1f2e}
+#map{flex:1;width:100%}
 
-    /* ── tooltip ── */
-    .los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;font-family:'Segoe UI',Arial,sans-serif;min-width:180px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.6);color:#fff}
-    .los-tooltip .tt-id{font-size:11px;color:#90caf9;font-weight:700;margin-bottom:4px}
-    .los-tooltip .tt-los{font-size:28px;font-weight:900;line-height:1;margin-bottom:2px}
-    .los-tooltip .tt-row{font-size:10px;color:#888;margin-top:2px;display:flex;justify-content:space-between;gap:8px}
-    .los-tooltip .tt-row b{color:#ccc}
+/* tooltip */
+.los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;
+  font-family:'Segoe UI',Arial,sans-serif;min-width:190px;pointer-events:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.7);color:#e0e0e0}
+.tt-id{font-size:11px;color:#90caf9;font-weight:700;margin-bottom:3px}
+.tt-los{font-size:30px;font-weight:900;line-height:1;margin-bottom:3px}
+.tt-row{font-size:10px;color:#888;margin-top:2px;display:flex;justify-content:space-between;gap:8px}
+.tt-row b{color:#ccc}
+.tt-warn{font-size:9px;color:#ff9800;margin-top:4px}
+.tt-proj{font-size:9px;color:#4a90d9;margin-top:4px;font-style:italic}
 
-    /* ── legend & insights ── */
-    #legend{position:absolute;top:70px;right:10px;z-index:1000;background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:12px;width:240px;font-size:10px;max-height:calc(100vh - 100px);overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
-    #legend h3{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px}
-    .leg-section{margin-bottom:10px}
-    .leg-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
-    .leg-swatch{border-radius:50%;border:1px solid rgba(255,255,255,.2);flex-shrink:0}
-    .leg-label{font-size:10px;color:#aaa;flex:1}
-    .leg-delay{font-size:9px;color:#555;text-align:right}
-    .leg-divider{border:none;border-top:1px solid #2a3044;margin:8px 0}
+/* legend */
+#legend{position:absolute;top:54px;right:10px;z-index:1000;background:#14161eee;
+  border:1px solid #2a3044;border-radius:8px;padding:11px 13px;width:220px;
+  font-size:10px;max-height:calc(100vh - 80px);overflow-y:auto;
+  box-shadow:0 6px 24px rgba(0,0,0,.6)}
+#legend h3{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:7px}
+.leg-h{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;margin:8px 0 4px}
+.lr{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ls{border-radius:50%;border:1px solid rgba(255,255,255,.15);flex-shrink:0}
+.ll{font-size:10px;color:#aaa;flex:1}
+.ld{font-size:9px;color:#555;text-align:right}
+.lc{border-radius:50%;background:#4a90d9;opacity:.7;flex-shrink:0}
+.leg-div{border:none;border-top:1px solid #2a3044;margin:7px 0}
+.crit-item{font-size:9px;color:#ccc;line-height:1.7;padding:1px 0}
+.crit-item span{font-weight:700}
+#critical-list{margin-top:4px}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-    <h1>🚦 LOS Naranjo — 2026</h1>
-    <button class="fbtn active" onclick="setFilt('all',this)">Todas</button>
-    <button class="fbtn" onclick="setFilt('sig',this)">Semaforizadas</button>
-    <button class="fbtn" onclick="setFilt('crit',this)">Críticas (ICU ≥90%)</button>
-    <div class="yr-toggle">
-        <span>2025</span>
-        <input type="checkbox" id="yrToggle" onchange="setYear(this.checked)">
-        <label for="yrToggle" style="font-size:10px; color:#90caf9; cursor:pointer">2030 Proyección</label>
-    </div>
-    <span id="stats">Cargando datos...</span>
+  <h1>🚦 Mapa LOS · Naranjo 2026</h1>
+  <button class="fbtn active" onclick="setFilt('all',this)">Todas</button>
+  <button class="fbtn" onclick="setFilt('sig',this)">Semaforizadas</button>
+  <button class="fbtn" onclick="setFilt('crit',this)">ICU ≥ 90%</button>
+  <button class="fbtn" onclick="setFilt('lovol',this)">Vol. bajo &lt;50</button>
+  <div class="yr-toggle">
+    <span>2025</span>
+    <input type="checkbox" id="yrToggle" onchange="setYear(this.checked)">
+    <label for="yrToggle">2030</label>
+  </div>
+  <span id="stats">Cargando…</span>
 </div>
 
 <div id="map"></div>
 
 <div id="legend">
-    <h3>Nivel de Servicio (LOS)</h3>
-    <div class="leg-section">
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#4caf50"></div><span class="leg-label">A - Excelente</span><span class="leg-delay">≤55%</span></div>
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#8bc34a"></div><span class="leg-label">B - Muy Bueno</span><span class="leg-delay">64%</span></div>
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#ffc107"></div><span class="leg-label">C - Aceptable</span><span class="leg-delay">73%</span></div>
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#ff9800"></div><span class="leg-label">D - Tolerable</span><span class="leg-delay">82%</span></div>
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#ff5722"></div><span class="leg-label">E - Inestable</span><span class="leg-delay">91%</span></div>
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#f44336"></div><span class="leg-label">F - Saturado</span><span class="leg-delay">100%</span></div>
-        <div class="leg-row"><div class="leg-swatch" style="width:14px;height:14px;background:#9c27b0"></div><span class="leg-label">H - Colapso</span><span class="leg-delay">>109%</span></div>
-    </div>
+  <h3>Nivel de servicio</h3>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#4caf50"></div><span class="ll">A — Excelente</span><span class="ld">≤55%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#8bc34a"></div><span class="ll">B — Muy bueno</span><span class="ld">≤64%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ffc107"></div><span class="ll">C — Aceptable</span><span class="ld">≤73%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ff9800"></div><span class="ll">D — Tolerable</span><span class="ld">≤82%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ff5722"></div><span class="ll">E — Inestable</span><span class="ld">≤91%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#f44336"></div><span class="ll">F — Saturado</span><span class="ld">≤100%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#e91e63"></div><span class="ll">G — Crítico</span><span class="ld">≤109%</span></div>
+  <div class="lr"><div class="ls" style="width:14px;height:14px;background:#9c27b0"></div><span class="ll">H — Colapso</span><span class="ld">&gt;109%</span></div>
 
-    <hr class="leg-divider">
-    <div id="insights-box">
-        <h3 style="color:#ff9800">⚠️ Puntos Críticos</h3>
-        <div id="critical-list" style="font-size:9px; color:#ccc; line-height:1.4">
-            Analizando datos...
-        </div>
-    </div>
+  <hr class="leg-div">
+  <div class="leg-h">Tamaño · volumen total</div>
+  <div class="lr"><div class="lc" style="width:24px;height:24px"></div><span class="ll">≥ 5 000 vph</span></div>
+  <div class="lr"><div class="lc" style="width:17px;height:17px"></div><span class="ll">1 000 – 5 000 vph</span></div>
+  <div class="lr"><div class="lc" style="width:11px;height:11px"></div><span class="ll">200 – 1 000 vph</span></div>
+  <div class="lr"><div class="lc" style="width:6px;height:6px"></div><span class="ll">&lt; 200 vph</span></div>
+
+  <hr class="leg-div">
+  <div class="leg-h">Tipo de control</div>
+  <div class="lr"><span style="font-size:13px;color:#29b6f6;width:18px;text-align:center">▶</span><span class="ll">Semaforizada</span></div>
+  <div class="lr"><span style="font-size:13px;color:#ffc107;width:18px;text-align:center">▷</span><span class="ll">No semaforizada</span></div>
+  <div class="lr"><span style="font-size:13px;color:#ce93d8;width:18px;text-align:center">⟳</span><span class="ll">Glorieta</span></div>
+  <div class="lr"><span style="font-size:13px;color:#81c784;width:18px;text-align:center">≡</span><span class="ll">Múltiple / Otro</span></div>
+
+  <hr class="leg-div">
+  <h3 style="color:#ff9800">⚠ Puntos críticos</h3>
+  <div id="critical-list">Cargando…</div>
+
+  <hr class="leg-div">
+  <div style="font-size:9px;color:#333;line-height:1.6">AM Peak · ICU + HCM 7<br>Synchro 11 · 01-29-2026</div>
 </div>
 
 <script>
-// ── DATA DIRECTA (SOLUCIONA CORS) ─────────────────────────────────────────────
-const DATA = {
-    "intersections": [
-        { "id": 1, "label": "1", "control_type": "Unsignalized", "coords": {"lat": 14.654072, "lng": -90.539395}, "icu": 35.8, "icu_los": "A", "lane_groups": [] },
-        { "id": 6, "label": "6", "control_type": "Roundabout", "coords": {"lat": 14.654124, "lng": -90.548677}, "icu": 117.1, "icu_los": "H", "lane_groups": [] },
-        { "id": 12, "label": "12", "control_type": "Unsignalized", "coords": {"lat": 14.650644, "lng": -90.540902}, "icu": 104.4, "icu_los": "G", "lane_groups": [] },
-        { "id": 17, "label": "17", "control_type": "Unsignalized", "coords": {"lat": 14.649922, "lng": -90.547936}, "icu": 89.0, "icu_los": "E", "lane_groups": [] },
-        { "id": 18, "label": "18", "control_type": "Pretimed", "coords": {"lat": 14.646238, "lng": -90.539052}, "icu": 107.6, "icu_los": "G", "lane_groups": [] },
-        { "id": 21, "label": "21", "control_type": "Pretimed", "coords": {"lat": 14.655470, "lng": -90.542335}, "icu": 56.2, "signal_delay": 14.9, "signal_los": "B", "lane_groups": [] },
-        { "id": 31, "label": "31", "control_type": "Unsignalized", "coords": {"lat": 14.651720, "lng": -90.548809}, "icu": 118.9, "icu_los": "H", "lane_groups": [] },
-        { "id": 74, "label": "74", "control_type": "Unsignalized", "coords": {"lat": 14.649137, "lng": -90.540085}, "icu": 129.2, "icu_los": "H", "lane_groups": [] }
-        // ... (el resto del JSON se filtrará aquí por id si lo completas)
-    ]
-};
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+const LC = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
 
-// Inyectar el resto de los datos que me pasaste dinámicamente si es necesario
-// Para este bloque, he incluido los más representativos y críticos.
+function icuLOS(p){return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H';}
 
-const LOS_COLOR = { A:'#4caf50', B:'#8bc34a', C:'#ffc107', D:'#ff9800', E:'#ff5722', F:'#f44336', G:'#e91e63', H:'#9c27b0' };
+function totalVol(d){
+  return (d.lane_groups||[]).reduce((s,lg)=>s+(lg.lane_group_flow||0),0);
+}
 
-// ── MAP INIT ──────────────────────────────────────────────────────────────────
-const map = L.map('map', { zoomControl: false }).setView([14.654, -90.542], 15);
+function getLOS(d, y30){
+  if(y30){
+    const icu30 = +(d.icu * 1.15).toFixed(1);
+    return {los: icuLOS(icu30), val: icu30+'%~', method:'ICU 2030'};
+  }
+  if(d.signal_delay!=null && d.signal_los)
+    return {los:d.signal_los, val:d.signal_delay+'s', method:'HCM'};
+  return {los: d.icu_los||icuLOS(d.icu), val:d.icu+'%', method:'ICU'};
+}
 
+function volToR(vol){
+  if(vol<=0)    return 7;
+  if(vol<50)    return 7;
+  if(vol>=8000) return 26;
+  return Math.round(7 + (Math.log(vol)-Math.log(50))/(Math.log(8000)-Math.log(50))*19);
+}
+
+function ctrlGlyph(ct){
+  if(ct.includes('Pretimed')||ct.includes('Actuated')) return {g:'▶',c:'#29b6f6'};
+  if(ct==='Roundabout') return {g:'⟳',c:'#ce93d8'};
+  if(ct==='Unsignalized') return {g:'▷',c:'#ffc107'};
+  return {g:'≡',c:'#81c784'};
+}
+
+// ── MAP INIT ─────────────────────────────────────────────────────────────────
+const map = L.map('map', {zoomControl:true}).setView([14.652, -90.543], 15);
+
+// Tile que renderiza sin problemas (mismo patrón del archivo que funcionó)
 L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© CARTO'
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>',
+  maxZoom: 20
 }).addTo(map);
 
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let D = {intersections:[]};
 let markers = [];
 let activeFilt = 'all';
-let useYear2030 = false;
+let useY30 = false;
 
-function getLOS(d) {
-    if (d.icu >= 109) return 'H';
-    return d.icu_los || 'A';
-}
+// ── BUILD MARKERS ─────────────────────────────────────────────────────────────
+function buildMarkers(){
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  const criticals = [];
 
-function buildMarkers() {
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
-    let criticals = [];
+  const items = D.intersections.filter(d => d.coords && d.coords.lat);
 
-    const items = DATA.intersections.filter(d => d.coords && d.coords.lat);
+  items.forEach(d => {
+    const vol    = totalVol(d);
+    const isSig  = d.signal_delay != null;
+    const isLow  = vol < 50;
 
-    items.forEach(d => {
-        const los = getLOS(d);
-        const col = LOS_COLOR[los] || '#888';
-        
-        // Filtros
-        if (activeFilt === 'sig' && d.control_type === 'Unsignalized') return;
-        if (activeFilt === 'crit' && d.icu < 90) return;
+    if(activeFilt==='sig'   && !isSig)   return;
+    if(activeFilt==='crit'  && d.icu<90) return;
+    if(activeFilt==='lovol' && !isLow)   return;
 
-        if (d.icu >= 90) criticals.push(d);
+    const {los, val, method} = getLOS(d, useY30);
+    const col  = LC[los]||'#888';
+    const r    = volToR(vol);
+    const sz   = r*2 + 10;
+    const cx   = sz/2;
+    const op   = isLow ? 0.45 : 0.85;
+    const ctrl = ctrlGlyph(d.control_type);
 
-        const icon = L.divIcon({
-            className: '',
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            html: `<svg width="30" height="30" viewBox="0 0 30 30">
-                <circle cx="15" cy="15" r="12" fill="${col}" fill-opacity="0.8" stroke="white" stroke-width="1.5"/>
-                <text x="15" y="16" text-anchor="middle" dominant-baseline="central" font-family="Arial" font-size="10px" font-weight="bold" fill="black">${los}</text>
-            </svg>`
-        });
-
-        const mk = L.marker([d.coords.lat, d.coords.lng], { icon });
-        mk.bindTooltip(`<div class="los-tooltip">
-            <div class="tt-id">Int. #${d.label}</div>
-            <div class="tt-los" style="color:${col}">${los}</div>
-            <div class="tt-row"><span>Control:</span><b>${d.control_type}</b></div>
-            <div class="tt-row"><span>ICU:</span><b>${d.icu}%</b></div>
-        </div>`);
-        
-        mk.addTo(map);
-        markers.push(mk);
+    const icon = L.divIcon({
+      className: '',
+      iconSize:  [sz, sz],
+      iconAnchor:[cx, cx],
+      html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}" stroke="white" stroke-width="1.2" stroke-opacity=".5"/>
+        <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
+          font-family="Segoe UI,Arial,sans-serif"
+          font-size="${Math.max(7,Math.min(12,r*0.85))}px"
+          font-weight="700" fill="#000" fill-opacity=".75">${los}</text>
+        <text x="${sz-2}" y="5" text-anchor="end"
+          font-family="Segoe UI,Arial,sans-serif" font-size="9px"
+          fill="${ctrl.c}">${ctrl.g}</text>
+      </svg>`
     });
 
-    // Actualizar Stats e Insights
-    document.getElementById('stats').textContent = `${markers.length} intersecciones visibles`;
-    const list = document.getElementById('critical-list');
-    list.innerHTML = criticals.length > 0 
-        ? criticals.slice(0, 5).map(c => `• Int ${c.label}: ICU ${c.icu}% (LOS ${getLOS(c)})`).join('<br>')
-        : "No hay puntos críticos en esta vista.";
-    
-    if(markers.length > 0) {
-        const group = new L.featureGroup(markers);
-        map.fitBounds(group.getBounds(), {padding: [50, 50]});
-    }
+    // Proyección 2030
+    const icu30  = +(d.icu*1.15).toFixed(1);
+    const los30  = icuLOS(icu30);
+    const col30  = LC[los30]||'#888';
+    const hcmRow = d.signal_delay!=null
+      ? `<div class="tt-row"><span>HCM rptd</span><b>${d.signal_delay}s — ${d.signal_los}</b></div>` : '';
+    const lowWarn = isLow
+      ? `<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>` : '';
+
+    const mk = L.marker([d.coords.lat, d.coords.lng], {icon, title:`Int. ${d.label}`});
+    mk.bindTooltip(`
+      <div class="los-tooltip">
+        <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
+        <div class="tt-los" style="color:${col}">${los}</div>
+        <div class="tt-row"><span>${method}</span><b>${val}</b></div>
+        <div class="tt-row"><span>ICU rptd</span><b>${d.icu}% — ${d.icu_los}</b></div>
+        ${hcmRow}
+        <div class="tt-row"><span>Vol. total</span><b>${vol.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Grupos de carril</span><b>${(d.lane_groups||[]).length}</b></div>
+        <div class="tt-proj">2030 proyección: <b style="color:${col30}">${los30}</b> (ICU ~${icu30}%)</div>
+        ${lowWarn}
+      </div>`, {
+      permanent:false, direction:'top',
+      offset:[0, -(r+4)], opacity:1, className:''
+    });
+
+    mk.addTo(map);
+    markers.push(mk);
+    if(d.icu >= 90) criticals.push({label:d.label, icu:d.icu, los});
+  });
+
+  // Stats
+  const losE = items.filter(d=>{ const {los}=getLOS(d,useY30); return 'EFGH'.includes(los); }).length;
+  document.getElementById('stats').textContent =
+    `${markers.length} intersecciones · ${losE} con LOS ≥ E`;
+
+  // Puntos críticos en leyenda
+  const cl = document.getElementById('critical-list');
+  if(criticals.length){
+    criticals.sort((a,b)=>b.icu-a.icu);
+    cl.innerHTML = criticals.map(c=>
+      `<div class="crit-item">• Int. <span>#${c.label}</span> — ICU ${c.icu}% <span style="color:${LC[c.los]}">[${c.los}]</span></div>`
+    ).join('');
+  } else {
+    cl.innerHTML = '<div style="font-size:9px;color:#555">Sin puntos críticos en esta vista.</div>';
+  }
+
+  // Fit bounds primera vez
+  if(markers.length && map.getZoom()<=15){
+    const grp = L.featureGroup(markers);
+    map.fitBounds(grp.getBounds(), {padding:[50,50]});
+  }
 }
 
-function setFilt(f, btn) {
-    activeFilt = f;
-    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    buildMarkers();
+// ── CONTROLS ─────────────────────────────────────────────────────────────────
+function setFilt(f, btn){
+  activeFilt = f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildMarkers();
+}
+function setYear(v){ useY30=v; buildMarkers(); }
+
+// ── DATA LOAD ─────────────────────────────────────────────────────────────────
+async function loadData(){
+  try{
+    const r = await fetch('datalos_latlong.json');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    D = await r.json();
+    console.log('datalos_latlong.json cargado: '+D.intersections.length+' intersecciones');
+  } catch(e){
+    console.warn('No se cargó datalos_latlong.json:', e.message);
+    document.getElementById('stats').textContent =
+      '⚠ Sirve el archivo con un servidor local (npx serve . | python -m http.server)';
+  }
+  buildMarkers();
 }
 
-function setYear(v) {
-    useYear2030 = v;
-    // Aquí podrías recalcular ICU futuro si el JSON tuviera future_vph completo
-    buildMarkers();
-}
-
-// Iniciar
-buildMarkers();
+loadData();
 </script>
 </body>
 </html>
