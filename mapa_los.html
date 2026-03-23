@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa LOS — Naranjo</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── top bar ── */
+.topbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000}
+.topbar h1{font-size:12px;color:#90caf9;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-right:6px}
+.fbtn{padding:3px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.yr-toggle{display:flex;align-items:center;gap:6px;background:#0d1220;border:1px solid #2a3044;border-radius:6px;padding:4px 10px;margin-left:auto}
+.yr-toggle span{font-size:10px;color:#888}
+.yr-toggle input[type=checkbox]{accent-color:#4a90d9;width:14px;height:14px;cursor:pointer}
+.yr-toggle label{font-size:10px;color:#90caf9;cursor:pointer;white-space:nowrap}
+#stats{font-size:10px;color:#555;white-space:nowrap}
+
+/* ── map ── */
+#map{flex:1;width:100%}
+.leaflet-container{background:#e0e0e0}
+
+/* ── tooltip ── */
+.los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;font-family:'Segoe UI',Arial,sans-serif;min-width:180px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.6)}
+.los-tooltip .tt-id{font-size:11px;color:#90caf9;font-weight:700;margin-bottom:4px}
+.los-tooltip .tt-los{font-size:28px;font-weight:900;line-height:1;margin-bottom:2px}
+.los-tooltip .tt-row{font-size:10px;color:#888;margin-top:2px;display:flex;justify-content:space-between;gap:8px}
+.los-tooltip .tt-row b{color:#ccc}
+.los-tooltip .tt-warn{font-size:9px;color:#ff9800;margin-top:4px}
+
+/* ── legend ── */
+#legend{position:absolute;top:70px;right:10px;z-index:1000;background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:12px 14px;min-width:210px;font-size:10px;max-height:calc(100vh - 120px);overflow-y:auto}
+#legend h3{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px}
+.leg-section{margin-bottom:10px}
+.leg-section h4{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.leg-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.leg-swatch{border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0}
+.leg-label{font-size:10px;color:#aaa;flex:1}
+.leg-delay{font-size:9px;color:#555;text-align:right}
+.leg-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.leg-circle{border-radius:50%;background:#4a90d9;opacity:.7;flex-shrink:0}
+.leg-bar-label{font-size:9px;color:#888}
+.leg-ctrl-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.leg-ctrl-icon{font-size:13px;line-height:1;width:18px;text-align:center;flex-shrink:0}
+.leg-ctrl-label{font-size:10px;color:#aaa}
+.leg-divider{border:none;border-top:1px solid #2a3044;margin:8px 0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🚦 Mapa LOS · Naranjo</h1>
+  <button class="fbtn active" onclick="setFilt('all',this)">Todas</button>
+  <button class="fbtn" onclick="setFilt('sig',this)">Semaforizadas</button>
+  <button class="fbtn" onclick="setFilt('crit',this)">ICU ≥90%</button>
+  <button class="fbtn" onclick="setFilt('lovol',this)">Vol. bajo &lt;50</button>
+  <div class="yr-toggle">
+    <span>2025</span>
+    <input type="checkbox" id="yrToggle" onchange="setYear(this.checked)">
+    <label for="yrToggle">2030 proyección</label>
+  </div>
+  <span id="stats"></span>
+</div>
+
+<div id="map"></div>
+
+<div id="legend">
+  <h3>Leyenda</h3>
+
+  <div class="leg-section">
+    <h4>LOS — nivel de servicio</h4>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#4caf50"></div><span class="leg-label">A — Excelente</span><span class="leg-delay">≤55% ICU / ≤10s</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#8bc34a"></div><span class="leg-label">B — Muy bueno</span><span class="leg-delay">56–64% / ≤20s</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#ffc107"></div><span class="leg-label">C — Aceptable</span><span class="leg-delay">65–73% / ≤35s</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#ff9800"></div><span class="leg-label">D — Tolerable</span><span class="leg-delay">74–82% / ≤55s</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#ff5722"></div><span class="leg-label">E — Inestable</span><span class="leg-delay">83–91% / ≤80s</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#f44336"></div><span class="leg-label">F — Colapso</span><span class="leg-delay">92–100%/ &gt;80s</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#e91e63"></div><span class="leg-label">G — Crítico</span><span class="leg-delay">101–109%</span></div>
+    <div class="leg-row"><div class="leg-swatch" style="width:18px;height:18px;background:#9c27b0"></div><span class="leg-label">H — Colapso total</span><span class="leg-delay">&gt;109%</span></div>
+  </div>
+
+  <hr class="leg-divider">
+  <div class="leg-section">
+    <h4>Tamaño del círculo · volumen total</h4>
+    <div class="leg-bar-row"><div class="leg-circle" style="width:28px;height:28px"></div><span class="leg-bar-label">≥ 5 000 vph</span></div>
+    <div class="leg-bar-row"><div class="leg-circle" style="width:20px;height:20px"></div><span class="leg-bar-label">1 000–5 000 vph</span></div>
+    <div class="leg-bar-row"><div class="leg-circle" style="width:13px;height:13px"></div><span class="leg-bar-label">200–1 000 vph</span></div>
+    <div class="leg-bar-row"><div class="leg-circle" style="width:7px;height:7px"></div><span class="leg-bar-label">&lt; 200 vph</span></div>
+  </div>
+
+  <hr class="leg-divider">
+  <div class="leg-section">
+    <h4>Tipo de control</h4>
+    <div class="leg-ctrl-row"><span class="leg-ctrl-icon" style="color:#29b6f6">▶</span><span class="leg-ctrl-label">Semaforizada (Pretimed / Actuated)</span></div>
+    <div class="leg-ctrl-row"><span class="leg-ctrl-icon" style="color:#ffc107">▷</span><span class="leg-ctrl-label">Ceda el paso / No semaforizada</span></div>
+    <div class="leg-ctrl-row"><span class="leg-ctrl-icon" style="color:#f44336">■</span><span class="leg-ctrl-label">Alto (Stop)</span></div>
+    <div class="leg-ctrl-row"><span class="leg-ctrl-icon" style="color:#ce93d8">⟳</span><span class="leg-ctrl-label">Glorieta (Roundabout)</span></div>
+    <div class="leg-ctrl-row"><span class="leg-ctrl-icon" style="color:#81c784">≡</span><span class="leg-ctrl-label">Múltiple / Otro</span></div>
+  </div>
+
+  <hr class="leg-divider">
+  <div style="font-size:9px;color:#444;line-height:1.5">
+    AM Peak · ICU + HCM 7<br>
+    Synchro 11 · 01-29-2026<br>
+    Coordenadas: WGS84
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+// Carga desde datalos.json (mismo directorio)
+let DATA = { intersections: [] };
+
+async function loadData() {
+  try {
+    const r = await fetch('datalos_latlong.json');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    DATA = await r.json();
+  } catch(e) {
+    console.warn('No se pudo cargar datalos.json:', e.message);
+    document.getElementById('stats').textContent =
+      '⚠ No se cargó datalos.json — usa un servidor local';
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const LOS_COLOR = {
+  A:'#4caf50', B:'#8bc34a', C:'#ffc107', D:'#ff9800',
+  E:'#ff5722', F:'#f44336', G:'#e91e63', H:'#9c27b0'
+};
+
+function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
+function sigLOS(d){ return d<=10?'A':d<=20?'B':d<=35?'C':d<=55?'D':d<=80?'E':'F'; }
+
+function getLOS(d, year2030) {
+  if (year2030) {
+    const icuF = calcICUfuture(d);
+    return { los: icuLOS(icuF), val: icuF + '%', method: 'ICU 2030' };
+  }
+  if (d.signal_delay != null && d.signal_los) {
+    return { los: d.signal_los, val: d.signal_delay + 's', method: 'HCM' };
+  }
+  return { los: icuLOS(d.icu), val: d.icu + '%', method: 'ICU' };
+}
+
+function calcICUfuture(d) {
+  let sum = 0;
+  d.lane_groups.forEach(lg => {
+    if (!lg.satd_flow_perm || !lg.lane_group_flow) return;
+    const vCur = lg.volume_vph || 0;
+    const vFut = lg.future_vph != null ? lg.future_vph : vCur;
+    let flow = lg.lane_group_flow;
+    if (vCur > 0) flow = Math.round(flow * vFut / vCur);
+    sum += flow / lg.satd_flow_perm;
+  });
+  return +(sum * 100).toFixed(1);
+}
+
+function totalVol(d) {
+  return d.lane_groups.reduce((s, lg) => s + (lg.lane_group_flow || 0), 0);
+}
+
+function volToRadius(vol) {
+  // Logarithmic scale: 7px (≤50 vph) → 28px (≥8000 vph)
+  if (vol <= 0)    return 5;
+  if (vol <= 50)   return 7;
+  if (vol >= 8000) return 28;
+  return Math.round(7 + (Math.log(vol) - Math.log(50)) / (Math.log(8000) - Math.log(50)) * 21);
+}
+
+function ctrlIcon(ct) {
+  if (ct.includes('Pretimed') || ct.includes('Actuated')) return { icon: '▶', color: '#29b6f6' };
+  if (ct === 'Roundabout') return { icon: '⟳', color: '#ce93d8' };
+  if (ct === 'Unsignalized') return { icon: '▷', color: '#ffc107' };
+  if (ct === 'Multiple')     return { icon: '≡', color: '#81c784' };
+  return { icon: '■', color: '#f44336' };
+}
+
+// ── MAP INIT ──────────────────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true, preferCanvas: false });
+
+// CARTO Dark Matter (gris oscuro de fondo) — mejor contraste para LOS coloridos
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_retina/{z}/{x}/{y}{r}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 20
+}).addTo(map);
+
+// ── MARKERS ───────────────────────────────────────────────────────────────────
+let markers = [];
+let activeFilt = 'all';
+let useYear2030 = false;
+
+function buildMarkers() {
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+
+  const items = DATA.intersections.filter(d => d.coords && d.coords.lat);
+  let shown = 0;
+
+  items.forEach(d => {
+    const vol   = totalVol(d);
+    const isSig = d.signal_delay != null;
+    const isLowVol = vol < 50;
+
+    // Filter
+    if (activeFilt === 'sig'   && !isSig) return;
+    if (activeFilt === 'crit'  && d.icu < 90) return;
+    if (activeFilt === 'lovol' && !isLowVol) return;
+
+    const { los, val, method } = getLOS(d, useYear2030);
+    const col    = LOS_COLOR[los] || '#888';
+    const radius = volToRadius(vol);
+    const ctrl   = ctrlIcon(d.control_type);
+    const opacity = isLowVol ? 0.45 : 0.88;
+
+    // SVG marker: circle + control icon
+    const sz  = radius * 2 + 14;
+    const cx  = sz / 2;
+    const cy  = sz / 2;
+    const icon = L.divIcon({
+      className: '',
+      iconSize:  [sz, sz],
+      iconAnchor:[cx, cy],
+      html: `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="${cx}" cy="${cy}" r="${radius}" fill="${col}" fill-opacity="${opacity}" stroke="${col}" stroke-width="1.5" stroke-opacity=".6"/>
+        <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central"
+          font-family="Segoe UI,Arial,sans-serif" font-size="${Math.max(7, Math.min(13, radius * 0.9))}px"
+          font-weight="700" fill="#000" fill-opacity=".75">${los}</text>
+        <text x="${sz - 4}" y="5" text-anchor="end"
+          font-family="Segoe UI,Arial,sans-serif" font-size="10px"
+          fill="${ctrl.color}">${ctrl.icon}</text>
+      </svg>`
+    });
+
+    const mk = L.marker([d.coords.lat, d.coords.lng], { icon, title: `Int. ${d.label}` });
+
+    // Tooltip HTML
+    const hcmRow = d.signal_delay != null
+      ? `<div class="tt-row"><span>HCM rptd</span><b>${d.signal_delay}s — ${d.signal_los || '—'}</b></div>`
+      : '';
+    const volWarn = isLowVol
+      ? `<div class="tt-warn">⚠ Volumen muy bajo — LOS poco representativo</div>` : '';
+    const projRow = `<div class="tt-row"><span>ICU 2030</span><b>${calcICUfuture(d)}% — ${icuLOS(calcICUfuture(d))}</b></div>`;
+
+    mk.bindTooltip(`
+      <div class="los-tooltip">
+        <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
+        <div class="tt-los" style="color:${col}">${los}</div>
+        <div class="tt-row"><span>${method}</span><b>${val}</b></div>
+        <div class="tt-row"><span>ICU rptd</span><b>${d.icu}% — ${d.icu_los}</b></div>
+        ${hcmRow}
+        ${projRow}
+        <div class="tt-row"><span>Vol. total</span><b>${vol.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Grupos</span><b>${d.lane_groups.length}</b></div>
+        ${volWarn}
+      </div>`, {
+      permanent: false,
+      direction: 'top',
+      offset: [0, -(radius + 4)],
+      opacity: 1,
+      className: ''
+    });
+
+    mk.addTo(map);
+    markers.push(mk);
+    shown++;
+  });
+
+  // Stats
+  const crit = items.filter(d => {
+    const { los } = getLOS(d, useYear2030);
+    return 'EFG H'.includes(los);
+  }).length;
+  document.getElementById('stats').textContent =
+    `${shown} intersecciones · ${crit} LOS ≥ E`;
+
+  // Fit bounds on first load
+  if (markers.length && map.getZoom() < 14) {
+    const coords = items.filter(d => d.coords).map(d => [d.coords.lat, d.coords.lng]);
+    if (coords.length) map.fitBounds(coords, { padding: [40, 40] });
+  }
+}
+
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+function setFilt(f, btn) {
+  activeFilt = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildMarkers();
+}
+
+function setYear(is2030) {
+  useYear2030 = is2030;
+  buildMarkers();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadData();
+  buildMarkers();
+}
+
+init();
+</script>
+</body>
+</html>
