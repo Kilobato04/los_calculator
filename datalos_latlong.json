@@ -3,11 +3,16 @@
   "report": "Lanes, Volumes, Timings",
   "software": "Synchro 11",
   "updated": "AM updated 4:30 pm 05-14-2025",
+  "audit_exported_at": "2026-03-24T00:29:29.820Z",
+  "horizon_base": "2025",
+  "horizon_future": "2030",
   "intersections": [
     {
       "id": 1, "label": "1", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.654072, "lng": -90.539395},
-      "icu": 35.8, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 35.8, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 44.9, "icu_los": "A", "hcm_delay_s": 18.7, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 724},
+      "calc_2030": {"icu_pct": 45.7, "icu_los": "A", "icu_delta_pct": 0.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBL","volume_vph":81, "future_vph":81, "satd_flow_perm":1702,"lane_group_flow":104,"sign_control":"Yield","lane_alignment":"Left"},
@@ -21,7 +26,9 @@
     {
       "id": 2, "label": "2", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.651922, "lng": -90.539377},
-      "icu": 16.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 16.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 10.3, "icu_los": "A", "hcm_delay_s": 7.6, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 187},
+      "calc_2030": {"icu_pct": 10.3, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":104,"future_vph":104,"satd_flow_perm":1785,"lane_group_flow":113,"sign_control":"Yield","lane_alignment":"Left"},
@@ -35,7 +42,9 @@
     {
       "id": 6, "label": "6", "control_type": "Roundabout", "area_type": "Other",
       "coords": {"lat": 14.654124, "lng": -90.548677},
-      "icu": 117.1, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 117.1, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 270.5, "icu_los": "H", "hcm_delay_s": null, "hcm_los": null, "hcm_confianza": "N/A", "vol_total_vph": 9707},
+      "calc_2030": {"icu_pct": 285.5, "icu_los": "H", "icu_delta_pct": 15.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBL","volume_vph":0,   "future_vph":80,  "satd_flow_perm":1581,"lane_group_flow":1061,"sign_control":"Free", "lane_alignment":"Left"},
@@ -49,7 +58,9 @@
     {
       "id": 7, "label": "7", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.656329, "lng": -90.541910, "_note": "lat corregida: 4.656329→14.656329"},
-      "icu": 22.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 22.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 33.0, "icu_los": "A", "hcm_delay_s": 13.5, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 1124},
+      "calc_2030": {"icu_pct": 33.0, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,  "future_vph":0,  "satd_flow_perm":1593,"lane_group_flow":20, "sign_control":"Stop","lane_alignment":"Left"},
@@ -65,7 +76,9 @@
     {
       "id": 8, "label": "8", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.656213, "lng": -90.543962},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 2.5, "icu_los": "A", "hcm_delay_s": 5.0, "hcm_los": "A", "hcm_confianza": "Media", "vol_total_vph": 41},
+      "calc_2030": {"icu_pct": 1.2, "icu_los": "A", "icu_delta_pct": -1.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":0, "satd_flow_perm":1593,"lane_group_flow":8, "sign_control":"Yield","lane_alignment":"Left"},
@@ -79,7 +92,9 @@
     {
       "id": 9, "label": "9", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.649281, "lng": -90.539983},
-      "icu": 61.3, "icu_los": "B", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 61.3, "icu_los": "B", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 51.3, "icu_los": "A", "hcm_delay_s": 1.0, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2509},
+      "calc_2030": {"icu_pct": 64.7, "icu_los": "C", "icu_delta_pct": 13.4, "deterioro": "A→C"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBL","volume_vph":1193,"future_vph":1313,"satd_flow_perm":0,   "lane_group_flow":0,   "sign_control":"Free","lane_alignment":"Left"},
@@ -93,7 +108,9 @@
     {
       "id": 10, "label": "10", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.650331, "lng": -90.540294},
-      "icu": 28.4, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 28.4, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 31.1, "icu_los": "A", "hcm_delay_s": 2.0, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1091},
+      "calc_2030": {"icu_pct": 39.1, "icu_los": "A", "icu_delta_pct": 8.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":8,  "future_vph":8,  "satd_flow_perm":1842,"lane_group_flow":9,   "sign_control":"Yield","lane_alignment":"Left"},
@@ -107,7 +124,9 @@
     {
       "id": 11, "label": "11", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.650134, "lng": -90.540845},
-      "icu": 27.2, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 27.2, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 0.9, "icu_los": "A", "hcm_delay_s": 0.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 16},
+      "calc_2030": {"icu_pct": 0.9, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":0,"future_vph":0,"satd_flow_perm":0,   "lane_group_flow":0, "sign_control":"Stop","lane_alignment":"Left"},
@@ -121,7 +140,9 @@
     {
       "id": 12, "label": "12", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.650644, "lng": -90.540902},
-      "icu": 104.4, "icu_los": "G", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 104.4, "icu_los": "G", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 125.3, "icu_los": "H", "hcm_delay_s": 2.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2861},
+      "calc_2030": {"icu_pct": 110.0, "icu_los": "H", "icu_delta_pct": -15.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":0,   "future_vph":0,   "satd_flow_perm":0,   "lane_group_flow":0,   "sign_control":"Stop","lane_alignment":"Left"},
@@ -135,7 +156,9 @@
     {
       "id": 15, "label": "15", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.650053, "lng": -90.541355},
-      "icu": 61.3, "icu_los": "B", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 61.3, "icu_los": "B", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 42.5, "icu_los": "A", "hcm_delay_s": 2.2, "hcm_los": "A", "hcm_confianza": "Media", "vol_total_vph": 1434},
+      "calc_2030": {"icu_pct": 46.7, "icu_los": "A", "icu_delta_pct": 4.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,   "future_vph":0,   "satd_flow_perm":0,   "lane_group_flow":0,   "sign_control":"Free","lane_alignment":"Left"},
@@ -149,7 +172,9 @@
     {
       "id": 17, "label": "17", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.649922, "lng": -90.547936},
-      "icu": 89.0, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 89.0, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 125.7, "icu_los": "H", "hcm_delay_s": 262.0, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6286},
+      "calc_2030": {"icu_pct": 175.7, "icu_los": "H", "icu_delta_pct": 50.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":4091,"future_vph":5742,"satd_flow_perm":5029,"lane_group_flow":6241,"sign_control":"Free","lane_alignment":"Left"},
@@ -163,7 +188,9 @@
     {
       "id": 18, "label": "18", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.646238, "lng": -90.539052},
-      "icu": 107.6, "icu_los": "G", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 107.6, "icu_los": "G", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 227.3, "icu_los": "H", "hcm_delay_s": 265.8, "hcm_los": "F", "hcm_confianza": "Media", "vol_total_vph": 6283},
+      "calc_2030": {"icu_pct": 292.7, "icu_los": "H", "icu_delta_pct": 65.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,   "future_vph":0,   "satd_flow_perm":0,   "lane_group_flow":0,   "sign_control":"Free","lane_alignment":"Left"},
@@ -177,7 +204,9 @@
     {
       "id": 19, "label": "19", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650391, "lng": -90.543830},
-      "icu": 36.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 36.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 46.8, "icu_los": "A", "hcm_delay_s": 0.9, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1494},
+      "calc_2030": {"icu_pct": 51.4, "icu_los": "A", "icu_delta_pct": 4.6, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,   "future_vph":0,  "satd_flow_perm":0,   "lane_group_flow":0,  "sign_control":"Free","lane_alignment":"Left"},
@@ -191,10 +220,10 @@
     {
       "id": 21, "label": "21", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.655470, "lng": -90.542335},
-      "icu": 56.2, "icu_los": "B", "signal_delay": 14.9, "signal_los": "B",
-      "cycle_length": 55, "actuated_cycle_length": 55,
-      "offset_s": 24, "offset_pct": 44, "natural_cycle": 50, "max_vc": 0.73,
-      "analysis_period_min": 15,
+      "synchro_2025": {"icu_pct": 56.2, "icu_los": "B", "signal_delay_s": 14.9, "signal_los": "B"},
+      "calc_2025": {"icu_pct": 64.1, "icu_los": "C", "hcm_delay_s": 17.6, "hcm_los": "B", "hcm_confianza": "Alta", "vol_total_vph": 2064},
+      "calc_2030": {"icu_pct": 67.0, "icu_los": "C", "icu_delta_pct": 2.9, "deterioro": "estable"},
+      "cycle_length": 55, "actuated_cycle_length": 55, "offset_s": 24, "offset_pct": 44, "natural_cycle": 50, "max_vc": 0.73, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":121,"future_vph":132,"satd_flow_perm":4776,"lane_group_flow":1110,"vc_ratio":0.70,"control_delay":12.2,"los":"B","sign_control":"—","lane_alignment":"Left"},
         {"group":"NBT","volume_vph":187,"future_vph":196,"satd_flow_perm":1807,"lane_group_flow":213, "vc_ratio":0.52,"control_delay":29.9,"los":"C","sign_control":"—","lane_alignment":"Left"},
@@ -212,7 +241,9 @@
     {
       "id": 22, "label": "22", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.652087, "lng": -90.540483},
-      "icu": 6.7, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 6.7, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 3.3, "icu_los": "A", "hcm_delay_s": 6.8, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 72},
+      "calc_2030": {"icu_pct": 3.0, "icu_los": "A", "icu_delta_pct": -0.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":23,"future_vph":23,"satd_flow_perm":3500,"lane_group_flow":25,"sign_control":"Free", "lane_alignment":"Left"},
@@ -223,10 +254,10 @@
     {
       "id": 23, "label": "23", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.654440, "lng": -90.542453},
-      "icu": 67.7, "icu_los": "C", "signal_delay": 11.3, "signal_los": "B",
-      "cycle_length": 55, "actuated_cycle_length": 55,
-      "offset_s": 24, "offset_pct": 44, "natural_cycle": 50, "max_vc": 0.73,
-      "analysis_period_min": 15,
+      "synchro_2025": {"icu_pct": 67.7, "icu_los": "C", "signal_delay_s": 11.3, "signal_los": "B"},
+      "calc_2025": {"icu_pct": 56.4, "icu_los": "B", "hcm_delay_s": 12.8, "hcm_los": "B", "hcm_confianza": "Alta", "vol_total_vph": 2538},
+      "calc_2030": {"icu_pct": 73.3, "icu_los": "D", "icu_delta_pct": 16.9, "deterioro": "B→D"},
+      "cycle_length": 55, "actuated_cycle_length": 55, "offset_s": 24, "offset_pct": 44, "natural_cycle": 50, "max_vc": 0.73, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":1209,"future_vph":1731,"satd_flow_perm":4999,"lane_group_flow":1927,"vc_ratio":0.73,"control_delay":12.1,"los":"B","sign_control":"—","lane_alignment":"Right"},
         {"group":"SBL","volume_vph":600, "future_vph":611, "satd_flow_perm":3429,"lane_group_flow":611, "vc_ratio":0.52,"control_delay":8.7, "los":"A","sign_control":"—","lane_alignment":"Left"}
@@ -242,7 +273,9 @@
     {
       "id": 24, "label": "24", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.653811, "lng": -90.544104},
-      "icu": 36.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 36.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 54.4, "icu_los": "A", "hcm_delay_s": 8.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2286},
+      "calc_2030": {"icu_pct": 92.9, "icu_los": "F", "icu_delta_pct": 38.5, "deterioro": "A→F"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":73,  "future_vph":214, "satd_flow_perm":1785,"lane_group_flow":233, "sign_control":"Yield","lane_alignment":"Left"},
@@ -253,7 +286,9 @@
     {
       "id": 25, "label": "25", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.654346, "lng": -90.544949},
-      "icu": 25.7, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 25.7, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 26.5, "icu_los": "A", "hcm_delay_s": 4.6, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1117},
+      "calc_2030": {"icu_pct": 443.9, "icu_los": "H", "icu_delta_pct": 417.4, "deterioro": "A→H"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"SBT","volume_vph":734,"future_vph":872,"satd_flow_perm":4792,"lane_group_flow":1027,"sign_control":"Free", "lane_alignment":"Left"},
@@ -263,7 +298,9 @@
     {
       "id": 26, "label": "26", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.652784, "lng": -90.544427},
-      "icu": 44.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 44.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 50.9, "icu_los": "A", "hcm_delay_s": 7.4, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2169},
+      "calc_2030": {"icu_pct": 70.8, "icu_los": "C", "icu_delta_pct": 19.9, "deterioro": "A→C"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":192, "future_vph":192, "satd_flow_perm":1733,"lane_group_flow":192, "sign_control":"Yield","lane_alignment":"Left"},
@@ -273,10 +310,10 @@
     {
       "id": 27, "label": "27", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.652860, "lng": -90.545495},
-      "icu": 49.2, "icu_los": "A", "signal_delay": 18.1, "signal_los": "B",
-      "cycle_length": 45, "actuated_cycle_length": 45,
-      "offset_s": 0, "offset_pct": 0, "natural_cycle": 45, "max_vc": 0.66,
-      "analysis_period_min": 15,
+      "synchro_2025": {"icu_pct": 49.2, "icu_los": "A", "signal_delay_s": 18.1, "signal_los": "B"},
+      "calc_2025": {"icu_pct": 50.6, "icu_los": "A", "hcm_delay_s": 17.7, "hcm_los": "B", "hcm_confianza": "Alta", "vol_total_vph": 1537},
+      "calc_2030": {"icu_pct": 58.8, "icu_los": "B", "icu_delta_pct": 8.2, "deterioro": "A→B"},
+      "cycle_length": 45, "actuated_cycle_length": 45, "offset_s": 0, "offset_pct": 0, "natural_cycle": 45, "max_vc": 0.66, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":187,"future_vph":187,"satd_flow_perm":1838,"lane_group_flow":225, "vc_ratio":0.63,"control_delay":27.5,"los":"C","sign_control":"—","lane_alignment":"Left"},
         {"group":"WBT","volume_vph":141,"future_vph":141,"satd_flow_perm":1684,"lane_group_flow":274, "vc_ratio":0.64,"control_delay":23.6,"los":"C","sign_control":"—","lane_alignment":"Left"},
@@ -291,10 +328,10 @@
     {
       "id": 28, "label": "28", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.653329, "lng": -90.541042},
-      "icu": 46.7, "icu_los": "A", "signal_delay": 7.3, "signal_los": "A",
-      "cycle_length": 55, "actuated_cycle_length": 55,
-      "offset_s": 52, "offset_pct": 95, "natural_cycle": 55, "max_vc": 0.67,
-      "analysis_period_min": 15,
+      "synchro_2025": {"icu_pct": 46.7, "icu_los": "A", "signal_delay_s": 7.3, "signal_los": "A"},
+      "calc_2025": {"icu_pct": 58.2, "icu_los": "B", "hcm_delay_s": 10.2, "hcm_los": "B", "hcm_confianza": "Alta", "vol_total_vph": 2451},
+      "calc_2030": {"icu_pct": 83.7, "icu_los": "E", "icu_delta_pct": 25.5, "deterioro": "B→E"},
+      "cycle_length": 55, "actuated_cycle_length": 55, "offset_s": 52, "offset_pct": 95, "natural_cycle": 55, "max_vc": 0.67, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":168, "future_vph":346, "satd_flow_perm":2124,"lane_group_flow":346, "vc_ratio":0.66,"control_delay":26.2,"los":"C","sign_control":"—","lane_alignment":"Left"},
         {"group":"SBT","volume_vph":1519,"future_vph":1815,"satd_flow_perm":5022,"lane_group_flow":2105,"vc_ratio":0.67,"control_delay":4.1, "los":"A","sign_control":"—","lane_alignment":"Right"}
@@ -310,10 +347,10 @@
     {
       "id": 30, "label": "30", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.653685, "lng": -90.540054},
-      "icu": 40.2, "icu_los": "A", "signal_delay": 15.3, "signal_los": "B",
-      "cycle_length": 55, "actuated_cycle_length": 55,
-      "offset_s": 52, "offset_pct": 95, "natural_cycle": 55, "max_vc": 0.67,
-      "analysis_period_min": 15,
+      "synchro_2025": {"icu_pct": 40.2, "icu_los": "A", "signal_delay_s": 15.3, "signal_los": "B"},
+      "calc_2025": {"icu_pct": 65.3, "icu_los": "C", "hcm_delay_s": 15.2, "hcm_los": "B", "hcm_confianza": "Alta", "vol_total_vph": 1332},
+      "calc_2030": {"icu_pct": 66.6, "icu_los": "C", "icu_delta_pct": 1.3, "deterioro": "estable"},
+      "cycle_length": 55, "actuated_cycle_length": 55, "offset_s": 52, "offset_pct": 95, "natural_cycle": 55, "max_vc": 0.67, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":128,"future_vph":128,"satd_flow_perm":1684,"lane_group_flow":128,"vc_ratio":0.42,"control_delay":24.8,"los":"C","sign_control":"—","lane_alignment":"Left"},
         {"group":"EBT","volume_vph":162,"future_vph":162,"satd_flow_perm":1879,"lane_group_flow":162,"vc_ratio":0.48,"control_delay":25.5,"los":"C","sign_control":"—","lane_alignment":"Left"},
@@ -332,7 +369,9 @@
     {
       "id": 31, "label": "31", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.651720, "lng": -90.548809},
-      "icu": 118.9, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 118.9, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 134.4, "icu_los": "H", "hcm_delay_s": 180.5, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 3132},
+      "calc_2030": {"icu_pct": 227.7, "icu_los": "H", "icu_delta_pct": 93.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":795, "future_vph":1561,"satd_flow_perm":1842,"lane_group_flow":1697,"sign_control":"Yield","lane_alignment":"Left"},
@@ -342,7 +381,9 @@
     {
       "id": 32, "label": "32", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651198, "lng": -90.540653},
-      "icu": 32.9, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 32.9, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 11.9, "icu_los": "A", "hcm_delay_s": 4.0, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 212},
+      "calc_2030": {"icu_pct": 8.6, "icu_los": "A", "icu_delta_pct": -3.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":23,"future_vph":23, "satd_flow_perm":1842,"lane_group_flow":25, "sign_control":"Yield","lane_alignment":"Left"},
@@ -353,7 +394,9 @@
     {
       "id": 34, "label": "34", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.652188, "lng": -90.541061},
-      "icu": 39.2, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 39.2, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 42.1, "icu_los": "A", "hcm_delay_s": 2.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2006},
+      "calc_2030": {"icu_pct": 55.1, "icu_los": "B", "icu_delta_pct": 13.0, "deterioro": "A→B"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":23,  "future_vph":23,  "satd_flow_perm":3298,"lane_group_flow":23,  "sign_control":"Yield","lane_alignment":"Left"},
@@ -363,7 +406,9 @@
     {
       "id": 35, "label": "35", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.651106, "lng": -90.540274},
-      "icu": 32.9, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 32.9, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 28.2, "icu_los": "A", "hcm_delay_s": 6.8, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1189},
+      "calc_2030": {"icu_pct": 29.1, "icu_los": "A", "icu_delta_pct": 0.9, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":23, "future_vph":23, "satd_flow_perm":1700,"lane_group_flow":25,  "sign_control":"Yield","lane_alignment":"Left"},
@@ -374,7 +419,9 @@
     {
       "id": 37, "label": "37", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650315, "lng": -90.545098},
-      "icu": 84.8, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 84.8, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 96.6, "icu_los": "F", "hcm_delay_s": 27.1, "hcm_los": "C", "hcm_confianza": "Baja", "vol_total_vph": 3347},
+      "calc_2030": {"icu_pct": 107.9, "icu_los": "G", "icu_delta_pct": 11.3, "deterioro": "F→G"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":2707,"future_vph":3037,"satd_flow_perm":3500,"lane_group_flow":3301,"sign_control":"Free","lane_alignment":"Left"},
@@ -384,7 +431,9 @@
     {
       "id": 38, "label": "38", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650130, "lng": -90.541742},
-      "icu": 33.1, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 33.1, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 34.4, "icu_los": "A", "hcm_delay_s": 4.6, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1537},
+      "calc_2030": {"icu_pct": 37.0, "icu_los": "A", "icu_delta_pct": 2.6, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":1193,"future_vph":1319,"satd_flow_perm":5029,"lane_group_flow":1434,"sign_control":"Free","lane_alignment":"Left"},
@@ -394,7 +443,9 @@
     {
       "id": 39, "label": "39", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650678, "lng": -90.544778},
-      "icu": 84.8, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 84.8, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 3.2, "icu_los": "A", "hcm_delay_s": 0.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 57},
+      "calc_2030": {"icu_pct": 2.9, "icu_los": "A", "icu_delta_pct": -0.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":0,"future_vph":42,"satd_flow_perm":1842,"lane_group_flow":46,"sign_control":"Free","lane_alignment":"Left"},
@@ -404,7 +455,9 @@
     {
       "id": 40, "label": "40", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650072, "lng": -90.542375},
-      "icu": 55.6, "icu_los": "B", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 55.6, "icu_los": "B", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 69.2, "icu_los": "C", "hcm_delay_s": 4.9, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 3387},
+      "calc_2030": {"icu_pct": 77.3, "icu_los": "D", "icu_delta_pct": 8.1, "deterioro": "C→D"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":2707,"future_vph":3041,"satd_flow_perm":5019,"lane_group_flow":3346,"sign_control":"Free", "lane_alignment":"Left"},
@@ -414,7 +467,9 @@
     {
       "id": 41, "label": "41", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.650963, "lng": -90.547128},
-      "icu": 38.6, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 38.6, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 54.9, "icu_los": "A", "hcm_delay_s": 11.1, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 1929},
+      "calc_2030": {"icu_pct": 105.6, "icu_los": "G", "icu_delta_pct": 50.7, "deterioro": "A→G"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT", "volume_vph":515,"future_vph":1267,"satd_flow_perm":4731,"lane_group_flow":1609,"sign_control":"Free","lane_alignment":"Left"},
@@ -424,7 +479,9 @@
     {
       "id": 42, "label": "42", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.654052, "lng": -90.544493},
-      "icu": 7.9, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 7.9, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 23.3, "icu_los": "A", "hcm_delay_s": 8.9, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 385},
+      "calc_2030": {"icu_pct": 1258.9, "icu_los": "H", "icu_delta_pct": 1235.6, "deterioro": "A→H"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBR","volume_vph":73,"future_vph":214,"satd_flow_perm":1593,"lane_group_flow":233,"sign_control":"Free", "lane_alignment":"Right"},
@@ -435,7 +492,9 @@
     {
       "id": 43, "label": "43", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.652758, "lng": -90.544940},
-      "icu": 16.6, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 16.6, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 29.7, "icu_los": "A", "hcm_delay_s": 12.2, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 543},
+      "calc_2030": {"icu_pct": 29.6, "icu_los": "A", "icu_delta_pct": -0.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":192,"future_vph":192,"satd_flow_perm":1842,"lane_group_flow":209,"sign_control":"Free", "lane_alignment":"Left"},
@@ -446,7 +505,9 @@
     {
       "id": 45, "label": "45", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.652017, "lng": -90.540023},
-      "icu": 20.8, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 20.8, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 18.8, "icu_los": "A", "hcm_delay_s": 0.4, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 922},
+      "calc_2030": {"icu_pct": 19.7, "icu_los": "A", "icu_delta_pct": 0.9, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":761,"future_vph":795,"satd_flow_perm":4902,"lane_group_flow":922,"sign_control":"Free","lane_alignment":"Left"}
@@ -455,7 +516,9 @@
     {
       "id": 47, "label": "47", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650007, "lng": -90.546134},
-      "icu": 82.4, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 82.4, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 132.2, "icu_los": "H", "hcm_delay_s": 258.9, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6353},
+      "calc_2030": {"icu_pct": 176.2, "icu_los": "H", "icu_delta_pct": 44.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":4091,"future_vph":5558,"satd_flow_perm":5009,"lane_group_flow":6227,"sign_control":"Yield","lane_alignment":"Left"},
@@ -465,7 +528,9 @@
     {
       "id": 49, "label": "49", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.654865, "lng": -90.540946},
-      "icu": 30.8, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 30.8, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 44.6, "icu_los": "A", "hcm_delay_s": 18.2, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 1270},
+      "calc_2030": {"icu_pct": 24.9, "icu_los": "A", "icu_delta_pct": -19.7, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":697,"future_vph":716,"satd_flow_perm":4881,"lane_group_flow":781,"sign_control":"Free", "lane_alignment":"Left"},
@@ -476,10 +541,10 @@
     {
       "id": 51, "label": "51", "control_type": "Actuated-Coordinated", "area_type": "Other",
       "coords": {"lat": 14.655348, "lng": -90.543661},
-      "icu": 37.0, "icu_los": "A", "signal_delay": 6.0, "signal_los": "A",
-      "cycle_length": 55, "actuated_cycle_length": 55,
-      "offset_s": 8, "offset_pct": 15, "natural_cycle": 45, "max_vc": 0.63,
-      "analysis_period_min": 15,
+      "synchro_2025": {"icu_pct": 37.0, "icu_los": "A", "signal_delay_s": 6.0, "signal_los": "A"},
+      "calc_2025": {"icu_pct": 22.2, "icu_los": "A", "hcm_delay_s": 17.7, "hcm_los": "B", "hcm_confianza": "Alta", "vol_total_vph": 998},
+      "calc_2030": {"icu_pct": 25.3, "icu_los": "A", "icu_delta_pct": 3.1, "deterioro": "estable"},
+      "cycle_length": 55, "actuated_cycle_length": 55, "offset_s": 8, "offset_pct": 15, "natural_cycle": 45, "max_vc": 0.63, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":807,"future_vph":945,"satd_flow_perm":4831,"lane_group_flow":953,"vc_ratio":0.63,"control_delay":5.9,"los":"A","sign_control":"—","lane_alignment":"Left"},
         {"group":"NBT","volume_vph":0,  "future_vph":34, "satd_flow_perm":1842,"lane_group_flow":37, "vc_ratio":0.04,"control_delay":7.0,"los":"A","sign_control":"—","lane_alignment":"Left"},
@@ -494,7 +559,9 @@
     {
       "id": 53, "label": "53", "control_type": "Pretimed", "area_type": "Other",
       "coords": {"lat": 14.651653, "lng": -90.544615},
-      "icu": 56.8, "icu_los": "B", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 56.8, "icu_los": "B", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 133.5, "icu_los": "H", "hcm_delay_s": 59.9, "hcm_los": "E", "hcm_confianza": "Media", "vol_total_vph": 3376},
+      "calc_2030": {"icu_pct": 159.2, "icu_los": "H", "icu_delta_pct": 25.7, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,   "future_vph":42,  "satd_flow_perm":1842,"lane_group_flow":46,  "sign_control":"Yield","lane_alignment":"Left"},
@@ -506,7 +573,9 @@
     {
       "id": 54, "label": "54", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.651192, "lng": -90.541108},
-      "icu": 33.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 33.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 97.2, "icu_los": "F", "hcm_delay_s": 86.9, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 3055},
+      "calc_2030": {"icu_pct": 105.8, "icu_los": "G", "icu_delta_pct": 8.6, "deterioro": "F→G"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBR","volume_vph":0,   "future_vph":676, "satd_flow_perm":1593,"lane_group_flow":735, "sign_control":"Yield","lane_alignment":"Right"},
@@ -517,7 +586,9 @@
     {
       "id": 56, "label": "56", "control_type": "Unsignalized", "area_type": "Other",
       "coords": null,
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 78.2, "icu_los": "D", "hcm_delay_s": 50.0, "hcm_los": "D", "hcm_confianza": "Baja", "vol_total_vph": 1375},
+      "calc_2030": {"icu_pct": 44.8, "icu_los": "A", "icu_delta_pct": -33.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":373,"satd_flow_perm":1805,"lane_group_flow":683,"sign_control":"Yield","lane_alignment":"Left"},
@@ -528,7 +599,9 @@
     {
       "id": 57, "label": "57", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651825, "lng": -90.545124},
-      "icu": 56.8, "icu_los": "B", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 56.8, "icu_los": "B", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 37.0, "icu_los": "A", "hcm_delay_s": 5.7, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 669},
+      "calc_2030": {"icu_pct": 30.6, "icu_los": "A", "icu_delta_pct": -6.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":0,"future_vph":514,"satd_flow_perm":1825,"lane_group_flow":597,"sign_control":"Yield","lane_alignment":"Left"},
@@ -538,7 +611,9 @@
     {
       "id": 58, "label": "58", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655566, "lng": -90.540531},
-      "icu": 12.4, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 12.4, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 20.9, "icu_los": "A", "hcm_delay_s": 16.4, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 366},
+      "calc_2030": {"icu_pct": 16.1, "icu_los": "A", "icu_delta_pct": -4.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":0,  "future_vph":72, "satd_flow_perm":1750,"lane_group_flow":78, "sign_control":"Free", "lane_alignment":"Left"},
@@ -550,7 +625,9 @@
     {
       "id": 59, "label": "59", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651154, "lng": -90.544939},
-      "icu": 115.1, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 115.1, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 57.7, "icu_los": "B", "hcm_delay_s": 3.0, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2877},
+      "calc_2030": {"icu_pct": 109.2, "icu_los": "H", "icu_delta_pct": 51.5, "deterioro": "B→H"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBR","volume_vph":0,   "future_vph":10,  "satd_flow_perm":1593,"lane_group_flow":11,  "sign_control":"Free","lane_alignment":"Right"},
@@ -560,7 +637,9 @@
     {
       "id": 62, "label": "62", "control_type": "Actuated-Uncoordinated", "area_type": "Other",
       "coords": {"lat": 14.654016, "lng": -90.541516},
-      "icu": 54.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 54.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 116.3, "icu_los": "H", "hcm_delay_s": 6.5, "hcm_los": "A", "hcm_confianza": "Media", "vol_total_vph": 2626},
+      "calc_2030": {"icu_pct": 89.3, "icu_los": "E", "icu_delta_pct": -27.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,   "future_vph":311, "satd_flow_perm":1641,"lane_group_flow":868, "sign_control":"Free", "lane_alignment":"Right"},
@@ -571,7 +650,9 @@
     {
       "id": 63, "label": "63", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.653528, "lng": -90.540468},
-      "icu": 18.6, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 18.6, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 41.7, "icu_los": "A", "hcm_delay_s": 24.6, "hcm_los": "C", "hcm_confianza": "Baja", "vol_total_vph": 738},
+      "calc_2030": {"icu_pct": 40.5, "icu_los": "A", "icu_delta_pct": -1.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":290,"future_vph":290,"satd_flow_perm":1842,"lane_group_flow":315,"sign_control":"Yield","lane_alignment":"Left"},
@@ -583,7 +664,9 @@
     {
       "id": 64, "label": "64", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654443, "lng": -90.541211},
-      "icu": 54.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 54.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 32.0, "icu_los": "A", "hcm_delay_s": 13.9, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 532},
+      "calc_2030": {"icu_pct": 14.9, "icu_los": "A", "icu_delta_pct": -17.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":0,"future_vph":71, "satd_flow_perm":1650,"lane_group_flow":338,"sign_control":"Yield","lane_alignment":"Left"},
@@ -594,7 +677,9 @@
     {
       "id": 65, "label": "65", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.654302, "lng": -90.543299},
-      "icu": 37.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 37.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 42.7, "icu_los": "A", "hcm_delay_s": 2.0, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2132},
+      "calc_2030": {"icu_pct": 58.5, "icu_los": "B", "icu_delta_pct": 15.8, "deterioro": "A→B"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":1396,"future_vph":1920,"satd_flow_perm":5024,"lane_group_flow":2124,"sign_control":"Free", "lane_alignment":"Left"},
@@ -604,7 +689,9 @@
     {
       "id": 66, "label": "66", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650066, "lng": -90.548263},
-      "icu": 89.0, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 89.0, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 160.5, "icu_los": "H", "hcm_delay_s": 250.9, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6662},
+      "calc_2030": {"icu_pct": 216.7, "icu_los": "H", "icu_delta_pct": 56.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":4091,"future_vph":5742,"satd_flow_perm":4748,"lane_group_flow":6283,"sign_control":"Free","lane_alignment":"Left"},
@@ -614,7 +701,9 @@
     {
       "id": 67, "label": "67", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.653443, "lng": -90.544848},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 3.6, "icu_los": "A", "hcm_delay_s": 7.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 60},
+      "calc_2030": {"icu_pct": 3.4, "icu_los": "A", "icu_delta_pct": -0.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":0,"future_vph":28,"satd_flow_perm":1750,"lane_group_flow":30,"sign_control":"Yield","lane_alignment":"Left"},
@@ -624,7 +713,9 @@
     {
       "id": 68, "label": "68", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654489, "lng": -90.538985},
-      "icu": 24.2, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 24.2, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 34.5, "icu_los": "A", "hcm_delay_s": 9.3, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 635},
+      "calc_2030": {"icu_pct": 34.5, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NET","volume_vph":397,"future_vph":397,"satd_flow_perm":1840,"lane_group_flow":445,"sign_control":"Free","lane_alignment":"Left"},
@@ -634,7 +725,9 @@
     {
       "id": 69, "label": "69", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651907, "lng": -90.545655},
-      "icu": 23.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 23.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 64.0, "icu_los": "B", "hcm_delay_s": 17.4, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 1609},
+      "calc_2030": {"icu_pct": 70.6, "icu_los": "C", "icu_delta_pct": 6.6, "deterioro": "B→C"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":0,  "future_vph":538,"satd_flow_perm":1750,"lane_group_flow":585, "sign_control":"Yield","lane_alignment":"Left"},
@@ -644,7 +737,9 @@
     {
       "id": 71, "label": "71", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650595, "lng": -90.548501},
-      "icu": 81.5, "icu_los": "D", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 81.5, "icu_los": "D", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 41.0, "icu_los": "A", "hcm_delay_s": 0.8, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1435},
+      "calc_2030": {"icu_pct": 45.4, "icu_los": "A", "icu_delta_pct": 4.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NWT","volume_vph":1193,"future_vph":1320,"satd_flow_perm":3500,"lane_group_flow":1435,"sign_control":"Free","lane_alignment":"Left"}
@@ -653,7 +748,9 @@
     {
       "id": 72, "label": "72", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650436, "lng": -90.547864},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 0.3, "icu_los": "A", "hcm_delay_s": 0.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 7},
+      "calc_2030": {"icu_pct": 0.3, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"SWT","volume_vph":0,"future_vph":6,"satd_flow_perm":2111,"lane_group_flow":7,"sign_control":"Free","lane_alignment":"Left"}
@@ -662,7 +759,9 @@
     {
       "id": 74, "label": "74", "control_type": "Unsignalized", "area_type": "Other",
       "coords": {"lat": 14.649137, "lng": -90.540085},
-      "icu": 129.2, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 129.2, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 282.7, "icu_los": "H", "hcm_delay_s": 266.9, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6282},
+      "calc_2030": {"icu_pct": 404.5, "icu_los": "H", "icu_delta_pct": 121.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"SBT","volume_vph":1679,"future_vph":2796,"satd_flow_perm":1842,"lane_group_flow":3039,"sign_control":"Free","lane_alignment":"Left"},
@@ -672,7 +771,9 @@
     {
       "id": 76, "label": "76", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655764, "lng": -90.543808},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 4.7, "icu_los": "A", "hcm_delay_s": 10.2, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 83},
+      "calc_2030": {"icu_pct": 4.3, "icu_los": "A", "icu_delta_pct": -0.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,"future_vph":28,"satd_flow_perm":1750,"lane_group_flow":30,"sign_control":"Yield","lane_alignment":"Left"},
@@ -683,7 +784,9 @@
     {
       "id": 79, "label": "79", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.652952, "lng": -90.546375},
-      "icu": 18.1, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 18.1, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 29.7, "icu_los": "A", "hcm_delay_s": 11.7, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 544},
+      "calc_2030": {"icu_pct": 29.6, "icu_los": "A", "icu_delta_pct": -0.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":207,"future_vph":207,"satd_flow_perm":1842,"lane_group_flow":225,"sign_control":"Free","lane_alignment":"Left"},
@@ -694,7 +797,9 @@
     {
       "id": 80, "label": "80", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655507, "lng": -90.545255},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 1.4, "icu_los": "A", "hcm_delay_s": 7.1, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 25},
+      "calc_2030": {"icu_pct": 1.3, "icu_los": "A", "icu_delta_pct": -0.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NWL","volume_vph":0,"future_vph":9, "satd_flow_perm":1593,"lane_group_flow":10,"sign_control":"Stop", "lane_alignment":"Left"},
@@ -704,7 +809,9 @@
     {
       "id": 81, "label": "81", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654069, "lng": -90.543726},
-      "icu": 37.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 37.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 42.4, "icu_los": "A", "hcm_delay_s": 0.7, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2134},
+      "calc_2030": {"icu_pct": 59.4, "icu_los": "B", "icu_delta_pct": 17.0, "deterioro": "A→B"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":1396,"future_vph":1954,"satd_flow_perm":5029,"lane_group_flow":2134,"sign_control":"Free","lane_alignment":"Left"}
@@ -713,7 +820,9 @@
     {
       "id": 82, "label": "82", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654793, "lng": -90.544495},
-      "icu": 37.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 37.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 21.0, "icu_los": "A", "hcm_delay_s": 1.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1037},
+      "calc_2030": {"icu_pct": 24.4, "icu_los": "A", "icu_delta_pct": 3.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":807,"future_vph":945,"satd_flow_perm":5029,"lane_group_flow":1027,"sign_control":"Free", "lane_alignment":"Left"},
@@ -723,7 +832,9 @@
     {
       "id": 84, "label": "84", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650283, "lng": -90.543002},
-      "icu": 26.4, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 26.4, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 30.2, "icu_los": "A", "hcm_delay_s": 0.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1517},
+      "calc_2030": {"icu_pct": 34.9, "icu_los": "A", "icu_delta_pct": 4.7, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":1193,"future_vph":1376,"satd_flow_perm":5019,"lane_group_flow":1517,"sign_control":"Free","lane_alignment":"Left"}
@@ -732,7 +843,9 @@
     {
       "id": 87, "label": "87", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.656388, "lng": -90.543263},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 1.1, "icu_los": "A", "hcm_delay_s": 0.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 20},
+      "calc_2030": {"icu_pct": 1.0, "icu_los": "A", "icu_delta_pct": -0.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":18,"satd_flow_perm":1842,"lane_group_flow":20,"sign_control":"Free","lane_alignment":"Left"}
@@ -741,7 +854,9 @@
     {
       "id": 89, "label": "89", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655942, "lng": -90.541096},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 2.5, "icu_los": "A", "hcm_delay_s": 8.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 44},
+      "calc_2030": {"icu_pct": 1.5, "icu_los": "A", "icu_delta_pct": -1.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":18,"satd_flow_perm":1813,"lane_group_flow":30,"sign_control":"Free", "lane_alignment":"Left"},
@@ -752,7 +867,9 @@
     {
       "id": 93, "label": "93", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655100, "lng": -90.541305},
-      "icu": 20.1, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 20.1, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 22.1, "icu_los": "A", "hcm_delay_s": 0.4, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1111},
+      "calc_2030": {"icu_pct": 26.0, "icu_los": "A", "icu_delta_pct": 3.9, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":869,"future_vph":1022,"satd_flow_perm":5029,"lane_group_flow":1111,"sign_control":"Free","lane_alignment":"Left"}
@@ -761,7 +878,9 @@
     {
       "id": 96, "label": "96", "control_type": "Roundabout", "area_type": "Other",
       "coords": {"lat": 14.649443, "lng": -90.549997},
-      "icu": 17.9, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 17.9, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 31.1, "icu_los": "A", "hcm_delay_s": null, "hcm_los": null, "hcm_confianza": "N/A", "vol_total_vph": 473},
+      "calc_2030": {"icu_pct": 19.4, "icu_los": "A", "icu_delta_pct": -11.7, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBR","volume_vph":0,  "future_vph":41, "satd_flow_perm":1593,"lane_group_flow":45, "sign_control":"Free", "lane_alignment":"Right"},
@@ -772,7 +891,9 @@
     {
       "id": 97, "label": "97", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.649618, "lng": -90.540952},
-      "icu": 115.1, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 115.1, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 223.8, "icu_los": "H", "hcm_delay_s": 269.6, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 3346},
+      "calc_2030": {"icu_pct": 128.9, "icu_los": "H", "icu_delta_pct": -94.9, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,   "future_vph":95,  "satd_flow_perm":1503,"lane_group_flow":1692,"sign_control":"Free","lane_alignment":"Left"},
@@ -782,7 +903,9 @@
     {
       "id": 103, "label": "103", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.649804, "lng": -90.547040},
-      "icu": 82.4, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 82.4, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 132.9, "icu_los": "H", "hcm_delay_s": 259.3, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6404},
+      "calc_2030": {"icu_pct": 179.2, "icu_los": "H", "icu_delta_pct": 46.3, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":4091,"future_vph":5620,"satd_flow_perm":5009,"lane_group_flow":6286,"sign_control":"Yield","lane_alignment":"Left"},
@@ -792,7 +915,9 @@
     {
       "id": 104, "label": "104", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655910, "lng": -90.544598},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 2.1, "icu_los": "A", "hcm_delay_s": 11.7, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 35},
+      "calc_2030": {"icu_pct": 1.3, "icu_los": "A", "icu_delta_pct": -0.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":9, "satd_flow_perm":1593,"lane_group_flow":10,"sign_control":"Yield","lane_alignment":"Left"},
@@ -803,7 +928,9 @@
     {
       "id": 105, "label": "105", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650278, "lng": -90.545725},
-      "icu": 115.1, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 115.1, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 267.8, "icu_los": "H", "hcm_delay_s": 266.7, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6167},
+      "calc_2030": {"icu_pct": 404.9, "icu_los": "H", "icu_delta_pct": 137.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NET","volume_vph":1384,"future_vph":2637,"satd_flow_perm":3188,"lane_group_flow":4252,"sign_control":"Free","lane_alignment":"Left"},
@@ -813,7 +940,9 @@
     {
       "id": 106, "label": "106", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655998, "lng": -90.542081},
-      "icu": 16.4, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 16.4, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 25.1, "icu_los": "A", "hcm_delay_s": 8.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1104},
+      "calc_2030": {"icu_pct": 25.5, "icu_los": "A", "icu_delta_pct": 0.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":326,"future_vph":335,"satd_flow_perm":3500,"lane_group_flow":364,"sign_control":"Yield","lane_alignment":"Left"},
@@ -823,7 +952,9 @@
     {
       "id": 108, "label": "108", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651518, "lng": -90.543328},
-      "icu": 13.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 13.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 83.0, "icu_los": "E", "hcm_delay_s": 63.9, "hcm_los": "E", "hcm_confianza": "Baja", "vol_total_vph": 1463},
+      "calc_2030": {"icu_pct": 49.2, "icu_los": "A", "icu_delta_pct": -33.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":324,"satd_flow_perm":1802,"lane_group_flow":630,"sign_control":"Yield","lane_alignment":"Left"},
@@ -834,7 +965,9 @@
     {
       "id": 110, "label": "110", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654207, "lng": -90.544716},
-      "icu": 7.4, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 7.4, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 28.3, "icu_los": "A", "hcm_delay_s": 15.0, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 473},
+      "calc_2030": {"icu_pct": 22.4, "icu_los": "A", "icu_delta_pct": -5.9, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBR","volume_vph":1, "future_vph":1,  "satd_flow_perm":1593,"lane_group_flow":152,"sign_control":"Free", "lane_alignment":"Right"},
@@ -845,7 +978,9 @@
     {
       "id": 112, "label": "112", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654923, "lng": -90.545887},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 0.8, "icu_los": "A", "hcm_delay_s": 0.2, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 15},
+      "calc_2030": {"icu_pct": 0.8, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"SWT","volume_vph":0,"future_vph":14,"satd_flow_perm":1842,"lane_group_flow":15,"sign_control":"Yield","lane_alignment":"Left"}
@@ -854,7 +989,9 @@
     {
       "id": 115, "label": "115", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654270, "lng": -90.542014},
-      "icu": 38.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 38.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 55.9, "icu_los": "B", "hcm_delay_s": 4.7, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2625},
+      "calc_2030": {"icu_pct": 68.4, "icu_los": "C", "icu_delta_pct": 12.5, "deterioro": "B→C"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":1809,"future_vph":2268,"satd_flow_perm":5004,"lane_group_flow":2545,"sign_control":"Free", "lane_alignment":"Left"},
@@ -864,7 +1001,9 @@
     {
       "id": 116, "label": "116", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654013, "lng": -90.540704},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 13.0, "icu_los": "A", "hcm_delay_s": 5.6, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 240},
+      "calc_2030": {"icu_pct": 12.0, "icu_los": "A", "icu_delta_pct": -1.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"SET","volume_vph":0,"future_vph":178,"satd_flow_perm":1842,"lane_group_flow":193,"sign_control":"Free","lane_alignment":"Left"},
@@ -874,7 +1013,9 @@
     {
       "id": 118, "label": "118", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.652406, "lng": -90.545000},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 2.6, "icu_los": "A", "hcm_delay_s": 9.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 46},
+      "calc_2030": {"icu_pct": 2.4, "icu_los": "A", "icu_delta_pct": -0.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBL","volume_vph":0,"future_vph":7, "satd_flow_perm":1593,"lane_group_flow":8, "sign_control":"Yield","lane_alignment":"Left"},
@@ -885,7 +1026,9 @@
     {
       "id": 120, "label": "120", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.652099, "lng": -90.545059, "_note": "duplicado en CSV, se usa primera ocurrencia"},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 6.3, "icu_los": "A", "hcm_delay_s": 12.5, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 110},
+      "calc_2030": {"icu_pct": 4.1, "icu_los": "A", "icu_delta_pct": -2.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBL","volume_vph":0,"future_vph":31,"satd_flow_perm":1750,"lane_group_flow":34,"sign_control":"Yield","lane_alignment":"Left"},
@@ -896,7 +1039,9 @@
     {
       "id": 121, "label": "121", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655265, "lng": -90.540714},
-      "icu": 12.4, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 12.4, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 20.7, "icu_los": "A", "hcm_delay_s": 8.9, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 380},
+      "calc_2030": {"icu_pct": 28.9, "icu_los": "A", "icu_delta_pct": 8.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":0,  "future_vph":68, "satd_flow_perm":1820,"lane_group_flow":81, "sign_control":"Yield","lane_alignment":"Left"},
@@ -907,7 +1052,9 @@
     {
       "id": 122, "label": "122", "control_type": "Multiple", "area_type": "Other",
       "coords": null,
-      "icu": 16.8, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 16.8, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 15.6, "icu_los": "A", "hcm_delay_s": 0.3, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 782},
+      "calc_2030": {"icu_pct": 16.1, "icu_los": "A", "icu_delta_pct": 0.5, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":697,"future_vph":719,"satd_flow_perm":5029,"lane_group_flow":782,"sign_control":"Free","lane_alignment":"Left"}
@@ -916,7 +1063,9 @@
     {
       "id": 124, "label": "124", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.657046, "lng": -90.541541},
-      "icu": 22.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 22.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 28.1, "icu_los": "A", "hcm_delay_s": 7.8, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1090},
+      "calc_2030": {"icu_pct": 28.1, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"NBT","volume_vph":326,"future_vph":326,"satd_flow_perm":5029,"lane_group_flow":354,"sign_control":"Free", "lane_alignment":"Left"},
@@ -926,7 +1075,9 @@
     {
       "id": 125, "label": "125", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.649589, "lng": -90.549074},
-      "icu": 15.6, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 15.6, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 16.4, "icu_los": "A", "hcm_delay_s": 1.4, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 428},
+      "calc_2030": {"icu_pct": 18.0, "icu_los": "A", "icu_delta_pct": 1.6, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":0,  "future_vph":6,  "satd_flow_perm":3500,"lane_group_flow":7,  "sign_control":"Free", "lane_alignment":"Left"},
@@ -936,7 +1087,9 @@
     {
       "id": 127, "label": "127", "control_type": "Multiple", "area_type": "Other",
       "coords": null,
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 9.8, "icu_los": "A", "hcm_delay_s": 10.6, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 163},
+      "calc_2030": {"icu_pct": 9.0, "icu_los": "A", "icu_delta_pct": -0.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":66,"satd_flow_perm":1750,"lane_group_flow":72,"sign_control":"Free", "lane_alignment":"Left"},
@@ -947,7 +1100,9 @@
     {
       "id": 130, "label": "130", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.654270, "lng": -90.540987},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 37.6, "icu_los": "A", "hcm_delay_s": 15.1, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 615},
+      "calc_2030": {"icu_pct": 23.9, "icu_los": "A", "icu_delta_pct": -13.7, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"SET","volume_vph":0,"future_vph":240,"satd_flow_perm":1593,"lane_group_flow":261,"sign_control":"Free", "lane_alignment":"Left"},
@@ -958,7 +1113,9 @@
     {
       "id": 132, "label": "132", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.653604, "lng": -90.540289},
-      "icu": 40.2, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 40.2, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 27.0, "icu_los": "A", "hcm_delay_s": 9.0, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 498},
+      "calc_2030": {"icu_pct": 27.0, "icu_los": "A", "icu_delta_pct": 0.0, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":290,"future_vph":290,"satd_flow_perm":1842,"lane_group_flow":315,"sign_control":"Yield","lane_alignment":"Left"},
@@ -968,7 +1125,9 @@
     {
       "id": 134, "label": "134", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.655477, "lng": -90.542917},
-      "icu": 18.9, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 18.9, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 20.6, "icu_los": "A", "hcm_delay_s": 0.4, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1036},
+      "calc_2030": {"icu_pct": 24.3, "icu_los": "A", "icu_delta_pct": 3.7, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":807,"future_vph":953,"satd_flow_perm":5029,"lane_group_flow":1036,"sign_control":"Free","lane_alignment":"Left"}
@@ -977,7 +1136,9 @@
     {
       "id": 138, "label": "138", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650213, "lng": -90.542346},
-      "icu": 33.1, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 33.1, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 30.6, "icu_los": "A", "hcm_delay_s": 0.5, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1537},
+      "calc_2030": {"icu_pct": 35.8, "icu_los": "A", "icu_delta_pct": 5.2, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":1193,"future_vph":1395,"satd_flow_perm":5019,"lane_group_flow":1537,"sign_control":"Free","lane_alignment":"Left"}
@@ -986,7 +1147,9 @@
     {
       "id": 140, "label": "140", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650543, "lng": -90.544386},
-      "icu": 0.0, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 0.0, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 2.9, "icu_los": "A", "hcm_delay_s": 6.3, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 77},
+      "calc_2030": {"icu_pct": 2.1, "icu_los": "A", "icu_delta_pct": -0.8, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":0,"future_vph":35,"satd_flow_perm":3314,"lane_group_flow":59,"sign_control":"Free", "lane_alignment":"Left"},
@@ -996,7 +1159,9 @@
     {
       "id": 141, "label": "141", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651460, "lng": -90.544717},
-      "icu": 30.1, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 30.1, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 58.4, "icu_los": "B", "hcm_delay_s": 3.7, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 2896},
+      "calc_2030": {"icu_pct": 109.9, "icu_los": "H", "icu_delta_pct": 51.5, "deterioro": "B→H"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBR","volume_vph":0,   "future_vph":17,  "satd_flow_perm":1593,"lane_group_flow":18,  "sign_control":"Yield","lane_alignment":"Right"},
@@ -1006,7 +1171,9 @@
     {
       "id": 144, "label": "144", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650308, "lng": -90.543599},
-      "icu": 33.1, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 33.1, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 30.9, "icu_los": "A", "hcm_delay_s": 1.9, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 1514},
+      "calc_2030": {"icu_pct": 35.0, "icu_los": "A", "icu_delta_pct": 4.1, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"WBT","volume_vph":1193,"future_vph":1357,"satd_flow_perm":5019,"lane_group_flow":1496,"sign_control":"Free", "lane_alignment":"Left"},
@@ -1016,7 +1183,9 @@
     {
       "id": 146, "label": "146", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651348, "lng": -90.542067},
-      "icu": 13.3, "icu_los": "A", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 13.3, "icu_los": "A", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 55.3, "icu_los": "B", "hcm_delay_s": 18.9, "hcm_los": "B", "hcm_confianza": "Baja", "vol_total_vph": 1013},
+      "calc_2030": {"icu_pct": 49.9, "icu_los": "A", "icu_delta_pct": -5.4, "deterioro": "estable"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":0,"future_vph":612,"satd_flow_perm":1837,"lane_group_flow":681,"sign_control":"Yield","lane_alignment":"Left"},
@@ -1027,7 +1196,9 @@
     {
       "id": 149, "label": "149", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.651280, "lng": -90.548907},
-      "icu": 117.1, "icu_los": "H", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 117.1, "icu_los": "H", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 108.1, "icu_los": "G", "hcm_delay_s": 261.5, "hcm_los": "F", "hcm_confianza": "Baja", "vol_total_vph": 6707},
+      "calc_2030": {"icu_pct": 146.8, "icu_los": "H", "icu_delta_pct": 38.7, "deterioro": "G→H"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBR","volume_vph":0,   "future_vph":41,  "satd_flow_perm":1593,"lane_group_flow":45,  "sign_control":"Yield","lane_alignment":"Right"},
@@ -1037,7 +1208,9 @@
     {
       "id": 151, "label": "151", "control_type": "Multiple", "area_type": "Other",
       "coords": {"lat": 14.650181, "lng": -90.543777},
-      "icu": 84.8, "icu_los": "E", "signal_delay": null, "signal_los": null,
+      "synchro_2025": {"icu_pct": 84.8, "icu_los": "E", "signal_delay_s": null, "signal_los": null},
+      "calc_2025": {"icu_pct": 70.7, "icu_los": "C", "hcm_delay_s": 5.8, "hcm_los": "A", "hcm_confianza": "Baja", "vol_total_vph": 3410},
+      "calc_2030": {"icu_pct": 78.1, "icu_los": "D", "icu_delta_pct": 7.4, "deterioro": "C→D"},
       "cycle_length": null, "analysis_period_min": 15,
       "lane_groups": [
         {"group":"EBT","volume_vph":2707,"future_vph":3021,"satd_flow_perm":5014,"lane_group_flow":3347,"sign_control":"Free", "lane_alignment":"Left"},
