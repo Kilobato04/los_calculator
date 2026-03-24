@@ -3,54 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapa LOS — Naranjo 2026</title>
+<title>Mapa LOS ICU — Naranjo 2026</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-.topbar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000}
+.topbar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000;flex-shrink:0}
 .topbar h1{font-size:11px;color:#90caf9;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-right:2px}
 
-/* filter groups */
 .fgroup{display:flex;align-items:center;gap:3px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:2px 4px}
 .fgroup-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;padding:0 4px;white-space:nowrap}
-.fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
+
+/* layer toggle — two prominent buttons */
+.layer-btn{padding:3px 11px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;
+  color:#888;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.layer-btn:hover{color:#ccc;background:#1e2a3a}
+.layer-btn.active-synchro{background:#1b3a4e;color:#29b6f6;border-color:#29b6f6}
+.layer-btn.active-calc{background:#1b3a1e;color:#4caf50;border-color:#4caf50}
+
+.fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;
+  color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
 .fbtn:hover{color:#aaa;background:#1a2030}
 .fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
-.fbtn.active-warn{background:#ff5722;color:#fff;border-color:#ff5722}
-.fbtn.active-ok{background:#1b4d2e;color:#4caf50;border-color:#2a6040}
+.fbtn.active-warn{background:#b83a22;color:#ffb4a2;border-color:#f44336}
 
-/* year toggle */
-.yr-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:3px 9px;margin-left:auto}
+/* sensitivity slider group */
+.sens-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a4060;
+  border-radius:5px;padding:3px 9px}
+.sens-wrap span{font-size:10px;color:#4a90d9;font-weight:600;white-space:nowrap}
+.sens-btn{width:22px;height:22px;border-radius:4px;border:1px solid #2a4060;background:#1a2a3a;
+  color:#90caf9;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;line-height:1;flex-shrink:0}
+.sens-btn:hover{background:#1e3a5a}
+#sensDisplay{font-size:13px;font-weight:700;color:#e0e0e0;min-width:36px;text-align:center}
+#sensSlider{width:90px;accent-color:#4a90d9}
+#sensPct{font-size:10px;font-weight:700;min-width:38px}
+
+/* yr toggle */
+.yr-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a3044;
+  border-radius:5px;padding:3px 9px}
 .yr-wrap span{font-size:10px;color:#555}
 .yr-wrap label{font-size:10px;color:#90caf9;cursor:pointer;white-space:nowrap}
 .yr-wrap input{accent-color:#4a90d9;cursor:pointer}
 
-#stats{font-size:10px;color:#555;white-space:nowrap;padding-left:2px;border-left:1px solid #2a3044;padding-left:8px}
+/* table link button */
+.tbl-btn{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;
+  border:1px solid #2a3044;background:#1a1f2e;color:#90caf9;font-size:10px;
+  font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;
+  transition:all .15s;margin-left:auto}
+.tbl-btn:hover{background:#1e3050;border-color:#4a90d9}
+.tbl-btn svg{flex-shrink:0}
+
+#stats{font-size:10px;color:#555;white-space:nowrap;border-left:1px solid #2a3044;padding-left:8px}
 
 #map{flex:1;width:100%}
 
 /* tooltip */
 .los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;
-  font-family:'Segoe UI',Arial,sans-serif;min-width:210px;pointer-events:none;
+  font-family:'Segoe UI',Arial,sans-serif;min-width:200px;pointer-events:none;
   box-shadow:0 4px 16px rgba(0,0,0,.7);color:#e0e0e0}
 .tt-id{font-size:11px;color:#90caf9;font-weight:700;margin-bottom:3px}
 .tt-los-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
 .tt-los{font-size:30px;font-weight:900;line-height:1}
-.tt-los-sub{font-size:9px;color:#555}
+.tt-los-sub{font-size:9px;color:#555;line-height:1.4}
 .tt-row{font-size:10px;color:#888;margin-top:2px;display:flex;justify-content:space-between;gap:8px}
 .tt-row b{color:#ccc}
-.tt-divider{border:none;border-top:1px solid #1e2538;margin:5px 0}
+.tt-div{border:none;border-top:1px solid #1e2538;margin:5px 0}
 .tt-warn{font-size:9px;color:#ff9800;margin-top:3px}
-.tt-proj{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:10px}
-.tt-proj-arrow{color:#444}
 .tt-discr{font-size:9px;color:#ffc107;margin-top:3px}
+.tt-det{font-size:9px;color:#f44336;margin-top:3px}
 
 /* legend */
 #legend{position:absolute;top:54px;right:10px;z-index:1000;background:#14161eee;
-  border:1px solid #2a3044;border-radius:8px;padding:11px 13px;width:222px;
+  border:1px solid #2a3044;border-radius:8px;padding:11px 13px;width:220px;
   font-size:10px;max-height:calc(100vh - 80px);overflow-y:auto;
   box-shadow:0 6px 24px rgba(0,0,0,.6)}
 #legend h3{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:7px}
@@ -62,24 +89,30 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 .lc{border-radius:50%;background:#4a90d9;opacity:.7;flex-shrink:0}
 .leg-div{border:none;border-top:1px solid #2a3044;margin:7px 0}
 .crit-item{font-size:9px;color:#ccc;line-height:1.8}
-#critical-list{margin-top:4px}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <h1>🚦 LOS · Naranjo 2026</h1>
+  <h1>🚦 LOS ICU · Naranjo 2026</h1>
 
-  <!-- group: vista -->
+  <!-- LAYER: synchro vs calc -->
   <div class="fgroup">
-    <span class="fgroup-label">Vista</span>
+    <span class="fgroup-label">Capa</span>
+    <button id="btn-synchro" class="layer-btn active-synchro" onclick="setLayer('synchro',this)">● Synchro rptd</button>
+    <button id="btn-calc"    class="layer-btn" onclick="setLayer('calc',this)">● ICU calc</button>
+  </div>
+
+  <!-- FILTER: vista -->
+  <div class="fgroup">
+    <span class="fgroup-label">Filtro</span>
     <button class="fbtn active" onclick="setFilt('all',this)">Todas</button>
     <button class="fbtn" onclick="setFilt('sig',this)">Semaforizadas</button>
     <button class="fbtn" onclick="setFilt('unsig',this)">No semaf.</button>
     <button class="fbtn" onclick="setFilt('roundabout',this)">Glorietas</button>
   </div>
 
-  <!-- group: alerta -->
+  <!-- FILTER: alerta -->
   <div class="fgroup">
     <span class="fgroup-label">Alerta</span>
     <button class="fbtn" onclick="setFilt('crit',this)">ICU ≥ 90%</button>
@@ -88,19 +121,34 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <button class="fbtn" onclick="setFilt('lovol',this)">Vol. &lt;50</button>
   </div>
 
-  <!-- group: confianza -->
-  <div class="fgroup">
-    <span class="fgroup-label">HCM</span>
-    <button class="fbtn" onclick="setFilt('alta',this)">Alta</button>
-    <button class="fbtn" onclick="setFilt('media',this)">Media</button>
+  <!-- SENSITIVITY -->
+  <div class="sens-wrap">
+    <span>Vol. ×</span>
+    <button class="sens-btn" onclick="stepSens(-0.1)">−</button>
+    <span id="sensDisplay">×1.0</span>
+    <button class="sens-btn" onclick="stepSens(0.1)">+</button>
+    <input type="range" id="sensSlider" min="0.5" max="3.0" step="0.1" value="1.0"
+      oninput="setSens(+this.value)">
+    <span id="sensPct" style="color:#666">+0%</span>
+    <button onclick="resetSens()" style="padding:2px 7px;background:#1a2030;border:1px solid #2a3044;border-radius:4px;color:#888;cursor:pointer;font-size:9px">Reset</button>
   </div>
 
-  <!-- year toggle -->
+  <!-- YEAR -->
   <div class="yr-wrap">
     <span>2025</span>
     <input type="checkbox" id="yrToggle" onchange="setYear(this.checked)">
     <label for="yrToggle">2030</label>
   </div>
+
+  <!-- TABLA LINK -->
+  <a class="tbl-btn" href="https://los-calulator-latam.netlify.app/summary_los.html" target="_blank">
+    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <rect x="1" y="1" width="10" height="10" rx="1.5"/>
+      <line x1="1" y1="4" x2="11" y2="4"/>
+      <line x1="4" y1="4" x2="4" y2="11"/>
+    </svg>
+    Tabla resumen
+  </a>
 
   <span id="stats">Cargando…</span>
 </div>
@@ -108,7 +156,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 <div id="map"></div>
 
 <div id="legend">
-  <h3>Nivel de servicio (ICU calc)</h3>
+  <h3 id="leg-title">LOS ICU — Synchro rptd</h3>
   <div class="lr"><div class="ls" style="width:14px;height:14px;background:#4caf50"></div><span class="ll">A — Excelente</span><span class="ld">≤55%</span></div>
   <div class="lr"><div class="ls" style="width:14px;height:14px;background:#8bc34a"></div><span class="ll">B — Muy bueno</span><span class="ld">≤64%</span></div>
   <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ffc107"></div><span class="ll">C — Aceptable</span><span class="ld">≤73%</span></div>
@@ -119,7 +167,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
   <div class="lr"><div class="ls" style="width:14px;height:14px;background:#9c27b0"></div><span class="ll">H — Colapso</span><span class="ld">&gt;109%</span></div>
 
   <hr class="leg-div">
-  <div class="leg-h">Tamaño · volumen total</div>
+  <div class="leg-h">Tamaño · volumen × sensibilidad</div>
   <div class="lr"><div class="lc" style="width:24px;height:24px"></div><span class="ll">≥ 5 000 vph</span></div>
   <div class="lr"><div class="lc" style="width:17px;height:17px"></div><span class="ll">1 000 – 5 000 vph</span></div>
   <div class="lr"><div class="lc" style="width:11px;height:11px"></div><span class="ll">200 – 1 000 vph</span></div>
@@ -134,7 +182,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 
   <hr class="leg-div">
   <div class="leg-h">Borde del marcador</div>
-  <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #ffc107;flex-shrink:0"></span><span class="ll">Discrepancia Synchro vs calc</span></div>
+  <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #ffc107;flex-shrink:0"></span><span class="ll">Discrepancia Synchro ≠ Calc</span></div>
   <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #f44336;flex-shrink:0"></span><span class="ll">Deterioro proyectado 2030</span></div>
 
   <hr class="leg-div">
@@ -142,41 +190,69 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
   <div id="critical-list">Cargando…</div>
 
   <hr class="leg-div">
-  <div style="font-size:9px;color:#333;line-height:1.6">AM Peak · ICU + HCM 7<br>Synchro 11 · 01-29-2026<br>datalos_latlong.json</div>
+  <div style="font-size:9px;color:#333;line-height:1.6">AM Peak · ICU<br>Synchro 11 · 01-29-2026<br>datalos_latlong.json</div>
 </div>
 
 <script>
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const LC  = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
+const ORD = 'ABCDEFGH';
+
+function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
+function lc(l){ return LC[l]||'#888'; }
+
+// accessors for new master schema
+function c25(d){ return d.calc_2025||{}; }
+function c30(d){ return d.calc_2030||{}; }
+function s25(d){ return d.synchro_2025||{}; }
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let D          = {intersections:[]};
+let markers    = [];
+let activeFilt = 'all';
+let activeLayer= 'synchro';   // 'synchro' | 'calc'
+let useY30     = false;
+let sensMult   = 1.0;
+
+// ── SENSITIVITY ───────────────────────────────────────────────────────────────
+function setSens(v){
+  sensMult = Math.round(v*10)/10;
+  document.getElementById('sensSlider').value = sensMult;
+  document.getElementById('sensDisplay').textContent = '×'+sensMult.toFixed(1);
+  const pct = Math.round((sensMult-1)*100);
+  const el  = document.getElementById('sensPct');
+  el.textContent = pct===0?'+0%':(pct>0?'+'+pct+'%':pct+'%');
+  el.style.color = pct>0?'#f44336':pct<0?'#4caf50':'#666';
+  buildMarkers();
+}
+function stepSens(d){ setSens(Math.min(3.0, Math.max(0.5, sensMult+d))); }
+function resetSens(){ setSens(1.0); }
+
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-const LC = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
-const ORDER = 'ABCDEFGH';
+// Apply sensitivity to ICU (scales proportionally)
+function scaledICU(rawIcu){
+  return +(rawIcu * sensMult).toFixed(1);
+}
 
-function losColor(l){ return LC[l]||'#888'; }
-function losIdx(l){ return ORDER.indexOf(l); }
-
-// Read from new master schema
-function c25(d){ return d.calc_2025 || {}; }
-function c30(d){ return d.calc_2030 || {}; }
-function s25(d){ return d.synchro_2025 || {}; }
-
-function getLOS(d, y30){
-  if(y30){
-    const l = c30(d).icu_los || 'A';
-    const v = c30(d).icu_pct;
-    return {los:l, val: v!=null ? v+'%' : '—', method:'ICU 2030'};
+// Get the ICU pct and LOS for the active layer + year + sensitivity
+function getDisplayLOS(d){
+  if(activeLayer==='synchro'){
+    const rawIcu = useY30 ? (s25(d).icu_pct||0)*1.15 : (s25(d).icu_pct||0);
+    const icu    = scaledICU(rawIcu);
+    return { icu, los: icuLOS(icu), source: useY30?'Synchro 2030~':'Synchro rptd' };
+  } else {
+    const rawIcu = useY30 ? (c30(d).icu_pct||0) : (c25(d).icu_pct||0);
+    const icu    = scaledICU(rawIcu);
+    return { icu, los: icuLOS(icu), source: useY30?'ICU calc 2030':'ICU calc 2025' };
   }
-  // prefer HCM high-conf signalized
-  const sig = s25(d).signal_delay_s;
-  const hcmConf = c25(d).hcm_confianza;
-  if(sig!=null && hcmConf==='Alta' && c25(d).hcm_los)
-    return {los:c25(d).hcm_los, val:c25(d).hcm_delay_s+'s', method:'HCM ●'};
-  return {los: c25(d).icu_los||'A', val: c25(d).icu_pct+'%', method:'ICU calc'};
 }
 
 function volToR(vol){
-  if(!vol||vol<=0) return 5;
-  if(vol<50)       return 6;
-  if(vol>=8000)    return 26;
-  return Math.round(6 + (Math.log(vol)-Math.log(50))/(Math.log(8000)-Math.log(50))*20);
+  const v = Math.round(vol * sensMult);
+  if(!v||v<=0) return 5;
+  if(v<50)     return 6;
+  if(v>=8000)  return 26;
+  return Math.round(6+(Math.log(v)-Math.log(50))/(Math.log(8000)-Math.log(50))*20);
 }
 
 function ctrlGlyph(ct){
@@ -186,31 +262,18 @@ function ctrlGlyph(ct){
   return {g:'≡',c:'#81c784'};
 }
 
-function hasDeterioroReal(d){
-  const det = c30(d).deterioro||'estable';
-  return det!=='estable';
-}
-
+function hasDeterioroReal(d){ return (c30(d).deterioro||'estable')!=='estable'; }
 function hasDiscrepancia(d){
-  const sLos = s25(d).icu_los;
-  const cLos = c25(d).icu_los;
-  return sLos && cLos && sLos!==cLos;
+  const sL = s25(d).icu_los, cL = c25(d).icu_los;
+  return sL && cL && sL!==cL;
 }
-
-function isSig(d){
-  return s25(d).signal_delay_s != null;
-}
+function isSigD(d){ return s25(d).signal_delay_s!=null; }
 
 // ── MAP INIT ──────────────────────────────────────────────────────────────────
 const map = L.map('map',{zoomControl:true}).setView([14.652,-90.543],15);
 L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
   attribution:'© OSM © CARTO', maxZoom:20
 }).addTo(map);
-
-let D = {intersections:[]};
-let markers = [];
-let activeFilt = 'all';
-let useY30 = false;
 
 // ── BUILD MARKERS ─────────────────────────────────────────────────────────────
 function buildMarkers(){
@@ -221,42 +284,36 @@ function buildMarkers(){
   const items = D.intersections.filter(d=>d.coords&&d.coords.lat);
 
   items.forEach(d=>{
-    const vol   = c25(d).vol_total_vph || 0;
-    const isLow = vol < 50;
-    const isSigD= isSig(d);
-    const isDet = hasDeterioroReal(d);
-    const isDisc= hasDiscrepancia(d);
-    const conf  = c25(d).hcm_confianza || '';
+    const vol    = Math.round((c25(d).vol_total_vph||0) * sensMult);
+    const isLow  = vol < 50;
+    const isDet  = hasDeterioroReal(d);
+    const isDisc = hasDiscrepancia(d);
 
     // ── FILTER ──
-    if(activeFilt==='sig'        && !isSigD) return;
-    if(activeFilt==='unsig'      && (isSigD||d.control_type==='Roundabout')) return;
+    if(activeFilt==='sig'        && !isSigD(d)) return;
+    if(activeFilt==='unsig'      && (isSigD(d)||d.control_type==='Roundabout')) return;
     if(activeFilt==='roundabout' && d.control_type!=='Roundabout') return;
     if(activeFilt==='crit'       && (c25(d).icu_pct||0)<90) return;
     if(activeFilt==='det'        && !isDet) return;
     if(activeFilt==='discr'      && !isDisc) return;
     if(activeFilt==='lovol'      && !isLow) return;
-    if(activeFilt==='alta'       && conf!=='Alta') return;
-    if(activeFilt==='media'      && conf!=='Media') return;
 
-    const {los, val, method} = getLOS(d, useY30);
-    const col  = losColor(los);
-    const r    = volToR(vol);
+    const {icu, los, source} = getDisplayLOS(d);
+    const col  = lc(los);
+    const r    = volToR(c25(d).vol_total_vph||0);
     const sz   = r*2+14;
     const cx   = sz/2;
     const op   = isLow ? 0.4 : 0.85;
     const ctrl = ctrlGlyph(d.control_type);
 
-    // Border: red = deterioro, yellow = discrepancia, white default
-    const strokeCol = isDet ? '#f44336' : isDisc ? '#ffc107' : '#ffffff';
-    const strokeW   = (isDet||isDisc) ? 2 : 1;
+    const strokeCol = isDet?'#f44336':isDisc?'#ffc107':'#ffffff';
+    const strokeW   = (isDet||isDisc)?2:1;
 
     const icon = L.divIcon({
-      className:'',
-      iconSize:[sz,sz], iconAnchor:[cx,cx],
+      className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
       html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
         <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
-          stroke="${strokeCol}" stroke-width="${strokeW}" stroke-opacity=".85"/>
+          stroke="${strokeCol}" stroke-width="${strokeW}" stroke-opacity=".9"/>
         <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
           font-family="Segoe UI,Arial,sans-serif"
           font-size="${Math.max(7,Math.min(12,r*0.85))}px"
@@ -268,33 +325,31 @@ function buildMarkers(){
     });
 
     // ── TOOLTIP ──
-    const sIcu   = s25(d).icu_pct;
-    const cIcu   = c25(d).icu_pct;
-    const sLos   = s25(d).icu_los;
-    const cLos25 = c25(d).icu_los;
-    const cLos30 = c30(d).icu_los;
-    const col30  = losColor(cLos30||'A');
-    const det    = c30(d).deterioro||'estable';
-    const icuDelta = c30(d).icu_delta_pct;
-    const hcmDelay = c25(d).hcm_delay_s;
-    const hcmLos   = c25(d).hcm_los;
-    const hcmConf  = c25(d).hcm_confianza;
-    const sigDelay = s25(d).signal_delay_s;
-    const sigLos   = s25(d).signal_los;
+    const sIcu25  = s25(d).icu_pct;
+    const cIcu25  = c25(d).icu_pct;
+    const sLos25  = s25(d).icu_los;
+    const cLos25  = c25(d).icu_los;
+    const cIcu30  = c30(d).icu_pct;
+    const cLos30  = c30(d).icu_los;
+    const det     = c30(d).deterioro||'estable';
+    const delta   = c30(d).icu_delta_pct;
 
-    const discWarn = isDisc
-      ? `<div class="tt-discr">⚡ Discrepancia: Synchro ${sLos} (${sIcu}%) vs Calc ${cLos25} (${cIcu}%)</div>` : '';
-    const hcmRow = hcmDelay!=null
-      ? `<div class="tt-row"><span>HCM calc ${hcmConf?'['+hcmConf+']':''}</span><b>${hcmDelay}s — ${hcmLos||'—'}</b></div>` : '';
-    const sigRow = sigDelay!=null
-      ? `<div class="tt-row"><span>HCM rptd</span><b>${sigDelay}s — ${sigLos||'—'}</b></div>` : '';
+    // scaled values for tooltip
+    const sIcuSc  = scaledICU(sIcu25||0);
+    const cIcuSc  = scaledICU(cIcu25||0);
+    const cIcu30Sc= scaledICU(cIcu30||0);
+    const sLosSc  = icuLOS(sIcuSc);
+    const cLosSc  = icuLOS(cIcuSc);
+    const cLos30Sc= icuLOS(cIcu30Sc);
+
+    const discWarn = hasDiscrepancia(d) || sLosSc!==cLosSc
+      ? `<div class="tt-discr">⚡ Synchro ${sLosSc} (${sIcuSc}%) vs Calc ${cLosSc} (${cIcuSc}%)</div>` : '';
+    const detRow = det!=='estable'
+      ? `<div class="tt-det">↑ Deterioro 2030: ${det}</div>` : '';
     const lowWarn = isLow
       ? `<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>` : '';
-    const detArrow = det!=='estable'
-      ? `<span style="color:#f44336;font-weight:700">${det}</span>`
-      : `<span style="color:#4caf50">estable</span>`;
-    const deltaStr = icuDelta!=null
-      ? ` (Δ${icuDelta>0?'+':''}${icuDelta}%)` : '';
+    const sensNote = sensMult!==1.0
+      ? `<div class="tt-row" style="margin-top:3px"><span>Sensibilidad</span><b style="color:${sensMult>1?'#f44336':'#4caf50'}">×${sensMult.toFixed(1)}</b></div>` : '';
 
     const mk = L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
     mk.bindTooltip(`
@@ -302,83 +357,81 @@ function buildMarkers(){
         <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
         <div class="tt-los-row">
           <div class="tt-los" style="color:${col}">${los}</div>
-          <div class="tt-los-sub">${method} · ${val}</div>
+          <div class="tt-los-sub">${source}<br>${icu}%</div>
         </div>
-        <hr class="tt-divider">
-        <div class="tt-row"><span>Synchro ICU</span><b>${sIcu}% — ${sLos}</b></div>
-        <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcu}% — <span style="color:${losColor(cLos25)}">${cLos25}</span></b></div>
-        ${hcmRow}${sigRow}
+        <hr class="tt-div">
+        <div class="tt-row"><span>Synchro ICU 2025</span><b>${sIcuSc}% — <span style="color:${lc(sLosSc)}">${sLosSc}</span></b></div>
+        <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcuSc}% — <span style="color:${lc(cLosSc)}">${cLosSc}</span></b></div>
+        <div class="tt-row"><span>Calc ICU 2030</span><b>${cIcu30Sc}% — <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>
         <div class="tt-row"><span>Vol. total</span><b>${vol.toLocaleString()} vph</b></div>
-        <hr class="tt-divider">
-        <div class="tt-proj">
-          <span style="color:#555;font-size:9px">2030:</span>
-          <b style="color:${col30}">${cLos30||'—'}</b>
-          <span style="color:#555;font-size:9px">${c30(d).icu_pct!=null?c30(d).icu_pct+'%':''}</span>
-          <span style="font-size:9px">${deltaStr}</span>
-          ${detArrow}
-        </div>
-        ${discWarn}${lowWarn}
+        ${sensNote}
+        ${discWarn}${detRow}${lowWarn}
       </div>`,{
-      permanent:false, direction:'top',
-      offset:[0,-(r+4)], opacity:1, className:''
+      permanent:false, direction:'top', offset:[0,-(r+4)], opacity:1, className:''
     });
 
     mk.addTo(map);
     markers.push(mk);
-    if((c25(d).icu_pct||0)>=90) criticals.push({label:d.label, icu:c25(d).icu_pct, los:cLos25});
+
+    const critIcu = activeLayer==='synchro' ? sIcuSc : cIcuSc;
+    if(critIcu>=90) criticals.push({label:d.label, icu:critIcu, los});
   });
 
   // ── STATS ──
-  const losE = items.filter(d=>{
-    const {los}=getLOS(d,useY30); return 'EFGH'.includes(los);
-  }).length;
-  const nDet  = items.filter(hasDeterioroReal).length;
-  const nDisc = items.filter(hasDiscrepancia).length;
+  const losE = items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
+  const nDet = items.filter(hasDeterioroReal).length;
+  const nDisc= items.filter(hasDiscrepancia).length;
   document.getElementById('stats').textContent =
-    `${markers.length} int. · ${losE} LOS≥E · ${nDet} deterioro · ${nDisc} discrepancia`;
+    `${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr.`;
 
   // ── CRITICAL LIST ──
   const cl = document.getElementById('critical-list');
   if(criticals.length){
     criticals.sort((a,b)=>b.icu-a.icu);
     cl.innerHTML = criticals.slice(0,8).map(c=>
-      `<div class="crit-item">• <b>#${c.label}</b> — ${c.icu}% <span style="color:${LC[c.los]}">[${c.los}]</span></div>`
+      `<div class="crit-item">• <b>#${c.label}</b> — ${c.icu}% <span style="color:${lc(c.los)}">[${c.los}]</span></div>`
     ).join('');
     if(criticals.length>8) cl.innerHTML+=`<div style="font-size:9px;color:#555">+${criticals.length-8} más…</div>`;
   } else {
     cl.innerHTML='<div style="font-size:9px;color:#555">Sin puntos críticos en esta vista.</div>';
   }
 
-  if(markers.length && map.getZoom()<=15){
+  if(markers.length && map.getZoom()<=15)
     map.fitBounds(L.featureGroup(markers).getBounds(),{padding:[50,50]});
-  }
 }
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
-function setFilt(f,btn){
-  activeFilt=f;
-  document.querySelectorAll('.fbtn').forEach(b=>{
-    b.classList.remove('active','active-warn','active-ok');
+function setLayer(l, btn){
+  activeLayer = l;
+  document.querySelectorAll('.layer-btn').forEach(b=>{
+    b.classList.remove('active-synchro','active-calc');
   });
-  // color por tipo de filtro
-  if(['crit','det','discr','lovol'].includes(f)) btn.classList.add('active-warn');
-  else if(['alta','media'].includes(f)) btn.classList.add('active-ok');
-  else btn.classList.add('active');
+  btn.classList.add(l==='synchro'?'active-synchro':'active-calc');
+  document.getElementById('leg-title').textContent =
+    l==='synchro' ? 'LOS ICU — Synchro rptd' : 'LOS ICU — Calculado';
   buildMarkers();
 }
+
+function setFilt(f, btn){
+  activeFilt = f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active','active-warn'));
+  btn.classList.add(['crit','det','discr','lovol'].includes(f)?'active-warn':'active');
+  buildMarkers();
+}
+
 function setYear(v){ useY30=v; buildMarkers(); }
 
 // ── LOAD ──────────────────────────────────────────────────────────────────────
 async function loadData(){
   try{
-    const r=await fetch('datalos_latlong.json');
+    const r = await fetch('datalos_latlong.json');
     if(!r.ok) throw new Error('HTTP '+r.status);
-    D=await r.json();
+    D = await r.json();
     console.log('datalos_latlong.json: '+D.intersections.length+' intersecciones');
   } catch(e){
-    console.warn('No se cargó datalos_master.json:',e.message);
-    document.getElementById('stats').textContent=
-      '⚠ Sirve los archivos con: npx serve .  |  python -m http.server';
+    console.warn('No se cargó datalos_latlong.json:',e.message);
+    document.getElementById('stats').textContent =
+      '⚠ Sirve con: npx serve .  |  python -m http.server';
   }
   buildMarkers();
 }
