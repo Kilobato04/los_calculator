@@ -290,10 +290,16 @@ function buildMarkers(){
     const isDisc = hasDiscrepancia(d);
 
     // ── FILTER ──
+    // ICU activo según capa y año (sin sensibilidad — filtra sobre el dato base)
+    const activeIcuRaw = activeLayer==='synchro'
+      ? (useY30 ? (s25(d).icu_pct||0)*1.15 : (s25(d).icu_pct||0))
+      : (useY30 ? (c30(d).icu_pct||0)      : (c25(d).icu_pct||0));
+    const activeIcu = scaledICU(activeIcuRaw);
+
     if(activeFilt==='sig'        && !isSigD(d)) return;
     if(activeFilt==='unsig'      && (isSigD(d)||d.control_type==='Roundabout')) return;
     if(activeFilt==='roundabout' && d.control_type!=='Roundabout') return;
-    if(activeFilt==='crit'       && (c25(d).icu_pct||0)<90) return;
+    if(activeFilt==='crit'       && activeIcu < 90) return;
     if(activeFilt==='det'        && !isDet) return;
     if(activeFilt==='discr'      && !isDisc) return;
     if(activeFilt==='lovol'      && !isLow) return;
@@ -373,11 +379,11 @@ function buildMarkers(){
     mk.addTo(map);
     markers.push(mk);
 
-    const critIcu = activeLayer==='synchro' ? sIcuSc : cIcuSc;
-    if(critIcu>=90) criticals.push({label:d.label, icu:critIcu, los});
+    // críticos basados en ICU de la capa activa
+    if(activeIcu>=90) criticals.push({label:d.label, icu:activeIcu, los});
   });
 
-  // ── STATS ──
+  // LOS≥E contado sobre la capa activa
   const losE = items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
   const nDet = items.filter(hasDeterioroReal).length;
   const nDisc= items.filter(hasDiscrepancia).length;
