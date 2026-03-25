@@ -343,8 +343,11 @@ function buildMarkers(){
   const criticals=[];
   const isVolLayer = activeLayer==='vol';
 
-  // Excluir intersecciones inexistentes en 2025
-  const items = D.intersections.filter(d=>d.coords&&d.coords.lat&&!EXCLUDE_2025.has(String(d.label)));
+  // En 2025 excluir intersecciones que aún no existen; en 2030 mostrar todas
+  const items = D.intersections.filter(d=>
+    d.coords && d.coords.lat &&
+    (useY30 || !EXCLUDE_2025.has(String(d.label)))
+  );
 
   items.forEach(d=>{
     const v25      = c25(d).vol_total_vph||0;
@@ -593,7 +596,8 @@ async function loadData(){
     if(!r.ok) throw new Error('HTTP '+r.status);
     D = await r.json();
     // Compute global factor from all intersections
-    const active = D.intersections.filter(d=>!EXCLUDE_2025.has(String(d.label)));
+    // Factor global: siempre sobre todas las intersecciones con coords
+    const active = D.intersections.filter(d=>d.coords&&d.coords.lat);
     GLOBAL_FACTOR = computeGlobalFactor(active);
     console.log(`datalos_latlong.json: ${D.intersections.length} intersecciones · factor global: ×${GLOBAL_FACTOR.toFixed(4)}`);
     // Log outlier comparison: JSON icu_2030 vs recomputed
