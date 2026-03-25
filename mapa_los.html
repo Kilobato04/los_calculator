@@ -9,58 +9,35 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-
 .topbar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000;flex-shrink:0}
 .topbar h1{font-size:11px;color:#90caf9;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-right:2px}
-
 .fgroup{display:flex;align-items:center;gap:3px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:2px 4px}
 .fgroup-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;padding:0 4px;white-space:nowrap}
-
-/* layer toggle */
-.layer-btn{padding:3px 11px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;
-  color:#888;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.layer-btn{padding:3px 11px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
 .layer-btn:hover{color:#ccc;background:#1e2a3a}
 .layer-btn.active-synchro{background:#1b3a4e;color:#29b6f6;border-color:#29b6f6}
 .layer-btn.active-calc{background:#1b3a1e;color:#4caf50;border-color:#4caf50}
 .layer-btn.active-vol{background:#2a1e3a;color:#ce93d8;border-color:#ce93d8}
-
-.fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;
-  color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
+.fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
 .fbtn:hover{color:#aaa;background:#1a2030}
 .fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
 .fbtn.active-warn{background:#b83a22;color:#ffb4a2;border-color:#f44336}
-
-.sens-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a4060;
-  border-radius:5px;padding:3px 9px}
+.sens-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a4060;border-radius:5px;padding:3px 9px}
 .sens-wrap span{font-size:10px;color:#4a90d9;font-weight:600;white-space:nowrap}
-.sens-btn{width:22px;height:22px;border-radius:4px;border:1px solid #2a4060;background:#1a2a3a;
-  color:#90caf9;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;line-height:1;flex-shrink:0}
+.sens-btn{width:22px;height:22px;border-radius:4px;border:1px solid #2a4060;background:#1a2a3a;color:#90caf9;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0}
 .sens-btn:hover{background:#1e3a5a}
 #sensDisplay{font-size:13px;font-weight:700;color:#e0e0e0;min-width:36px;text-align:center}
 #sensSlider{width:90px;accent-color:#4a90d9}
 #sensPct{font-size:10px;font-weight:700;min-width:38px}
-
-.yr-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a3044;
-  border-radius:5px;padding:3px 9px}
+.yr-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:3px 9px}
 .yr-wrap span{font-size:10px;color:#555}
 .yr-wrap label{font-size:10px;color:#90caf9;cursor:pointer;white-space:nowrap}
 .yr-wrap input{accent-color:#4a90d9;cursor:pointer}
-
-.tbl-btn{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;
-  border:1px solid #2a3044;background:#1a1f2e;color:#90caf9;font-size:10px;
-  font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;
-  transition:all .15s;margin-left:auto}
+.tbl-btn{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#90caf9;font-size:10px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all .15s;margin-left:auto}
 .tbl-btn:hover{background:#1e3050;border-color:#4a90d9}
-.tbl-btn svg{flex-shrink:0}
-
 #stats{font-size:10px;color:#555;white-space:nowrap;border-left:1px solid #2a3044;padding-left:8px}
 #map{flex:1;width:100%}
-
-/* tooltip */
-.los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;
-  font-family:'Segoe UI',Arial,sans-serif;min-width:210px;pointer-events:none;
-  box-shadow:0 4px 16px rgba(0,0,0,.7);color:#e0e0e0}
+.los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;font-family:'Segoe UI',Arial,sans-serif;min-width:220px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.7);color:#e0e0e0}
 .tt-id{font-size:11px;color:#90caf9;font-weight:700;margin-bottom:3px}
 .tt-los-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
 .tt-los{font-size:30px;font-weight:900;line-height:1}
@@ -72,12 +49,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 .tt-discr{font-size:9px;color:#ffc107;margin-top:3px}
 .tt-det{font-size:9px;color:#f44336;margin-top:3px}
 .tt-outlier{font-size:9px;color:#ff6b6b;margin-top:3px;background:#2a1010;border-radius:3px;padding:2px 5px}
-
-/* legend */
-#legend{position:absolute;top:54px;right:10px;z-index:1000;background:#14161eee;
-  border:1px solid #2a3044;border-radius:8px;padding:11px 13px;width:230px;
-  font-size:10px;max-height:calc(100vh - 80px);overflow-y:auto;
-  box-shadow:0 6px 24px rgba(0,0,0,.6)}
+.tt-growth{font-size:9px;color:#a5d6a7;margin-top:2px}
+#legend{position:absolute;top:54px;right:10px;z-index:1000;background:#14161eee;border:1px solid #2a3044;border-radius:8px;padding:11px 13px;width:230px;font-size:10px;max-height:calc(100vh - 80px);overflow-y:auto;box-shadow:0 6px 24px rgba(0,0,0,.6)}
 #legend h3{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:7px}
 .leg-h{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;margin:8px 0 4px}
 .lr{display:flex;align-items:center;gap:6px;margin-bottom:3px}
@@ -87,23 +60,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 .lc{border-radius:50%;background:#4a90d9;opacity:.7;flex-shrink:0}
 .leg-div{border:none;border-top:1px solid #2a3044;margin:7px 0}
 .crit-item{font-size:9px;color:#ccc;line-height:1.8}
-
-/* volume legend items */
 .vol-swatch{border-radius:4px;flex-shrink:0}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <h1>🚦 LOS ICU · Naranjo 2026</h1>
-
   <div class="fgroup">
     <span class="fgroup-label">Capa</span>
     <button id="btn-synchro" class="layer-btn active-synchro" onclick="setLayer('synchro',this)">● Synchro rptd</button>
     <button id="btn-calc"    class="layer-btn" onclick="setLayer('calc',this)">● ICU calc</button>
     <button id="btn-vol"     class="layer-btn" onclick="setLayer('vol',this)">● Aforos</button>
   </div>
-
   <div class="fgroup">
     <span class="fgroup-label">Filtro</span>
     <button class="fbtn active" onclick="setFilt('all',this)">Todas</button>
@@ -111,7 +79,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <button class="fbtn" onclick="setFilt('unsig',this)">No semaf.</button>
     <button class="fbtn" onclick="setFilt('roundabout',this)">Glorietas</button>
   </div>
-
   <div class="fgroup">
     <span class="fgroup-label">Alerta</span>
     <button class="fbtn" onclick="setFilt('crit',this)">ICU ≥ 90%</button>
@@ -120,24 +87,20 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <button class="fbtn" onclick="setFilt('lovol',this)">Vol. &lt;50</button>
     <button class="fbtn" onclick="setFilt('outlier',this)">⚠ Outliers</button>
   </div>
-
   <div class="sens-wrap" id="sens-group">
     <span>Vol. ×</span>
     <button class="sens-btn" onclick="stepSens(-0.1)">−</button>
     <span id="sensDisplay">×1.0</span>
     <button class="sens-btn" onclick="stepSens(0.1)">+</button>
-    <input type="range" id="sensSlider" min="0.5" max="3.0" step="0.1" value="1.0"
-      oninput="setSens(+this.value)">
+    <input type="range" id="sensSlider" min="0.5" max="3.0" step="0.1" value="1.0" oninput="setSens(+this.value)">
     <span id="sensPct" style="color:#666">+0%</span>
     <button onclick="resetSens()" style="padding:2px 7px;background:#1a2030;border:1px solid #2a3044;border-radius:4px;color:#888;cursor:pointer;font-size:9px">Reset</button>
   </div>
-
   <div class="yr-wrap">
     <span>2025</span>
     <input type="checkbox" id="yrToggle" onchange="setYear(this.checked)">
     <label for="yrToggle">2030</label>
   </div>
-
   <a class="tbl-btn" href="https://los-calulator-latam.netlify.app/summary_los.html" target="_blank">
     <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
       <rect x="1" y="1" width="10" height="10" rx="1.5"/>
@@ -146,7 +109,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     </svg>
     Tabla resumen
   </a>
-
   <span id="stats">Cargando…</span>
 </div>
 
@@ -154,8 +116,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 
 <div id="legend">
   <h3 id="leg-title">LOS ICU — Synchro rptd</h3>
-
-  <!-- LOS legend (shown for synchro/calc layers) -->
   <div id="leg-los">
     <div class="lr"><div class="ls" style="width:14px;height:14px;background:#4caf50"></div><span class="ll">A — Excelente</span><span class="ld">≤55%</span></div>
     <div class="lr"><div class="ls" style="width:14px;height:14px;background:#8bc34a"></div><span class="ll">B — Muy bueno</span><span class="ld">≤64%</span></div>
@@ -177,8 +137,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #f44336;flex-shrink:0"></span><span class="ll">Deterioro proyectado 2030</span></div>
     <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px dashed #ff6b6b;flex-shrink:0"></span><span class="ll">Outlier ICU 2030 (delta &gt;200%)</span></div>
   </div>
-
-  <!-- Volume legend (shown for vol layer) -->
   <div id="leg-vol" style="display:none">
     <div class="leg-h">Volumen total (vph)</div>
     <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#4a1a6e"></div><span class="ll">≥ 8 000 vph</span></div>
@@ -189,69 +147,92 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#b8e47a"></div><span class="ll">100 – 500 vph</span></div>
     <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#4caf50"></div><span class="ll">&lt; 100 vph</span></div>
     <hr class="leg-div">
-    <div class="leg-h">Tamaño · proporcional al volumen</div>
-    <div class="lr"><div class="lc" style="width:26px;height:26px;background:#8b2fc9"></div><span class="ll">≥ 5 000 vph</span></div>
-    <div class="lr"><div class="lc" style="width:18px;height:18px;background:#d44caa"></div><span class="ll">1 500 – 5 000 vph</span></div>
-    <div class="lr"><div class="lc" style="width:12px;height:12px;background:#f0813a"></div><span class="ll">500 – 1 500 vph</span></div>
-    <div class="lr"><div class="lc" style="width:7px;height:7px;background:#f7c948"></div><span class="ll">&lt; 500 vph</span></div>
-    <hr class="leg-div">
-    <div style="font-size:9px;color:#555;line-height:1.6">
-      2025: calc_2025.vol_total_vph<br>
-      2030: Σ future_vph de lane_groups
+    <div class="leg-h">Factor crecimiento inferido</div>
+    <div style="font-size:9px;color:#aaa;line-height:1.7">
+      Por intersección: ratio Σfuture_vph / Σvolume_vph<br>
+      Solo movimientos con volume_vph &gt; 0.<br>
+      Si no hay base, usa factor global del proyecto.<br>
+      Vol 2030 = vol_total_vph × factor inferido.
     </div>
   </div>
-
-  <!-- shared sections -->
   <hr class="leg-div">
   <div class="leg-h">Control</div>
   <div class="lr"><span style="font-size:13px;color:#29b6f6;width:18px;text-align:center">▶</span><span class="ll">Semaforizada</span></div>
   <div class="lr"><span style="font-size:13px;color:#ffc107;width:18px;text-align:center">▷</span><span class="ll">No semaforizada</span></div>
   <div class="lr"><span style="font-size:13px;color:#ce93d8;width:18px;text-align:center">⟳</span><span class="ll">Glorieta</span></div>
   <div class="lr"><span style="font-size:13px;color:#81c784;width:18px;text-align:center">≡</span><span class="ll">Múltiple / Otro</span></div>
-
   <hr class="leg-div">
   <h3 style="color:#ff9800" id="leg-crit-hdr">⚠ Puntos críticos</h3>
   <div id="critical-list">Cargando…</div>
-
   <hr class="leg-div">
+  <div id="leg-growth-info" style="font-size:9px;color:#444;line-height:1.6;display:none"></div>
   <div style="font-size:9px;color:#333;line-height:1.6">AM Peak · ICU<br>Synchro 11 · 01-29-2026<br>datalos_latlong.json</div>
 </div>
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const LC  = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
-const ORD = 'ABCDEFGH';
-
-// Intersecciones con delta ICU 2030 anómalos (outliers de modelado)
-// Criterio: icu_delta_pct > 200% → proyección poco confiable
-const OUTLIER_THRESHOLD = 200; // % delta
+const OUTLIER_THRESHOLD = 200;
 
 function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
 function lc(l){ return LC[l]||'#888'; }
-
 function c25(d){ return d.calc_2025||{}; }
 function c30(d){ return d.calc_2030||{}; }
 function s25(d){ return d.synchro_2025||{}; }
 
-// Compute vol_total for 2030 by summing future_vph of lane_groups
-// Uses the unique NB/SB/EB/WB main-movement groups to avoid double-counting
-function vol2030(d){
-  if(!d.lane_groups||!d.lane_groups.length) return 0;
-  // Sum future_vph of all lane groups (Synchro reports per-group, ICU uses them)
-  // We deduplicate by taking the max per movement direction (T > L > R priority)
-  const seen = {};
-  let total = 0;
-  for(const g of d.lane_groups){
-    const dir = g.group.replace(/[LTR][\d]?$/, ''); // e.g. "NB", "EB"
-    const v = g.future_vph||0;
-    if(seen[dir] === undefined) seen[dir] = 0;
-    seen[dir] += v;
+// ── GROWTH FACTOR ENGINE ──────────────────────────────────────────────────────
+// Infer per-intersection growth factor from lane_groups:
+//   ratio = Σ(future_vph) / Σ(volume_vph)  — only for groups where volume_vph > 0
+//   This avoids pollution from "new flow" groups (volume=0 → future>0)
+//   which represent projected new movements, not growth of existing traffic.
+let GLOBAL_FACTOR = 1.20; // fallback, recomputed after data loads
+
+function computeGrowthFactor(d){
+  const lanes = d.lane_groups||[];
+  let sumV=0, sumF=0;
+  for(const g of lanes){
+    if((g.volume_vph||0) > 0){
+      sumV += g.volume_vph;
+      sumF += g.future_vph||0;
+    }
   }
-  // Return sum of all direction buckets
-  return Object.values(seen).reduce((a,b)=>a+b, 0);
+  // Need at least 50 vph base to trust the ratio
+  if(sumV >= 50) return sumF / sumV;
+  return null; // will use global
 }
 
-// Detect outlier: delta > OUTLIER_THRESHOLD% — likely a modeling artifact
+function computeGlobalFactor(intersections){
+  let sumV=0, sumF=0;
+  for(const d of intersections){
+    for(const g of (d.lane_groups||[])){
+      if((g.volume_vph||0) > 0){
+        sumV += g.volume_vph;
+        sumF += g.future_vph||0;
+      }
+    }
+  }
+  return sumV > 0 ? sumF/sumV : 1.20;
+}
+
+// vol2030: apply inferred growth factor to vol_total_vph (the authoritative 2025 volume)
+// This correctly scales the HCM-reported volume (which matches calc_2025.icu_pct inputs)
+function vol2030(d){
+  const v25 = c25(d).vol_total_vph||0;
+  const factor = computeGrowthFactor(d) ?? GLOBAL_FACTOR;
+  return Math.round(v25 * factor);
+}
+
+// Recompute ICU 2030 from scratch using inferred growth factor
+// ICU = Σ (lane_group_flow / satd_flow_perm) per critical movement per phase
+// We approximate by scaling calc_2025.icu_pct by the growth factor
+// This is valid because ICU is linear in volume when saturation flows are constant
+function computeICU2030(d){
+  const icu25 = c25(d).icu_pct;
+  if(icu25 == null) return null;
+  const factor = computeGrowthFactor(d) ?? GLOBAL_FACTOR;
+  return +(icu25 * factor).toFixed(1);
+}
+
 function isOutlier(d){
   const delta = c30(d).icu_delta_pct;
   return delta != null && Math.abs(delta) > OUTLIER_THRESHOLD;
@@ -279,67 +260,70 @@ function setSens(v){
 function stepSens(d){ setSens(Math.min(3.0, Math.max(0.5, sensMult+d))); }
 function resetSens(){ setSens(1.0); }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
 function scaledICU(rawIcu){ return +(rawIcu * sensMult).toFixed(1); }
 
+// ── DISPLAY LOS ───────────────────────────────────────────────────────────────
+// For 2030 in 'calc' layer: use our recomputed ICU (growth-factor based)
+// instead of the JSON's calc_2030.icu_pct which has outlier issues
 function getDisplayLOS(d){
   if(activeLayer==='synchro'){
     const rawIcu = useY30 ? (s25(d).icu_pct||0)*1.15 : (s25(d).icu_pct||0);
     const icu    = scaledICU(rawIcu);
     return { icu, los: icuLOS(icu), source: useY30?'Synchro 2030~':'Synchro rptd' };
   } else {
-    const rawIcu = useY30 ? (c30(d).icu_pct||0) : (c25(d).icu_pct||0);
-    const icu    = scaledICU(rawIcu);
-    return { icu, los: icuLOS(icu), source: useY30?'ICU calc 2030':'ICU calc 2025' };
+    let rawIcu;
+    if(useY30){
+      // Use growth-factor recomputed ICU 2030 instead of JSON's calc_2030.icu_pct
+      const recomputed = computeICU2030(d);
+      rawIcu = recomputed != null ? recomputed : (c30(d).icu_pct||0);
+    } else {
+      rawIcu = c25(d).icu_pct||0;
+    }
+    const icu = scaledICU(rawIcu);
+    return { icu, los: icuLOS(icu), source: useY30?'ICU calc 2030 (recomp.)':'ICU calc 2025' };
   }
 }
 
 function volToR(vol){
   const v = Math.round(vol * sensMult);
   if(!v||v<=0) return 5;
-  if(v<50)     return 6;
-  if(v>=8000)  return 26;
+  if(v<50)  return 6;
+  if(v>=8000) return 26;
   return Math.round(6+(Math.log(v)-Math.log(50))/(Math.log(8000)-Math.log(50))*20);
 }
-
-// Volume-layer radius (not affected by sensitivity)
 function volToRaw(vol){
   if(!vol||vol<=0) return 6;
-  if(vol>=8000)  return 28;
-  if(vol>=5000)  return 24;
-  if(vol>=3000)  return 20;
-  if(vol>=1500)  return 16;
-  if(vol>=500)   return 12;
-  if(vol>=100)   return 8;
+  if(vol>=8000) return 28;
+  if(vol>=5000) return 24;
+  if(vol>=3000) return 20;
+  if(vol>=1500) return 16;
+  if(vol>=500)  return 12;
+  if(vol>=100)  return 8;
   return 6;
 }
-
-// Volume → color ramp (purple → magenta → orange → yellow → green)
 function volToColor(vol){
-  if(vol>=8000)  return '#4a1a6e';
-  if(vol>=5000)  return '#8b2fc9';
-  if(vol>=3000)  return '#d44caa';
-  if(vol>=1500)  return '#f0813a';
-  if(vol>=500)   return '#f7c948';
-  if(vol>=100)   return '#b8e47a';
+  if(vol>=8000) return '#4a1a6e';
+  if(vol>=5000) return '#8b2fc9';
+  if(vol>=3000) return '#d44caa';
+  if(vol>=1500) return '#f0813a';
+  if(vol>=500)  return '#f7c948';
+  if(vol>=100)  return '#b8e47a';
   return '#4caf50';
 }
-
 function ctrlGlyph(ct){
   if(ct.includes('Pretimed')||ct.includes('Actuated')) return {g:'▶',c:'#29b6f6'};
   if(ct==='Roundabout') return {g:'⟳',c:'#ce93d8'};
   if(ct==='Unsignalized') return {g:'▷',c:'#ffc107'};
   return {g:'≡',c:'#81c784'};
 }
-
 function hasDeterioroReal(d){ return (c30(d).deterioro||'estable')!=='estable'; }
 function hasDiscrepancia(d){
-  const sL = s25(d).icu_los, cL = c25(d).icu_los;
+  const sL=s25(d).icu_los, cL=c25(d).icu_los;
   return sL && cL && sL!==cL;
 }
 function isSigD(d){ return s25(d).signal_delay_s!=null; }
 
-// ── MAP INIT ──────────────────────────────────────────────────────────────────
+// ── MAP ───────────────────────────────────────────────────────────────────────
 const map = L.map('map',{zoomControl:true}).setView([14.652,-90.543],15);
 L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
   attribution:'© OSM © CARTO', maxZoom:20
@@ -350,25 +334,32 @@ function buildMarkers(){
   markers.forEach(m=>map.removeLayer(m));
   markers=[];
   const criticals=[];
-
-  const items = D.intersections.filter(d=>d.coords&&d.coords.lat);
   const isVolLayer = activeLayer==='vol';
 
+  const items = D.intersections.filter(d=>d.coords&&d.coords.lat);
+
   items.forEach(d=>{
-    const vol25  = c25(d).vol_total_vph||0;
-    const vol30raw = vol2030(d);
-    const dispVol  = useY30 ? vol30raw : vol25;
-    const scaledVol = Math.round(dispVol * (isVolLayer ? 1 : sensMult));
+    const v25      = c25(d).vol_total_vph||0;
+    const v30      = vol2030(d);                          // growth-factor based
+    const dispVol  = useY30 ? v30 : v25;
+    const factor   = computeGrowthFactor(d) ?? GLOBAL_FACTOR;
+    const factorPct= Math.round((factor-1)*100);
 
-    const isLow  = scaledVol < 50;
-    const isDet  = hasDeterioroReal(d);
-    const isDisc = hasDiscrepancia(d);
-    const isOut  = isOutlier(d);
+    const scaledVol= Math.round(dispVol*(isVolLayer?1:sensMult));
+    const isLow    = scaledVol < 50;
+    const isDet    = hasDeterioroReal(d);
+    const isDisc   = hasDiscrepancia(d);
+    const isOut    = isOutlier(d);
 
-    // ── FILTER ──
-    const activeIcuRaw = activeLayer==='synchro'
-      ? (useY30 ? (s25(d).icu_pct||0)*1.15 : (s25(d).icu_pct||0))
-      : (useY30 ? (c30(d).icu_pct||0)      : (c25(d).icu_pct||0));
+    // Active ICU for filter (uses recomputed 2030 for calc layer)
+    let activeIcuRaw;
+    if(activeLayer==='synchro')
+      activeIcuRaw = useY30 ? (s25(d).icu_pct||0)*1.15 : (s25(d).icu_pct||0);
+    else if(activeLayer==='calc')
+      activeIcuRaw = useY30 ? (computeICU2030(d)??c30(d).icu_pct??0) : (c25(d).icu_pct||0);
+    else
+      activeIcuRaw = c25(d).icu_pct||0;
+
     const activeIcu = scaledICU(activeIcuRaw);
 
     if(activeFilt==='sig'        && !isSigD(d)) return;
@@ -382,24 +373,34 @@ function buildMarkers(){
 
     const ctrl = ctrlGlyph(d.control_type);
 
+    // ── ICU recomputed values for tooltip ──
+    const sIcu25    = s25(d).icu_pct||0;
+    const cIcu25    = c25(d).icu_pct||0;
+    const cIcu30json= c30(d).icu_pct||0;
+    const cIcu30rc  = computeICU2030(d)??cIcu30json;
+
+    const sIcuSc    = scaledICU(sIcu25);
+    const cIcuSc    = scaledICU(cIcu25);
+    const cIcu30Sc  = scaledICU(cIcu30rc);
+    const cIcu30JsonSc = scaledICU(cIcu30json);
+    const sLosSc    = icuLOS(sIcuSc);
+    const cLosSc    = icuLOS(cIcuSc);
+    const cLos30Sc  = icuLOS(cIcu30Sc);
+    const det       = c30(d).deterioro||'estable';
+
     let icon;
     if(isVolLayer){
-      // ── VOLUME LAYER MARKER ──
-      const r   = volToRaw(dispVol);
-      const sz  = r*2+10;
-      const cx  = sz/2;
-      const col = volToColor(dispVol);
-      const op  = isLow ? 0.35 : 0.88;
-      // Outline: dashed for outlier, solid white otherwise
-      const strokeStyle = isOut ? 'stroke-dasharray="3,2"' : '';
-      const strokeCol   = isOut ? '#ff6b6b' : 'rgba(255,255,255,0.4)';
-      const strokeW     = isOut ? 2 : 1;
-
+      const r  = volToRaw(dispVol);
+      const sz = r*2+10, cx=sz/2;
+      const col= volToColor(dispVol);
+      const op = isLow?0.35:0.88;
+      const strokeStyle = isOut?'stroke-dasharray="3,2"':'';
+      const strokeCol   = isOut?'#ff6b6b':'rgba(255,255,255,0.4)';
       icon = L.divIcon({
         className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
         html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
           <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
-            stroke="${strokeCol}" stroke-width="${strokeW}" ${strokeStyle}/>
+            stroke="${strokeCol}" stroke-width="${isOut?2:1}" ${strokeStyle}/>
           <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
             font-family="Segoe UI,Arial,sans-serif"
             font-size="${Math.max(6,Math.min(10,r*0.7))}px"
@@ -410,19 +411,14 @@ function buildMarkers(){
         </svg>`
       });
     } else {
-      // ── LOS LAYER MARKER (original logic) ──
       const {icu, los, source} = getDisplayLOS(d);
-      const col  = lc(los);
-      const r    = volToR(vol25);
-      const sz   = r*2+14;
-      const cx   = sz/2;
-      const op   = isLow ? 0.4 : 0.85;
-
-      // Border priority: outlier > deterioro > discrepancia > default
+      const col = lc(los);
+      const r   = volToR(v25);
+      const sz  = r*2+14, cx=sz/2;
+      const op  = isLow?0.4:0.85;
       const strokeCol = isOut?'#ff6b6b':isDet?'#f44336':isDisc?'#ffc107':'#ffffff';
       const strokeW   = (isOut||isDet||isDisc)?2:1;
-      const dashAttr  = isOut ? 'stroke-dasharray="3,2"' : '';
-
+      const dashAttr  = isOut?'stroke-dasharray="3,2"':'';
       icon = L.divIcon({
         className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
         html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
@@ -440,48 +436,39 @@ function buildMarkers(){
     }
 
     // ── TOOLTIP ──
-    const sIcu25  = s25(d).icu_pct;
-    const cIcu25  = c25(d).icu_pct;
-    const cIcu30  = c30(d).icu_pct;
-    const det     = c30(d).deterioro||'estable';
-    const delta   = c30(d).icu_delta_pct;
-
-    const sIcuSc   = scaledICU(sIcu25||0);
-    const cIcuSc   = scaledICU(cIcu25||0);
-    const cIcu30Sc = scaledICU(cIcu30||0);
-    const sLosSc   = icuLOS(sIcuSc);
-    const cLosSc   = icuLOS(cIcuSc);
-    const cLos30Sc = icuLOS(cIcu30Sc);
-
-    const discWarn = hasDiscrepancia(d) || sLosSc!==cLosSc
-      ? `<div class="tt-discr">⚡ Synchro ${sLosSc} (${sIcuSc}%) vs Calc ${cLosSc} (${cIcuSc}%)</div>` : '';
+    const discWarn = hasDiscrepancia(d)||sLosSc!==cLosSc
+      ?`<div class="tt-discr">⚡ Synchro ${sLosSc} (${sIcuSc}%) vs Calc ${cLosSc} (${cIcuSc}%)</div>`:'';
     const detRow = det!=='estable'
-      ? `<div class="tt-det">↑ Deterioro 2030: ${det}</div>` : '';
+      ?`<div class="tt-det">↑ Deterioro 2030: ${det}</div>`:'';
     const lowWarn = isLow
-      ? `<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>` : '';
+      ?`<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>`:'';
     const sensNote = sensMult!==1.0
-      ? `<div class="tt-row" style="margin-top:3px"><span>Sensibilidad</span><b style="color:${sensMult>1?'#f44336':'#4caf50'}">×${sensMult.toFixed(1)}</b></div>` : '';
+      ?`<div class="tt-row"><span>Sensibilidad</span><b style="color:${sensMult>1?'#f44336':'#4caf50'}">×${sensMult.toFixed(1)}</b></div>`:'';
     const outlierNote = isOut
-      ? `<div class="tt-outlier">⚠ Outlier: delta ICU 2030 = ${delta!=null?(delta>0?'+':'')+delta.toFixed(1)+'%':'N/A'} — proyección poco confiable</div>` : '';
+      ?`<div class="tt-outlier">⚠ Outlier: delta JSON = ${(c30(d).icu_delta_pct??'N/A')}% — usando ICU recomputado</div>`:'';
+    const growthNote = `<div class="tt-growth">📈 Factor crecimiento: ×${factor.toFixed(3)} (${factorPct>=0?'+':''}${factorPct}%)${computeGrowthFactor(d)==null?' [global]':' [inferido]'}</div>`;
 
-    // Vol row for tooltip
-    const volDelta = vol30raw - vol25;
-    const volDeltaStr = volDelta>=0 ? '+'+volDelta.toLocaleString() : volDelta.toLocaleString();
-    const volRow = `
-      <div class="tt-row"><span>Vol. 2025</span><b>${vol25.toLocaleString()} vph</b></div>
-      <div class="tt-row"><span>Vol. 2030~</span><b>${vol30raw.toLocaleString()} vph <span style="color:${volDelta>0?'#f44336':volDelta<0?'#4caf50':'#888'};font-size:9px">(${volDeltaStr})</span></b></div>`;
+    // ICU 2030 comparison row: show both JSON and recomputed if they differ significantly
+    const icuDiff = Math.abs(cIcu30json - cIcu30rc);
+    const icu30Row = icuDiff > 2
+      ? `<div class="tt-row"><span>ICU 2030 (JSON)</span><b style="color:#666">${cIcu30JsonSc}%</b></div>
+         <div class="tt-row"><span>ICU 2030 (recomp.)</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`
+      : `<div class="tt-row"><span>ICU 2030</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`;
 
-    const mk = L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
+    const volDelta  = v30-v25;
+    const volDeltaS = (volDelta>=0?'+':'')+volDelta.toLocaleString();
 
-    // Dynamic tooltip header based on active layer
     let ttHeader, ttMain;
     if(isVolLayer){
       const col = volToColor(dispVol);
       ttHeader = `<div class="tt-los-row">
         <div class="tt-los" style="color:${col};font-size:22px">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</div>
-        <div class="tt-los-sub">vph ${useY30?'2030~':'2025'}<br>${d.control_type}</div>
+        <div class="tt-los-sub">vph ${useY30?'2030':'2025'}<br>${d.control_type}</div>
       </div>`;
-      ttMain = volRow;
+      ttMain = `
+        <div class="tt-row"><span>Vol. 2025</span><b>${v25.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Vol. 2030 (×${factor.toFixed(2)})</span><b>${v30.toLocaleString()} vph <span style="color:${volDelta>0?'#4caf50':'#f44336'};font-size:9px">(${volDeltaS})</span></b></div>
+        ${growthNote}`;
     } else {
       const {icu, los, source} = getDisplayLOS(d);
       const col = lc(los);
@@ -490,13 +477,16 @@ function buildMarkers(){
         <div class="tt-los-sub">${source}<br>${icu}%</div>
       </div>`;
       ttMain = `
-        <div class="tt-row"><span>Synchro ICU 2025</span><b>${sIcuSc}% — <span style="color:${lc(sLosSc)}">${sLosSc}</span></b></div>
-        <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcuSc}% — <span style="color:${lc(cLosSc)}">${cLosSc}</span></b></div>
-        <div class="tt-row"><span>Calc ICU 2030</span><b>${cIcu30Sc}% — <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span>${isOut?' ⚠':''}</b></div>
-        ${volRow}
-        ${sensNote}`;
+        <div class="tt-row"><span>Synchro ICU 2025</span><b>${sIcuSc}% <span style="color:${lc(sLosSc)}">${sLosSc}</span></b></div>
+        <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcuSc}% <span style="color:${lc(cLosSc)}">${cLosSc}</span></b></div>
+        ${icu30Row}
+        <div class="tt-row"><span>Vol. 2025</span><b>${v25.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Vol. 2030 est.</span><b>${v30.toLocaleString()} vph <span style="color:#4caf50;font-size:9px">(${volDeltaS})</span></b></div>
+        ${growthNote}${sensNote}`;
     }
 
+    const tipRadius = isVolLayer ? volToRaw(dispVol) : volToR(v25);
+    const mk = L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
     mk.bindTooltip(`
       <div class="los-tooltip">
         <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
@@ -505,50 +495,58 @@ function buildMarkers(){
         ${ttMain}
         ${discWarn}${detRow}${lowWarn}${outlierNote}
       </div>`,{
-      permanent:false, direction:'top', offset:[0,-((isVolLayer?volToRaw(dispVol):volToR(vol25))+4)], opacity:1, className:''
+      permanent:false, direction:'top', offset:[0,-(tipRadius+4)], opacity:1, className:''
     });
 
     mk.addTo(map);
     markers.push(mk);
-
-    if(activeIcu>=90 && !isVolLayer) criticals.push({label:d.label, icu:activeIcu, los:icuLOS(activeIcu)});
+    if(!isVolLayer && activeIcu>=90)
+      criticals.push({label:d.label, icu:activeIcu, los:icuLOS(activeIcu)});
   });
 
-  // Stats bar
-  const losE = items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
-  const nDet = items.filter(hasDeterioroReal).length;
-  const nDisc= items.filter(hasDiscrepancia).length;
-  const nOut = items.filter(isOutlier).length;
-  const totalVol = items.reduce((s,d)=>s+(useY30?vol2030(d):(c25(d).vol_total_vph||0)),0);
+  // ── STATS ──
+  const losE  = items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
+  const nDet  = items.filter(hasDeterioroReal).length;
+  const nDisc = items.filter(hasDiscrepancia).length;
+  const nOut  = items.filter(isOutlier).length;
 
   if(isVolLayer){
+    const total25 = items.reduce((s,d)=>s+(c25(d).vol_total_vph||0),0);
+    const total30 = items.reduce((s,d)=>s+vol2030(d),0);
+    const dispTotal = useY30?total30:total25;
     document.getElementById('stats').textContent =
-      `${markers.length} int. · Vol total: ${(totalVol/1000).toFixed(1)}k vph · ${nOut} outliers`;
+      `${markers.length} int. · Vol total: ${(dispTotal/1000).toFixed(1)}k vph · Factor global: ×${GLOBAL_FACTOR.toFixed(3)}`;
   } else {
     document.getElementById('stats').textContent =
       `${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr. · ${nOut} outliers`;
   }
 
-  // Critical list
-  const cl = document.getElementById('critical-list');
+  // ── CRITICAL LIST / TOP VOL ──
+  const cl  = document.getElementById('critical-list');
   const hdr = document.getElementById('leg-crit-hdr');
   if(isVolLayer){
     hdr.textContent = '📊 Mayor volumen';
     const topVol = items
-      .filter(d=>d.coords&&d.coords.lat)
-      .map(d=>({label:d.label, vol:useY30?vol2030(d):(c25(d).vol_total_vph||0)}))
+      .map(d=>({label:d.label, vol:useY30?vol2030(d):(c25(d).vol_total_vph||0), factor:computeGrowthFactor(d)??GLOBAL_FACTOR}))
       .sort((a,b)=>b.vol-a.vol).slice(0,8);
     cl.innerHTML = topVol.map(x=>
-      `<div class="crit-item">• <b>#${x.label}</b> — ${x.vol>=1000?(x.vol/1000).toFixed(1)+'k':x.vol} vph <span style="color:${volToColor(x.vol)}">■</span></div>`
+      `<div class="crit-item">• <b>#${x.label}</b> — ${x.vol>=1000?(x.vol/1000).toFixed(1)+'k':x.vol} vph <span style="color:${volToColor(x.vol)}">■</span> <span style="color:#555">(×${x.factor.toFixed(2)})</span></div>`
     ).join('');
+    // Show global factor note in legend
+    document.getElementById('leg-growth-info').style.display='block';
+    document.getElementById('leg-growth-info').innerHTML=
+      `Factor global del proyecto: <b style="color:#a5d6a7">×${GLOBAL_FACTOR.toFixed(3)}</b> (+${Math.round((GLOBAL_FACTOR-1)*100)}%)<br>
+       Basado en ${items.filter(d=>computeGrowthFactor(d)!=null).length} intersecciones con base ≥50 vph.`;
   } else {
+    document.getElementById('leg-growth-info').style.display='none';
     hdr.textContent = '⚠ Puntos críticos';
     if(criticals.length){
       criticals.sort((a,b)=>b.icu-a.icu);
       cl.innerHTML = criticals.slice(0,8).map(c=>
         `<div class="crit-item">• <b>#${c.label}</b> — ${c.icu}% <span style="color:${lc(c.los)}">[${c.los}]</span></div>`
       ).join('');
-      if(criticals.length>8) cl.innerHTML+=`<div style="font-size:9px;color:#555">+${criticals.length-8} más…</div>`;
+      if(criticals.length>8)
+        cl.innerHTML+=`<div style="font-size:9px;color:#555">+${criticals.length-8} más…</div>`;
     } else {
       cl.innerHTML='<div style="font-size:9px;color:#555">Sin puntos críticos en esta vista.</div>';
     }
@@ -560,35 +558,24 @@ function buildMarkers(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 function setLayer(l, btn){
-  activeLayer = l;
-  document.querySelectorAll('.layer-btn').forEach(b=>{
-    b.classList.remove('active-synchro','active-calc','active-vol');
-  });
-  const cls = l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol';
-  btn.classList.add(cls);
-
-  // Toggle legend sections
-  document.getElementById('leg-los').style.display = l==='vol'?'none':'block';
-  document.getElementById('leg-vol').style.display = l==='vol'?'block':'none';
-
-  // Sensitivity only meaningful for LOS layers
-  document.getElementById('sens-group').style.opacity = l==='vol'?'0.4':'1';
-  document.getElementById('sens-group').style.pointerEvents = l==='vol'?'none':'auto';
-
-  const titles = {synchro:'LOS ICU — Synchro rptd', calc:'LOS ICU — Calculado', vol:'Aforos — Volumen Total'};
+  activeLayer=l;
+  document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol'));
+  btn.classList.add(l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol');
+  document.getElementById('leg-los').style.display  = l==='vol'?'none':'block';
+  document.getElementById('leg-vol').style.display  = l==='vol'?'block':'none';
+  document.getElementById('sens-group').style.opacity      = l==='vol'?'0.4':'1';
+  document.getElementById('sens-group').style.pointerEvents= l==='vol'?'none':'auto';
+  const titles={synchro:'LOS ICU — Synchro rptd',calc:'LOS ICU — Calculado',vol:'Aforos — Volumen Total'};
   document.getElementById('leg-title').textContent = titles[l];
   document.getElementById('leg-title').style.color = l==='vol'?'#ce93d8':'#4a90d9';
-
   buildMarkers();
 }
-
-function setFilt(f, btn){
-  activeFilt = f;
+function setFilt(f,btn){
+  activeFilt=f;
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active','active-warn'));
   btn.classList.add(['crit','det','discr','lovol','outlier'].includes(f)?'active-warn':'active');
   buildMarkers();
 }
-
 function setYear(v){ useY30=v; buildMarkers(); }
 
 // ── LOAD ──────────────────────────────────────────────────────────────────────
@@ -597,24 +584,25 @@ async function loadData(){
     const r = await fetch('datalos_latlong.json');
     if(!r.ok) throw new Error('HTTP '+r.status);
     D = await r.json();
-    console.log('datalos_latlong.json: '+D.intersections.length+' intersecciones');
-
-    // Log outliers to console for review
-    const outliers = D.intersections.filter(isOutlier);
-    if(outliers.length){
-      console.warn('⚠ Outliers detectados (delta ICU 2030 > '+OUTLIER_THRESHOLD+'%):');
-      outliers.forEach(d=>{
-        console.warn(`  Int. #${d.label}: delta = ${c30(d).icu_delta_pct}% | ICU 2025=${c25(d).icu_pct}% → 2030=${c30(d).icu_pct}%`);
-      });
-    }
+    // Compute global factor from all intersections
+    GLOBAL_FACTOR = computeGlobalFactor(D.intersections);
+    console.log(`datalos_latlong.json: ${D.intersections.length} intersecciones · factor global: ×${GLOBAL_FACTOR.toFixed(4)}`);
+    // Log outlier comparison: JSON icu_2030 vs recomputed
+    console.group('ICU 2030: JSON vs Recomputado');
+    D.intersections.forEach(d=>{
+      const json_icu = c30(d).icu_pct;
+      const rc_icu   = computeICU2030(d);
+      if(json_icu==null||rc_icu==null) return;
+      const diff = Math.abs(json_icu-rc_icu);
+      if(diff>5) console.warn(`#${d.label}: JSON=${json_icu}% → Recomp=${rc_icu}% (Δ${diff.toFixed(1)}%) factor=×${(computeGrowthFactor(d)??GLOBAL_FACTOR).toFixed(3)}`);
+    });
+    console.groupEnd();
   } catch(e){
     console.warn('No se cargó datalos_latlong.json:',e.message);
-    document.getElementById('stats').textContent =
-      '⚠ Sirve con: npx serve .  |  python -m http.server';
+    document.getElementById('stats').textContent='⚠ Sirve con: npx serve .  |  python -m http.server';
   }
   buildMarkers();
 }
-
 loadData();
 </script>
 </body>
