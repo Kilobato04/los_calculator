@@ -138,7 +138,8 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
       <th>Δ ICU</th>
       <th>LOS Synchro</th>
       <th>LOS Calc</th>
-      <th>LOS 2030</th>
+      <th>LOS Synchro 2030~</th>
+      <th>LOS Calc 2030</th>
       <th>Δ LOS 2030</th>
       <th onclick="doSort('v25')">Vol. total 2025</th>
       <th onclick="doSort('v30')">Vol. est. 2030</th>
@@ -263,17 +264,21 @@ function buildResults(){
     const icuSynchro     = +(rawSynchro*sensitivityMult).toFixed(1);
     const losSynchro     = icuLOS(icuSynchro);
 
-    // ICU 2030 recomputed
-    const icu30val  = icu30(d);
-    const los30val  = icu30val!=null ? icuLOS(+(icu30val*sensitivityMult).toFixed(1)) : null;
+    // ICU 2030 — Synchro estimado (×1.15 sobre synchro_2025)
+    const rawSynchro30   = (s25.icu_pct||0)*1.15;
+    const icuSynchro30sc = +(rawSynchro30*sensitivityMult).toFixed(1);
+    const losSynchro30   = icuLOS(icuSynchro30sc);
 
-    // LOS change 2025→2030
+    // ICU 2030 — Calculado recomputado (icu_2025 × factor crecimiento)
+    const icu30val  = icu30(d);
+    const icu30sc   = icu30val!=null ? +(icu30val*sensitivityMult).toFixed(1) : null;
+    const losCalc30 = icu30sc!=null ? icuLOS(icu30sc) : null;
+
+    // Deterioro: usa LOS calc 2030 vs LOS calc 2025 como referencia
     const los25     = icuLOS((c25.icu_pct||0));
-    const losChgStr = los30val==null ? null
-      : los25===los30val ? null
-      : ORDER.indexOf(los30val)>ORDER.indexOf(los25) ? los25+'→'+los30val
-      : los25+'→'+los30val;
-    const worsens   = los30val && ORDER.indexOf(los30val)>ORDER.indexOf(los25);
+    const los30ref  = losCalc30??losSynchro30;
+    const losChgStr = los25===los30ref ? null : los25+'→'+los30ref;
+    const worsens   = ORDER.indexOf(los30ref)>ORDER.indexOf(los25);
 
     const factor    = inferFactor(d)??GLOBAL_FACTOR;
     const v25       = c25.vol_total_vph||0;
@@ -287,8 +292,8 @@ function buildResults(){
       id:d.id, label:d.label, ct:d.control_type,
       ir:icuSynchro, ilr:losSynchro,
       ic:icuCalc.icu, ilc:icuCalc.los,
-      icu30:icu30val!=null?+(icu30val*sensitivityMult).toFixed(1):null,
-      los30:los30val,
+      icuSynchro30:icuSynchro30sc, losSynchro30,
+      icu30:icu30sc, losCalc30,
       losChg:losChgStr, worsens,
       v25, v30:v30e, factor,
       discr, det, isLowVol, isNewInt,
@@ -392,19 +397,17 @@ function renderSum(){
     const deltaICU = +(r.ic-r.ir).toFixed(1);
     const deltaPill = '<span class="chip '+(Math.abs(deltaICU)<2?'ok':Math.abs(deltaICU)<8?'warn':'err')+'">'+(deltaICU>=0?'+':'')+deltaICU+'%</span>';
 
-    // LOS 2030 column
-    const los30Cell = r.los30
-      ? bd(r.los30)+'<span style="font-size:9px;color:#888;margin-left:3px">'+(r.icu30!=null?r.icu30+'%':'')+'</span>'
+    // LOS Synchro 2030~
+    const losSynchro30Cell = bd(r.losSynchro30)+
+      '<span style="font-size:9px;color:#888;margin-left:3px">'+r.icuSynchro30+'%</span>';
+
+    // LOS Calc 2030
+    const losCalc30Cell = r.losCalc30
+      ? bd(r.losCalc30)+'<span style="font-size:9px;color:#888;margin-left:3px">'+r.icu30+'%</span>'
       : '<span style="color:#333">—</span>';
 
-    // Δ LOS 2030 vs 2025
-    let losChgCell = '<span style="color:#333">—</span>';
-    if(r.losChg){
-      const w = r.worsens;
-      losChgCell = '<span class="'+(w?'delta-up':'delta-dn')+'">'+(w?'↑':'↓')+r.losChg+'</span>';
-    } else if(r.los30){
-      losChgCell = '<span class="delta-eq">= '+r.los30+'</span>';
-    }
+    // Δ LOS 2030 — compara calc 2025 vs calc 2030 (referencia más consistente)
+    const los30ref = r.losCalc30??r.losSynchro30;
 
     // Factor badge
     const isGlobal = inferFactor(D.intersections.find(d=>d.id===r.id)??{})==null;
@@ -427,7 +430,8 @@ function renderSum(){
       '<td>'+deltaPill+'</td>'+
       '<td>'+bd(r.ilr)+'</td>'+
       '<td>'+bd(r.ilc)+'</td>'+
-      '<td>'+los30Cell+'</td>'+
+      '<td>'+losSynchro30Cell+'</td>'+
+      '<td>'+losCalc30Cell+'</td>'+
       '<td>'+losChgCell+'</td>'+
       '<td>'+volCell(r.v25,Math.round(r.v25/maxV25*100),r.isLowVol)+'</td>'+
       '<td>'+volCell(r.v30,Math.round(r.v30/maxV30*100),r.v30<50)+'</td>'+
