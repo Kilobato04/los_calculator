@@ -451,10 +451,10 @@ async function init(){
     GLOBAL_FACTOR = globalFactor(D.intersections);
     console.log('Cargado: '+D.intersections.length+' ints · factor global ×'+GLOBAL_FACTOR.toFixed(4));
   } catch(e){
-    console.warn('No se cargó datalos_latlong.json:',e.message);
+    console.warn('Error cargando JSON:', e.message);
     document.getElementById('sstats').innerHTML =
       '<div class="schip" style="color:#f44336;border-color:#f44336">'+
-      '⚠ No se cargó datalos_latlong.json — usa: <code>npx serve .</code> o <code>python -m http.server</code></div>';
+      '⚠ No se pudo cargar datalos_latlong.json: '+e.message+'</div>';
   }
   buildResults();
   renderSum();
