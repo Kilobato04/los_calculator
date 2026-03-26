@@ -3,30 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Synchro 11 — Auditoría LOS de Red</title>
+<title>Synchro 11 — LOS de Red · Naranjo 2026</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;min-height:100vh;padding:16px;font-size:12px}
 .hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #2a3044}
 .hdr h1{font-size:14px;color:#90caf9;letter-spacing:.8px;text-transform:uppercase}
 .hdr p{font-size:10px;color:#555;margin-top:3px}
+.toolbar{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.yr-btn{background:transparent;border:1px solid #2a3044;border-radius:6px;padding:4px 12px;color:#888;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.yr-btn:hover{border-color:#90caf9;color:#e0e0e0}
+.yr-btn.active{border-color:#4a90d9;color:#90caf9;background:#0d1e38}
+.step-btn{padding:0;width:28px;height:28px;background:#1a2a3a;border:1px solid #2a4060;border-radius:5px;color:#90caf9;cursor:pointer;font-size:18px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.step-btn:hover{background:#1e3a5a}
 .sfilt{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .fbtn{padding:4px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s}
-.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.fbtn:hover{color:#ccc;background:#1e2a3a}
+.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
 .fbtn.active-warn{background:#b83a22;color:#ffb4a2;border-color:#f44336}
 .sbox{padding:5px 10px;background:#1a1f2e;border:1px solid #2a3044;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;min-width:200px}
 .sbox:focus{border-color:#4a90d9}
 .sstats{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
 .schip{background:#1a1f2e;border:1px solid #2a3044;border-radius:5px;padding:3px 9px;font-size:10px;color:#888}
 .schip b{color:#e0e0e0}
-.twrap{overflow-x:auto;margin-bottom:12px}
+.twrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
-thead tr{background:#1e2538;position:sticky;top:0;z-index:10}
-th{padding:6px 8px;text-align:left;color:#6a8ab0;font-weight:600;white-space:nowrap;border-bottom:1px solid #2a3044;cursor:pointer;user-select:none}
+thead tr{background:#1e2538}
+th{padding:6px 8px;text-align:left;color:#6a8ab0;font-weight:600;white-space:nowrap;border-bottom:1px solid #2a3044;cursor:pointer;user-select:none;position:sticky;top:0;z-index:5}
 th:hover{color:#90caf9}
 tbody tr{border-bottom:1px solid #1a1f2e;transition:background .1s}
 tbody tr:hover{background:#1e2538}
-td{padding:5px 8px;color:#ccc;white-space:nowrap;vertical-align:middle}
+td{padding:5px 8px;white-space:nowrap;vertical-align:middle}
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;border-radius:4px;font-size:11px;font-weight:700}
 .A{background:#1b3a1e;color:#4caf50}.B{background:#253318;color:#8bc34a}
 .C{background:#332d00;color:#ffc107}.D{background:#332100;color:#ff9800}
@@ -34,29 +41,21 @@ td{padding:5px 8px;color:#ccc;white-space:nowrap;vertical-align:middle}
 .G{background:#280b1a;color:#e91e63}.H{background:#1c0e26;color:#9c27b0}
 .NA{background:#1e2130;color:#555}
 .chip{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;display:inline-block}
-.ok{background:#1b3a1e;color:#4caf50}.warn{background:#332d00;color:#ffc107}
-.err{background:#2d0e0e;color:#f44336}.na{background:#1a1a1a;color:#555}
+.ok{background:#1b3a1e;color:#4caf50}.warn{background:#332d00;color:#ffc107}.err{background:#2d0e0e;color:#f44336}
 .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
 .tS{background:#153242;color:#29b6f6}.tU{background:#2a2008;color:#ff9800}
 .tR{background:#1f1039;color:#ce93d8}.tM{background:#0e2619;color:#81c784}
-.delta-up{font-size:9px;padding:1px 5px;border-radius:3px;background:#2d0e0e;color:#f44336;font-weight:700;margin-left:3px}
-.delta-dn{font-size:9px;padding:1px 5px;border-radius:3px;background:#1b3a1e;color:#4caf50;font-weight:700;margin-left:3px}
-.delta-eq{font-size:9px;padding:1px 5px;border-radius:3px;background:#1a1a1a;color:#666;font-weight:700;margin-left:3px}
-.step-btn{padding:0;width:28px;height:28px;background:#1a2a3a;border:1px solid #2a4060;border-radius:5px;color:#90caf9;cursor:pointer;font-size:18px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
-.step-btn:hover{background:#1e3a5a}
+.up{font-size:9px;padding:1px 5px;border-radius:3px;background:#2d0e0e;color:#f44336;font-weight:700;margin-left:2px}
+.dn{font-size:9px;padding:1px 5px;border-radius:3px;background:#1b3a1e;color:#4caf50;font-weight:700;margin-left:2px}
+.eq{font-size:9px;padding:1px 5px;border-radius:3px;background:#1a1a1a;color:#666;font-weight:700;margin-left:2px}
 .crit-row{background:#1b1212!important}
 .warn-row{background:#1a180a!important}
-.new-row{background:#0d1a1a!important}
-.lovol-row{opacity:.45}
-.lovol-row:hover{opacity:.75}
-.vol-bar-wrap{display:inline-flex;align-items:center;gap:5px;min-width:100px}
-.vol-bar-bg{flex:1;height:5px;background:#1e2130;border-radius:3px;overflow:hidden;min-width:48px}
-.vol-bar-fill{height:100%;border-radius:3px;transition:width .4s}
-.vol-warn{font-size:8px;color:#ff9800;font-weight:700;white-space:nowrap}
-.legend-box{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
-.yr-btn{background:transparent;border:1px solid #2a3044;border-radius:6px;padding:4px 12px;color:#888;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
-.yr-btn:hover{border-color:#90caf9;color:#e0e0e0}
-.yr-btn.active{border-color:#4a90d9;color:#90caf9;background:#0d1e38}
+.new-row{background:#0a1a1a!important}
+.dim{opacity:.4}
+.dim:hover{opacity:.8}
+.vbar{display:inline-flex;align-items:center;gap:5px;min-width:90px}
+.vbar-bg{flex:1;height:5px;background:#1e2130;border-radius:3px;overflow:hidden;min-width:44px}
+.vbar-fill{height:100%;border-radius:3px}
 footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px solid #1a1f2e;margin-top:16px}
 </style>
 </head>
@@ -69,17 +68,17 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
   </div>
 </div>
 
-<div class="legend-box">
+<div class="toolbar">
   <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
 
     <!-- Year toggle -->
     <div style="display:flex;align-items:center;gap:8px;background:#0d1220;border:1px solid #2a3044;border-radius:8px;padding:7px 13px">
-      <span style="font-size:10px;color:#555;font-weight:700;white-space:nowrap">Horizonte:</span>
+      <span style="font-size:10px;color:#555;font-weight:700">Horizonte:</span>
       <button id="btn-2025" class="yr-btn active" onclick="setYear('current',this)">
         <span style="font-size:11px;font-weight:700">2025</span>
         <span style="font-size:9px;display:block;opacity:.7">base</span>
       </button>
-      <div style="position:relative;width:36px;height:20px;cursor:pointer;flex-shrink:0" onclick="toggleYear()">
+      <div style="position:relative;width:36px;height:20px;cursor:pointer" onclick="toggleYear()">
         <div id="yr-track" style="width:36px;height:20px;border-radius:10px;background:#2a3044;transition:background .2s"></div>
         <div id="yr-thumb" style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#90caf9;transition:left .2s;pointer-events:none"></div>
       </div>
@@ -87,23 +86,23 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
         <span style="font-size:11px;font-weight:700">2030</span>
         <span style="font-size:9px;display:block;opacity:.7">futuro</span>
       </button>
-      <span id="yr-badge" style="font-size:9px;padding:2px 8px;border-radius:4px;background:#1b3a1e;color:#4caf50;font-weight:700;white-space:nowrap">AÑO BASE</span>
+      <span id="yr-badge" style="font-size:9px;padding:2px 8px;border-radius:4px;background:#1b3a1e;color:#4caf50;font-weight:700">AÑO BASE</span>
     </div>
 
     <!-- Sensitivity -->
-    <div style="display:flex;align-items:center;gap:9px;background:#0d1220;border:1px solid #2a4060;border-radius:8px;padding:7px 13px;flex-wrap:wrap">
-      <span style="font-size:10px;color:#4a90d9;font-weight:700;white-space:nowrap">Sensibilidad vol.:</span>
+    <div style="display:flex;align-items:center;gap:8px;background:#0d1220;border:1px solid #2a4060;border-radius:8px;padding:7px 13px;flex-wrap:wrap">
+      <span style="font-size:10px;color:#4a90d9;font-weight:700">Sensibilidad vol.:</span>
       <button class="step-btn" onclick="stepMult(-0.1)">−</button>
       <span id="multDisplay" style="font-size:14px;font-weight:700;color:#e0e0e0;min-width:40px;text-align:center">×1.0</span>
       <button class="step-btn" onclick="stepMult(0.1)">+</button>
       <input type="range" id="multSlider" min="0.5" max="3.0" step="0.1" value="1.0"
-        style="width:120px;accent-color:#4a90d9" oninput="setMult(+this.value)">
-      <span id="multPct" style="font-size:11px;font-weight:700;color:#666;min-width:42px">+0%</span>
-      <button onclick="resetMult()" style="padding:4px 10px;background:#1a2030;border:1px solid #2a3044;border-radius:5px;color:#888;cursor:pointer;font-size:10px">Reset</button>
+        style="width:110px;accent-color:#4a90d9" oninput="setMult(+this.value)">
+      <span id="multPct" style="font-size:11px;font-weight:700;color:#666;min-width:38px">+0%</span>
+      <button onclick="resetMult()" style="padding:3px 9px;background:#1a2030;border:1px solid #2a3044;border-radius:4px;color:#888;cursor:pointer;font-size:10px">Reset</button>
     </div>
 
-    <!-- LOS color key -->
-    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">
+    <!-- LOS key -->
+    <div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap">
       <span style="font-size:9px;color:#555;margin-right:2px">LOS:</span>
       <span class="badge A">A</span><span class="badge B">B</span><span class="badge C">C</span>
       <span class="badge D">D</span><span class="badge E">E</span><span class="badge F">F</span>
@@ -112,7 +111,6 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
   </div>
 </div>
 
-<!-- Filters -->
 <div class="sfilt">
   <input class="sbox" id="srch" placeholder="Buscar intersección…" oninput="renderSum()">
   <button class="fbtn active" onclick="setFilt('ALL',this)">Todas</button>
@@ -144,13 +142,13 @@ footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px s
       <th onclick="doSort('v25')">Vol. total 2025</th>
       <th onclick="doSort('v30')">Vol. est. 2030</th>
       <th>Factor crecim.</th>
-      <th>Deterioro</th>
+      <th onclick="doSort('deterioro')">Deterioro</th>
     </tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 
-<footer>ICU = Σ(lane_group_flow / satd_flow_perm) × 100 · Vol. 2030 = vol_total_vph × factor inferido de lane_groups · Synchro 11 · 01-29-2026</footer>
+<footer>ICU = Σ(lane_group_flow / satd_flow_perm) × 100 · Vol. 2030 = vol_total_vph × factor inferido · Synchro 11 · 01-29-2026</footer>
 
 <script>
 // ── EXCLUDE 2025 ──────────────────────────────────────────────────────────────
@@ -159,320 +157,293 @@ const EXCLUDE_2025 = new Set([
   '84','138','40','38','15','79','112','80','104','89'
 ]);
 
+const ORDER = 'ABCDEFGH';
+const LC = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
+const lc = l => LC[l] || '#888';
+const gc = p => p < 60 ? '#4caf50' : p < 80 ? '#ffc107' : p < 100 ? '#ff9800' : '#f44336';
+
+function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let D   = { intersections: [] };
 let RES = [];
-let activeYear    = 'current';
+let activeYear      = 'current';
 let sensitivityMult = 1.0;
 let filt = 'ALL';
 let srt  = { k: 'label', asc: true };
-let GLOBAL_FACTOR = 1.20;
-
-// ── LOS THRESHOLDS ────────────────────────────────────────────────────────────
-function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
-const LC = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
-const lc = l => LC[l]||'#888';
-const gc = p => p<60?'#4caf50':p<80?'#ffc107':p<100?'#ff9800':'#f44336';
-const ORDER = 'ABCDEFGH';
+let GLOBAL_FACTOR   = 1.20;
 
 // ── GROWTH FACTOR ─────────────────────────────────────────────────────────────
 function inferFactor(d){
-  const lanes = d.lane_groups||[];
-  let sv=0, sf=0;
+  const lanes = d.lane_groups || [];
+  let sv = 0, sf = 0;
   for(const g of lanes){
-    if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=(g.future_vph||0); }
+    if((g.volume_vph || 0) > 0){ sv += g.volume_vph; sf += (g.future_vph || 0); }
   }
-  return sv>=50 ? sf/sv : null;
+  return sv >= 50 ? sf / sv : null;
 }
 function globalFactor(ints){
-  let sv=0, sf=0;
+  let sv = 0, sf = 0;
   for(const d of ints)
-    for(const g of (d.lane_groups||[]))
-      if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=(g.future_vph||0); }
-  return sv>0 ? sf/sv : 1.20;
+    for(const g of (d.lane_groups || []))
+      if((g.volume_vph || 0) > 0){ sv += g.volume_vph; sf += (g.future_vph || 0); }
+  return sv > 0 ? sf / sv : 1.20;
 }
 function vol30(d){
-  const v25 = (d.calc_2025||{}).vol_total_vph||0;
-  const f   = inferFactor(d)??GLOBAL_FACTOR;
-  return Math.round(v25*f);
+  const v25 = (d.calc_2025 || {}).vol_total_vph || 0;
+  return Math.round(v25 * (inferFactor(d) ?? GLOBAL_FACTOR));
 }
 function icu30(d){
-  const icu25 = (d.calc_2025||{}).icu_pct;
-  if(icu25==null) return null;
-  const f = inferFactor(d)??GLOBAL_FACTOR;
-  return +(icu25*f).toFixed(1);
+  const icu25 = (d.calc_2025 || {}).icu_pct;
+  if(icu25 == null) return null;
+  return +(icu25 * (inferFactor(d) ?? GLOBAL_FACTOR)).toFixed(1);
 }
 
-// ── SENSITIVITY ───────────────────────────────────────────────────────────────
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
 function setMult(v){
-  sensitivityMult = Math.round(v*10)/10;
+  sensitivityMult = Math.round(v * 10) / 10;
   document.getElementById('multSlider').value = sensitivityMult;
-  document.getElementById('multDisplay').textContent = '×'+sensitivityMult.toFixed(1);
-  const pct = Math.round((sensitivityMult-1)*100);
-  const el  = document.getElementById('multPct');
-  el.textContent = pct===0?'+0%':(pct>0?'+'+pct+'%':pct+'%');
-  el.style.color = pct>0?'#f44336':pct<0?'#4caf50':'#666';
+  document.getElementById('multDisplay').textContent = '×' + sensitivityMult.toFixed(1);
+  const pct = Math.round((sensitivityMult - 1) * 100);
+  const el = document.getElementById('multPct');
+  el.textContent = pct === 0 ? '+0%' : (pct > 0 ? '+' + pct : pct) + '%';
+  el.style.color = pct > 0 ? '#f44336' : pct < 0 ? '#4caf50' : '#666';
   buildResults(); renderSum();
 }
-function stepMult(d){ setMult(Math.min(3.0,Math.max(0.5,sensitivityMult+d))); }
+function stepMult(d){ setMult(Math.min(3.0, Math.max(0.5, sensitivityMult + d))); }
 function resetMult(){ setMult(1.0); }
 
-// ── YEAR TOGGLE ───────────────────────────────────────────────────────────────
 function setYear(y, btn){
   activeYear = y;
-  document.querySelectorAll('.yr-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.yr-btn').forEach(b => b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  const f = y==='future';
-  document.getElementById('yr-track').style.background = f?'#1b4d2e':'#2a3044';
-  document.getElementById('yr-thumb').style.left = f?'19px':'3px';
-  document.getElementById('yr-badge').textContent  = f?'AÑO 5 — 2030':'AÑO BASE';
-  document.getElementById('yr-badge').style.background = f?'#332d00':'#1b3a1e';
-  document.getElementById('yr-badge').style.color  = f?'#ffc107':'#4caf50';
+  const f = y === 'future';
+  document.getElementById('yr-track').style.background = f ? '#1b4d2e' : '#2a3044';
+  document.getElementById('yr-thumb').style.left = f ? '19px' : '3px';
+  document.getElementById('yr-badge').textContent  = f ? 'AÑO 5 — 2030' : 'AÑO BASE';
+  document.getElementById('yr-badge').style.background = f ? '#332d00' : '#1b3a1e';
+  document.getElementById('yr-badge').style.color  = f ? '#ffc107' : '#4caf50';
   buildResults(); renderSum();
 }
 function toggleYear(){
-  const next = activeYear==='current'?'future':'current';
-  setYear(next, document.getElementById(next==='future'?'btn-2030':'btn-2025'));
-}
-
-// ── ICU CALC (with sensitivity) ───────────────────────────────────────────────
-function calcICU(d){
-  const base = activeYear==='future'
-    ? (icu30(d)??0)
-    : ((d.calc_2025||{}).icu_pct||0);
-  const scaled = +(base*sensitivityMult).toFixed(1);
-  return { icu: scaled, los: icuLOS(scaled) };
+  const next = activeYear === 'current' ? 'future' : 'current';
+  setYear(next, document.getElementById(next === 'future' ? 'btn-2030' : 'btn-2025'));
 }
 
 // ── BUILD RESULTS ─────────────────────────────────────────────────────────────
 function buildResults(){
-  const isNew = d => EXCLUDE_2025.has(String(d.label));
-  const active = activeYear==='future'
-    ? D.intersections.filter(d=>d.coords&&d.coords.lat)
-    : D.intersections.filter(d=>d.coords&&d.coords.lat&&!isNew(d));
+  const isNewInt = d => EXCLUDE_2025.has(String(d.label));
 
-  RES = active.map(d=>{
-    // ── Acceso correcto al esquema JSON anidado ──
+  const active = activeYear === 'future'
+    ? D.intersections.filter(d => d.coords && d.coords.lat)
+    : D.intersections.filter(d => d.coords && d.coords.lat && !isNewInt(d));
+
+  RES = active.map(d => {
     const s25 = d.synchro_2025 || {};
     const c25 = d.calc_2025    || {};
     const c30 = d.calc_2030    || {};
 
-    // Synchro 2025
-    const synIcu25  = s25.icu_pct  || 0;
-    const synLos25  = s25.icu_los  || icuLOS(synIcu25);
-
-    // Calc 2025
-    const calIcu25  = c25.icu_pct  || 0;
-    const calLos25  = c25.icu_los  || icuLOS(calIcu25);
-    const vol25     = c25.vol_total_vph || 0;
-
-    // Calc 2030 (JSON)
-    const calIcu30j = c30.icu_pct  || 0;
+    // raw ICU values from JSON
+    const synIcu25 = s25.icu_pct || 0;
+    const calIcu25 = c25.icu_pct || 0;
+    const vol25    = c25.vol_total_vph || 0;
     const deterioro = c30.deterioro || 'estable';
 
-    // ── ICU activo según año + sensibilidad ──
-    // Synchro: año base = synchro_2025, año futuro = synchro_2025 × 1.15
-    const rawSyn    = activeYear==='future' ? synIcu25*1.15 : synIcu25;
-    const icuSyn    = +(rawSyn * sensitivityMult).toFixed(1);
-    const losSyn    = icuLOS(icuSyn);
+    // ── Active year display (ICU + LOS scaled by sensitivity) ──
+    const rawSyn  = activeYear === 'future' ? synIcu25 * 1.15 : synIcu25;
+    const rawCalc = activeYear === 'future' ? (icu30(d) ?? 0) : calIcu25;
+    const icuSyn  = +(rawSyn  * sensitivityMult).toFixed(1);
+    const icuCalc = +(rawCalc * sensitivityMult).toFixed(1);
+    const losSyn  = icuLOS(icuSyn);
+    const losCalc = icuLOS(icuCalc);
 
-    // Calc: año base = calc_2025, año futuro = recomputado con factor
-    const rawCalc   = activeYear==='future' ? (icu30(d) ?? calIcu30j) : calIcu25;
-    const icuCalc   = +(rawCalc * sensitivityMult).toFixed(1);
-    const losCalc   = icuLOS(icuCalc);
-
-    // ── Columnas 2030 fijas (siempre muestran proyección) ──
-    // Synchro 2030~
+    // ── Fixed 2030 projection columns ──
     const icuSyn30  = +(synIcu25 * 1.15 * sensitivityMult).toFixed(1);
     const losSyn30  = icuLOS(icuSyn30);
-
-    // Calc 2030 recomputado
-    const icu30val  = icu30(d);
-    const icu30sc   = icu30val != null ? +(icu30val * sensitivityMult).toFixed(1) : null;
+    const icu30raw  = icu30(d);
+    const icu30sc   = icu30raw != null ? +(icu30raw * sensitivityMult).toFixed(1) : null;
     const losCalc30 = icu30sc  != null ? icuLOS(icu30sc) : null;
 
-    // ── Δ LOS 2030: compara LOS calc 2025 vs LOS calc 2030 ──
+    // ── Δ LOS 2030: calc 2025 base vs calc 2030 ──
     const los25base = icuLOS(calIcu25);
     const los30ref  = losCalc30 ?? losSyn30;
-    const losChgStr = los25base === los30ref ? null : los25base + '→' + los30ref;
     const worsens   = ORDER.indexOf(los30ref) > ORDER.indexOf(los25base);
+    const losChg    = los25base === los30ref ? null : los25base + '→' + los30ref;
 
-    // ── Discrepancia: Synchro LOS 2025 ≠ Calc LOS 2025 ──
-    const discr = synLos25 && calLos25 && synLos25 !== calLos25;
-    const det   = deterioro !== 'estable';
-
+    // ── Flags ──
+    const discr    = (s25.icu_los && c25.icu_los && s25.icu_los !== c25.icu_los);
+    const det      = deterioro !== 'estable';
+    const isLowVol = vol25 < 50;
+    const isNew    = isNewInt(d);
     const factor   = inferFactor(d) ?? GLOBAL_FACTOR;
     const v30e     = vol30(d);
-    const isLowVol = vol25 < 50;
-    const isNewInt = isNew(d);
 
     return {
-      id:d.id, label:d.label, ct:d.control_type,
-      ir:icuSyn,  ilr:losSyn,
-      ic:icuCalc, ilc:losCalc,
-      icuSynchro30:icuSyn30,  losSynchro30:losSyn30,
-      icu30:icu30sc,           losCalc30,
-      losChg:losChgStr, worsens,
-      v25:vol25, v30:v30e, factor,
-      discr, det, isLowVol, isNewInt,
-      deterioro
+      id: d.id, label: d.label, ct: d.control_type,
+      ir: icuSyn,  ilr: losSyn,
+      ic: icuCalc, ilc: losCalc,
+      icuSyn30, losSyn30,
+      icu30: icu30sc, losCalc30,
+      losChg, worsens,
+      v25: vol25, v30: v30e, factor,
+      discr, det, isLowVol, isNew, deterioro
     };
   });
 }
 
-// ── BADGES ────────────────────────────────────────────────────────────────────
+// ── FILTERS & SORT ────────────────────────────────────────────────────────────
+function setFilt(f, btn){
+  filt = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active','active-warn'));
+  btn.classList.add(['Crit','Diff','Det','LowVol'].includes(f) ? 'active-warn' : 'active');
+  renderSum();
+}
+function doSort(k){ srt = { k, asc: srt.k === k ? !srt.asc : true }; renderSum(); }
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 function bd(l){
-  if(!l) return '<span class="badge NA">—</span>';
-  return '<span class="badge '+l+'">'+l+'</span>';
+  return l ? '<span class="badge '+l+'">'+l+'</span>' : '<span class="badge NA">—</span>';
 }
 function ctTag(ct){
-  const c = ct.includes('Pretimed')||ct.includes('Actuated')?'tS':ct==='Roundabout'?'tR':ct==='Multiple'?'tM':'tU';
+  const c = ct.includes('Pretimed')||ct.includes('Actuated') ? 'tS'
+          : ct === 'Roundabout' ? 'tR'
+          : ct === 'Multiple'   ? 'tM' : 'tU';
   return '<span class="tag '+c+'">'+ct+'</span>';
 }
-function dChip(r,c){
-  if(c==null) return '<span class="chip na">N/D</span>';
-  const d=+(c-r).toFixed(1), p=r?Math.abs(d/r*100):0;
-  const cl = p<2?'ok':p<8?'warn':'err';
-  return '<span class="chip '+cl+'">'+(d>=0?'+':'')+d+'% ('+p.toFixed(0)+'%)</span>';
+function dChip(a, b){
+  if(b == null) return '<span class="chip" style="background:#1a1a1a;color:#555">N/D</span>';
+  const d = +(b - a).toFixed(1), p = a ? Math.abs(d / a * 100) : 0;
+  const cl = p < 2 ? 'ok' : p < 8 ? 'warn' : 'err';
+  return '<span class="chip '+cl+'">'+(d >= 0 ? '+' : '')+d+'% ('+p.toFixed(0)+'%)</span>';
 }
-function volCell(vol, pctOfMax, isLow){
-  const col = isLow?'#ff9800':vol<200?'#ffc107':vol<800?'#90caf9':'#4caf50';
-  return '<div class="vol-bar-wrap">'+
-    '<span style="font-size:11px;font-weight:700;color:'+col+';min-width:42px;text-align:right">'+vol.toLocaleString()+'</span>'+
-    '<div class="vol-bar-bg"><div class="vol-bar-fill" style="width:'+pctOfMax+'%;background:'+col+'"></div></div>'+
-    (isLow?'<span class="vol-warn">⚠</span>':'')+
+function vBar(vol, pct, isLow){
+  const col = isLow ? '#ff9800' : vol < 200 ? '#ffc107' : vol < 1500 ? '#90caf9' : '#4caf50';
+  return '<div class="vbar">'+
+    '<span style="font-size:11px;font-weight:700;color:'+col+';min-width:40px;text-align:right">'+vol.toLocaleString()+'</span>'+
+    '<div class="vbar-bg"><div class="vbar-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'+
+    (isLow ? '<span style="font-size:8px;color:#ff9800;font-weight:700">⚠</span>' : '')+
   '</div>';
 }
 
-// ── FILTERS & SORT ────────────────────────────────────────────────────────────
-function setFilt(f,btn){
-  filt=f;
-  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active','active-warn'));
-  btn.classList.add(['Crit','Diff','Det','LowVol'].includes(f)?'active-warn':'active');
-  renderSum();
-}
-function doSort(k){ srt={k, asc:srt.k===k?!srt.asc:true}; renderSum(); }
-
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function renderSum(){
-  const q = (document.getElementById('srch')||{}).value||'';
-  const ql = q.toLowerCase();
-
+  const q  = (document.getElementById('srch').value || '').toLowerCase();
   let rows = [...RES];
-  if(filt==='Sig')    rows=rows.filter(r=>r.ct.includes('Pretimed')||r.ct.includes('Actuated'));
-  if(filt==='UnSig')  rows=rows.filter(r=>r.ct==='Unsignalized');
-  if(filt==='Round')  rows=rows.filter(r=>r.ct==='Roundabout');
-  if(filt==='Crit')   rows=rows.filter(r=>r.ic>=90);
-  if(filt==='Diff')   rows=rows.filter(r=>r.discr);
-  if(filt==='Det')    rows=rows.filter(r=>r.det);
-  if(filt==='LowVol') rows=rows.filter(r=>r.isLowVol);
-  if(filt==='New')    rows=rows.filter(r=>r.isNewInt);
-  if(ql) rows=rows.filter(r=>String(r.label).includes(ql)||r.ct.toLowerCase().includes(ql));
 
-  rows.sort((a,b)=>{
-    let va=a[srt.k], vb=b[srt.k];
-    if(va==null) va=-Infinity; if(vb==null) vb=-Infinity;
-    if(typeof va==='string') return srt.asc?va.localeCompare(vb):vb.localeCompare(va);
-    return srt.asc?(va>vb?1:-1):(va<vb?1:-1);
+  if(filt === 'Sig')    rows = rows.filter(r => r.ct.includes('Pretimed') || r.ct.includes('Actuated'));
+  if(filt === 'UnSig')  rows = rows.filter(r => r.ct === 'Unsignalized');
+  if(filt === 'Round')  rows = rows.filter(r => r.ct === 'Roundabout');
+  if(filt === 'Crit')   rows = rows.filter(r => r.ic >= 90);
+  if(filt === 'Diff')   rows = rows.filter(r => r.discr);
+  if(filt === 'Det')    rows = rows.filter(r => r.det);
+  if(filt === 'LowVol') rows = rows.filter(r => r.isLowVol);
+  if(filt === 'New')    rows = rows.filter(r => r.isNew);
+  if(q) rows = rows.filter(r => String(r.label).includes(q) || r.ct.toLowerCase().includes(q));
+
+  rows.sort((a, b) => {
+    let va = a[srt.k], vb = b[srt.k];
+    if(va == null) va = -Infinity;
+    if(vb == null) vb = -Infinity;
+    if(typeof va === 'string') return srt.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return srt.asc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
   });
 
-  // stats
-  const total  = RES.length;
-  const crit   = RES.filter(r=>r.ic>=90).length;
-  const diff   = RES.filter(r=>r.discr).length;
-  const det    = RES.filter(r=>r.det).length;
-  const newInt = RES.filter(r=>r.isNewInt).length;
-  const avgICU = total?+(RES.reduce((s,r)=>s+r.ic,0)/total).toFixed(1):0;
-  const yrLabel= activeYear==='future'
+  // Stats bar
+  const n     = RES.length;
+  const nCrit = RES.filter(r => r.ic >= 90).length;
+  const nDiff = RES.filter(r => r.discr).length;
+  const nDet  = RES.filter(r => r.det).length;
+  const nNew  = RES.filter(r => r.isNew).length;
+  const avgIC = n ? +(RES.reduce((s, r) => s + r.ic, 0) / n).toFixed(1) : 0;
+  const yrLbl = activeYear === 'future'
     ? '<span style="color:#ffc107">2030</span>'
     : '<span style="color:#4caf50">2025</span>';
-  const multInfo = sensitivityMult!==1
-    ? ' · <span style="color:'+(sensitivityMult>1?'#f44336':'#4caf50')+'">×'+sensitivityMult.toFixed(1)+' sensibilidad</span>':' ';
+  const sLbl  = sensitivityMult !== 1.0
+    ? ' · <span style="color:'+(sensitivityMult>1?'#f44336':'#4caf50')+'">×'+sensitivityMult.toFixed(1)+'</span>' : '';
 
   document.getElementById('sstats').innerHTML =
-    '<div class="schip"><b>'+total+'</b> intersecciones</div>'+
-    '<div class="schip"><b>'+crit+'</b> ICU calc ≥90%</div>'+
-    '<div class="schip"><b>'+diff+'</b> discrepancias</div>'+
-    '<div class="schip"><b>'+det+'</b> deterioro 2030</div>'+
-    (activeYear==='future'?'<div class="schip"><b>'+newInt+'</b> nuevas 2030</div>':'')+
-    '<div class="schip">ICU calc prom. <b>'+avgICU+'%</b></div>'+
+    '<div class="schip"><b>'+n+'</b> intersecciones</div>'+
+    '<div class="schip"><b>'+nCrit+'</b> ICU calc ≥90%</div>'+
+    '<div class="schip"><b>'+nDiff+'</b> discrepancias</div>'+
+    '<div class="schip"><b>'+nDet+'</b> deterioro 2030</div>'+
+    (activeYear==='future'?'<div class="schip"><b>'+nNew+'</b> nuevas 2030</div>':'')+
+    '<div class="schip">ICU calc prom. <b>'+avgIC+'%</b></div>'+
     '<div class="schip">Factor global <b>×'+GLOBAL_FACTOR.toFixed(3)+'</b></div>'+
-    '<div class="schip">Año: '+yrLabel+multInfo+'</div>'+
+    '<div class="schip">Año: '+yrLbl+sLbl+'</div>'+
     '<div class="schip">mostrando <b>'+rows.length+'</b></div>';
 
-  const maxV25 = RES.length?Math.max(...RES.map(r=>r.v25),1):1;
-  const maxV30 = RES.length?Math.max(...RES.map(r=>r.v30),1):1;
+  const maxV25 = Math.max(...RES.map(r => r.v25), 1);
+  const maxV30 = Math.max(...RES.map(r => r.v30), 1);
 
-  let h='';
-  rows.forEach(r=>{
-    const rowCls = r.isNewInt?'new-row':r.ic>=90?'crit-row':r.discr?'warn-row':'';
-    const cls = rowCls+(r.isLowVol?' lovol-row':'');
+  // Build all rows — every variable declared with const inside the forEach scope
+  const html = rows.map(r => {
+    const rowCls = r.isNew ? 'new-row' : r.ic >= 90 ? 'crit-row' : r.discr ? 'warn-row' : '';
+    const dimCls = r.isLowVol ? ' dim' : '';
 
-    const multPill = sensitivityMult!==1
-      ?'<span class="'+(sensitivityMult>1?'delta-up':'delta-dn')+'">×'+sensitivityMult.toFixed(1)+'</span>':'';
+    const sMult = sensitivityMult !== 1.0
+      ? '<span class="'+(sensitivityMult>1?'up':'dn')+'">×'+sensitivityMult.toFixed(1)+'</span>' : '';
 
-    // Δ ICU synchro vs calc
-    const deltaICU = +(r.ic-r.ir).toFixed(1);
-    const deltaPill = '<span class="chip '+(Math.abs(deltaICU)<2?'ok':Math.abs(deltaICU)<8?'warn':'err')+'">'+(deltaICU>=0?'+':'')+deltaICU+'%</span>';
+    const deltaICU  = +(r.ic - r.ir).toFixed(1);
+    const deltaChip = '<span class="chip '+(Math.abs(deltaICU)<2?'ok':Math.abs(deltaICU)<8?'warn':'err')+'">'+(deltaICU>=0?'+':'')+deltaICU+'%</span>';
 
-    // LOS Synchro 2030~
-    const losSynchro30Cell = bd(r.losSynchro30)+
-      '<span style="font-size:9px;color:#888;margin-left:3px">'+r.icuSynchro30+'%</span>';
+    // LOS 2030 columns
+    const syn30cell  = bd(r.losSyn30) + '<span style="font-size:9px;color:#666;margin-left:3px">'+r.icuSyn30+'%</span>';
+    const calc30cell = r.losCalc30
+      ? bd(r.losCalc30) + '<span style="font-size:9px;color:#666;margin-left:3px">'+(r.icu30??'')+'%</span>'
+      : '<span style="color:#444">—</span>';
 
-    // LOS Calc 2030
-    const losCalc30Cell = r.losCalc30
-      ? bd(r.losCalc30)+'<span style="font-size:9px;color:#888;margin-left:3px">'+r.icu30+'%</span>'
-      : '<span style="color:#333">—</span>';
+    // Δ LOS 2030 — fully self-contained, no external let
+    const los30display = r.losChg
+      ? '<span class="'+(r.worsens?'up':'dn')+'">'+(r.worsens?'↑':'↓')+r.losChg+'</span>'
+      : (r.losCalc30 ?? r.losSyn30)
+        ? '<span class="eq">= '+(r.losCalc30??r.losSyn30)+'</span>'
+        : '<span style="color:#444">—</span>';
 
-    // Δ LOS 2030 — compara calc 2025 vs calc 2030 (referencia más consistente)
-    const los30ref = r.losCalc30??r.losSynchro30;
+    const facCol = r.factor > 1.3 ? '#f44336' : r.factor > 1.1 ? '#ffc107' : '#4caf50';
+    const facGlb = inferFactor(D.intersections.find(x => x.id === r.id) ?? {}) == null;
+    const facCell = '<span style="font-size:10px;font-weight:700;color:'+facCol+'">×'+r.factor.toFixed(2)+'</span>'
+                  + (facGlb ? '<span style="font-size:8px;color:#555;margin-left:2px">[g]</span>' : '');
 
-    // Factor badge
-    const isGlobal = inferFactor(D.intersections.find(d=>d.id===r.id)??{})==null;
-    const facBadge = '<span style="font-size:10px;font-weight:700;color:'+(r.factor>1.3?'#f44336':r.factor>1.1?'#ffc107':'#4caf50')+'">×'+r.factor.toFixed(2)+'</span>'+
-      (isGlobal?'<span style="font-size:8px;color:#555;margin-left:2px">[g]</span>':'');
-
-    // Deterioro badge
-    const detCell = r.deterioro==='estable'
+    const detCell = r.deterioro === 'estable'
       ? '<span style="color:#444">estable</span>'
       : '<span style="color:#f44336;font-weight:700">'+r.deterioro+'</span>';
 
-    // New intersection badge
-    const newBadge = r.isNewInt?'<span class="tag" style="background:#0a2a2a;color:#26c6da;border:1px solid #0d4a50">★ nueva</span>':'';
+    const newBadge = r.isNew
+      ? '<span class="tag" style="background:#0a2a2a;color:#26c6da;margin-left:3px">★ nueva</span>' : '';
 
-    h += '<tr class="'+cls+'">'+
+    return '<tr class="'+rowCls+dimCls+'">'+
       '<td style="font-weight:700;color:#90caf9">'+r.label+newBadge+'</td>'+
       '<td>'+ctTag(r.ct)+'</td>'+
       '<td style="color:'+gc(r.ir)+';font-weight:700">'+r.ir+'%</td>'+
-      '<td style="color:'+gc(r.ic)+';font-weight:700">'+r.ic+'%'+multPill+'</td>'+
-      '<td>'+deltaPill+'</td>'+
+      '<td style="color:'+gc(r.ic)+';font-weight:700">'+r.ic+'%'+sMult+'</td>'+
+      '<td>'+deltaChip+'</td>'+
       '<td>'+bd(r.ilr)+'</td>'+
       '<td>'+bd(r.ilc)+'</td>'+
-      '<td>'+losSynchro30Cell+'</td>'+
-      '<td>'+losCalc30Cell+'</td>'+
-      '<td>'+losChgCell+'</td>'+
-      '<td>'+volCell(r.v25,Math.round(r.v25/maxV25*100),r.isLowVol)+'</td>'+
-      '<td>'+volCell(r.v30,Math.round(r.v30/maxV30*100),r.v30<50)+'</td>'+
-      '<td>'+facBadge+'</td>'+
+      '<td>'+syn30cell+'</td>'+
+      '<td>'+calc30cell+'</td>'+
+      '<td>'+los30display+'</td>'+
+      '<td>'+vBar(r.v25, Math.round(r.v25/maxV25*100), r.isLowVol)+'</td>'+
+      '<td>'+vBar(r.v30, Math.round(r.v30/maxV30*100), r.v30<50)+'</td>'+
+      '<td>'+facCell+'</td>'+
       '<td>'+detCell+'</td>'+
     '</tr>';
-  });
-  document.getElementById('tbody').innerHTML = h;
+  }).join('');
+
+  document.getElementById('tbody').innerHTML = html;
 }
 
 // ── LOAD ──────────────────────────────────────────────────────────────────────
 async function init(){
   try{
     const r = await fetch('datalos_latlong.json');
-    if(!r.ok) throw new Error('HTTP '+r.status);
+    if(!r.ok) throw new Error('HTTP ' + r.status);
     D = await r.json();
     GLOBAL_FACTOR = globalFactor(D.intersections);
     console.log('Cargado: '+D.intersections.length+' ints · factor global ×'+GLOBAL_FACTOR.toFixed(4));
   } catch(e){
-    console.warn('Error cargando JSON:', e.message);
+    console.warn('Error:', e.message);
     document.getElementById('sstats').innerHTML =
-      '<div class="schip" style="color:#f44336;border-color:#f44336">'+
-      '⚠ No se pudo cargar datalos_latlong.json: '+e.message+'</div>';
+      '<div class="schip" style="color:#f44336;border-color:#f44336">⚠ No se cargó datalos_latlong.json: '+e.message+'</div>';
   }
   buildResults();
   renderSum();
