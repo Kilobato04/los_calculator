@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synchro 11 — Auditoría LOS de Red</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;min-height:100vh;padding:16px;font-size:12px}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #2a3044}
+.hdr h1{font-size:14px;color:#90caf9;letter-spacing:.8px;text-transform:uppercase}
+.hdr p{font-size:10px;color:#555;margin-top:3px}
+.sfilt{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.fbtn{padding:4px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;cursor:pointer;transition:all .15s}
+.fbtn:hover,.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.fbtn.active-warn{background:#b83a22;color:#ffb4a2;border-color:#f44336}
+.sbox{padding:5px 10px;background:#1a1f2e;border:1px solid #2a3044;border-radius:6px;color:#e0e0e0;font-size:11px;outline:none;min-width:200px}
+.sbox:focus{border-color:#4a90d9}
+.sstats{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.schip{background:#1a1f2e;border:1px solid #2a3044;border-radius:5px;padding:3px 9px;font-size:10px;color:#888}
+.schip b{color:#e0e0e0}
+.twrap{overflow-x:auto;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:#1e2538;position:sticky;top:0;z-index:10}
+th{padding:6px 8px;text-align:left;color:#6a8ab0;font-weight:600;white-space:nowrap;border-bottom:1px solid #2a3044;cursor:pointer;user-select:none}
+th:hover{color:#90caf9}
+tbody tr{border-bottom:1px solid #1a1f2e;transition:background .1s}
+tbody tr:hover{background:#1e2538}
+td{padding:5px 8px;color:#ccc;white-space:nowrap;vertical-align:middle}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;border-radius:4px;font-size:11px;font-weight:700}
+.A{background:#1b3a1e;color:#4caf50}.B{background:#253318;color:#8bc34a}
+.C{background:#332d00;color:#ffc107}.D{background:#332100;color:#ff9800}
+.E{background:#33160a;color:#ff5722}.F{background:#2d0e0e;color:#f44336}
+.G{background:#280b1a;color:#e91e63}.H{background:#1c0e26;color:#9c27b0}
+.NA{background:#1e2130;color:#555}
+.chip{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;display:inline-block}
+.ok{background:#1b3a1e;color:#4caf50}.warn{background:#332d00;color:#ffc107}
+.err{background:#2d0e0e;color:#f44336}.na{background:#1a1a1a;color:#555}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
+.tS{background:#153242;color:#29b6f6}.tU{background:#2a2008;color:#ff9800}
+.tR{background:#1f1039;color:#ce93d8}.tM{background:#0e2619;color:#81c784}
+.delta-up{font-size:9px;padding:1px 5px;border-radius:3px;background:#2d0e0e;color:#f44336;font-weight:700;margin-left:3px}
+.delta-dn{font-size:9px;padding:1px 5px;border-radius:3px;background:#1b3a1e;color:#4caf50;font-weight:700;margin-left:3px}
+.delta-eq{font-size:9px;padding:1px 5px;border-radius:3px;background:#1a1a1a;color:#666;font-weight:700;margin-left:3px}
+.step-btn{padding:0;width:28px;height:28px;background:#1a2a3a;border:1px solid #2a4060;border-radius:5px;color:#90caf9;cursor:pointer;font-size:18px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
+.step-btn:hover{background:#1e3a5a}
+.crit-row{background:#1b1212!important}
+.warn-row{background:#1a180a!important}
+.new-row{background:#0d1a1a!important}
+.lovol-row{opacity:.45}
+.lovol-row:hover{opacity:.75}
+.vol-bar-wrap{display:inline-flex;align-items:center;gap:5px;min-width:100px}
+.vol-bar-bg{flex:1;height:5px;background:#1e2130;border-radius:3px;overflow:hidden;min-width:48px}
+.vol-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.vol-warn{font-size:8px;color:#ff9800;font-weight:700;white-space:nowrap}
+.legend-box{background:#14161e;border:1px solid #2a3044;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.yr-btn{background:transparent;border:1px solid #2a3044;border-radius:6px;padding:4px 12px;color:#888;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.yr-btn:hover{border-color:#90caf9;color:#e0e0e0}
+.yr-btn.active{border-color:#4a90d9;color:#90caf9;background:#0d1e38}
+footer{text-align:center;padding:12px;color:#333;font-size:10px;border-top:1px solid #1a1f2e;margin-top:16px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>🚦 Synchro 11 — LOS de Red · Naranjo 2026</h1>
+    <p>01-29-2026 · AM Peak · ICU Synchro reportado vs. ICU calculado</p>
+  </div>
+</div>
+
+<div class="legend-box">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+
+    <!-- Year toggle -->
+    <div style="display:flex;align-items:center;gap:8px;background:#0d1220;border:1px solid #2a3044;border-radius:8px;padding:7px 13px">
+      <span style="font-size:10px;color:#555;font-weight:700;white-space:nowrap">Horizonte:</span>
+      <button id="btn-2025" class="yr-btn active" onclick="setYear('current',this)">
+        <span style="font-size:11px;font-weight:700">2025</span>
+        <span style="font-size:9px;display:block;opacity:.7">base</span>
+      </button>
+      <div style="position:relative;width:36px;height:20px;cursor:pointer;flex-shrink:0" onclick="toggleYear()">
+        <div id="yr-track" style="width:36px;height:20px;border-radius:10px;background:#2a3044;transition:background .2s"></div>
+        <div id="yr-thumb" style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#90caf9;transition:left .2s;pointer-events:none"></div>
+      </div>
+      <button id="btn-2030" class="yr-btn" onclick="setYear('future',this)">
+        <span style="font-size:11px;font-weight:700">2030</span>
+        <span style="font-size:9px;display:block;opacity:.7">futuro</span>
+      </button>
+      <span id="yr-badge" style="font-size:9px;padding:2px 8px;border-radius:4px;background:#1b3a1e;color:#4caf50;font-weight:700;white-space:nowrap">AÑO BASE</span>
+    </div>
+
+    <!-- Sensitivity -->
+    <div style="display:flex;align-items:center;gap:9px;background:#0d1220;border:1px solid #2a4060;border-radius:8px;padding:7px 13px;flex-wrap:wrap">
+      <span style="font-size:10px;color:#4a90d9;font-weight:700;white-space:nowrap">Sensibilidad vol.:</span>
+      <button class="step-btn" onclick="stepMult(-0.1)">−</button>
+      <span id="multDisplay" style="font-size:14px;font-weight:700;color:#e0e0e0;min-width:40px;text-align:center">×1.0</span>
+      <button class="step-btn" onclick="stepMult(0.1)">+</button>
+      <input type="range" id="multSlider" min="0.5" max="3.0" step="0.1" value="1.0"
+        style="width:120px;accent-color:#4a90d9" oninput="setMult(+this.value)">
+      <span id="multPct" style="font-size:11px;font-weight:700;color:#666;min-width:42px">+0%</span>
+      <button onclick="resetMult()" style="padding:4px 10px;background:#1a2030;border:1px solid #2a3044;border-radius:5px;color:#888;cursor:pointer;font-size:10px">Reset</button>
+    </div>
+
+    <!-- LOS color key -->
+    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:9px;color:#555;margin-right:2px">LOS:</span>
+      <span class="badge A">A</span><span class="badge B">B</span><span class="badge C">C</span>
+      <span class="badge D">D</span><span class="badge E">E</span><span class="badge F">F</span>
+      <span class="badge G">G</span><span class="badge H">H</span>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="sfilt">
+  <input class="sbox" id="srch" placeholder="Buscar intersección…" oninput="renderSum()">
+  <button class="fbtn active" onclick="setFilt('ALL',this)">Todas</button>
+  <button class="fbtn" onclick="setFilt('Sig',this)">Semaforizadas</button>
+  <button class="fbtn" onclick="setFilt('UnSig',this)">No semaforizadas</button>
+  <button class="fbtn" onclick="setFilt('Round',this)">Glorietas</button>
+  <button class="fbtn" onclick="setFilt('Crit',this)">ICU ≥ 90%</button>
+  <button class="fbtn" onclick="setFilt('Diff',this)">Discrepancia</button>
+  <button class="fbtn" onclick="setFilt('Det',this)">Deterioro 2030</button>
+  <button class="fbtn" onclick="setFilt('LowVol',this)">Vol. bajo &lt;50</button>
+  <button class="fbtn" onclick="setFilt('New',this)">★ Nuevas 2030</button>
+</div>
+
+<div class="sstats" id="sstats"></div>
+
+<div class="twrap">
+  <table>
+    <thead><tr>
+      <th onclick="doSort('label')">#</th>
+      <th onclick="doSort('ct')">Control</th>
+      <th onclick="doSort('ir')">ICU% Synchro</th>
+      <th onclick="doSort('ic')">ICU% Calc</th>
+      <th>Δ ICU</th>
+      <th>LOS Synchro</th>
+      <th>LOS Calc</th>
+      <th>LOS 2030</th>
+      <th>Δ LOS 2030</th>
+      <th onclick="doSort('v25')">Vol. total 2025</th>
+      <th onclick="doSort('v30')">Vol. est. 2030</th>
+      <th>Factor crecim.</th>
+      <th>Deterioro</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<footer>ICU = Σ(lane_group_flow / satd_flow_perm) × 100 · Vol. 2030 = vol_total_vph × factor inferido de lane_groups · Synchro 11 · 01-29-2026</footer>
+
+<script>
+// ── EXCLUDE 2025 ──────────────────────────────────────────────────────────────
+const EXCLUDE_2025 = new Set([
+  '125','72','37','39','140','19','151','144',
+  '84','138','40','38','15','79','112','80','104','89'
+]);
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let D   = { intersections: [] };
+let RES = [];
+let activeYear    = 'current';
+let sensitivityMult = 1.0;
+let filt = 'ALL';
+let srt  = { k: 'label', asc: true };
+let GLOBAL_FACTOR = 1.20;
+
+// ── LOS THRESHOLDS ────────────────────────────────────────────────────────────
+function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
+const LC = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
+const lc = l => LC[l]||'#888';
+const gc = p => p<60?'#4caf50':p<80?'#ffc107':p<100?'#ff9800':'#f44336';
+const ORDER = 'ABCDEFGH';
+
+// ── GROWTH FACTOR ─────────────────────────────────────────────────────────────
+function inferFactor(d){
+  const lanes = d.lane_groups||[];
+  let sv=0, sf=0;
+  for(const g of lanes){
+    if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=(g.future_vph||0); }
+  }
+  return sv>=50 ? sf/sv : null;
+}
+function globalFactor(ints){
+  let sv=0, sf=0;
+  for(const d of ints)
+    for(const g of (d.lane_groups||[]))
+      if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=(g.future_vph||0); }
+  return sv>0 ? sf/sv : 1.20;
+}
+function vol30(d){
+  const v25 = (d.calc_2025||{}).vol_total_vph||0;
+  const f   = inferFactor(d)??GLOBAL_FACTOR;
+  return Math.round(v25*f);
+}
+function icu30(d){
+  const icu25 = (d.calc_2025||{}).icu_pct;
+  if(icu25==null) return null;
+  const f = inferFactor(d)??GLOBAL_FACTOR;
+  return +(icu25*f).toFixed(1);
+}
+
+// ── SENSITIVITY ───────────────────────────────────────────────────────────────
+function setMult(v){
+  sensitivityMult = Math.round(v*10)/10;
+  document.getElementById('multSlider').value = sensitivityMult;
+  document.getElementById('multDisplay').textContent = '×'+sensitivityMult.toFixed(1);
+  const pct = Math.round((sensitivityMult-1)*100);
+  const el  = document.getElementById('multPct');
+  el.textContent = pct===0?'+0%':(pct>0?'+'+pct+'%':pct+'%');
+  el.style.color = pct>0?'#f44336':pct<0?'#4caf50':'#666';
+  buildResults(); renderSum();
+}
+function stepMult(d){ setMult(Math.min(3.0,Math.max(0.5,sensitivityMult+d))); }
+function resetMult(){ setMult(1.0); }
+
+// ── YEAR TOGGLE ───────────────────────────────────────────────────────────────
+function setYear(y, btn){
+  activeYear = y;
+  document.querySelectorAll('.yr-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const f = y==='future';
+  document.getElementById('yr-track').style.background = f?'#1b4d2e':'#2a3044';
+  document.getElementById('yr-thumb').style.left = f?'19px':'3px';
+  document.getElementById('yr-badge').textContent  = f?'AÑO 5 — 2030':'AÑO BASE';
+  document.getElementById('yr-badge').style.background = f?'#332d00':'#1b3a1e';
+  document.getElementById('yr-badge').style.color  = f?'#ffc107':'#4caf50';
+  buildResults(); renderSum();
+}
+function toggleYear(){
+  const next = activeYear==='current'?'future':'current';
+  setYear(next, document.getElementById(next==='future'?'btn-2030':'btn-2025'));
+}
+
+// ── ICU CALC (with sensitivity) ───────────────────────────────────────────────
+function calcICU(d){
+  const base = activeYear==='future'
+    ? (icu30(d)??0)
+    : ((d.calc_2025||{}).icu_pct||0);
+  const scaled = +(base*sensitivityMult).toFixed(1);
+  return { icu: scaled, los: icuLOS(scaled) };
+}
+
+// ── BUILD RESULTS ─────────────────────────────────────────────────────────────
+function buildResults(){
+  const isNew = d => EXCLUDE_2025.has(String(d.label));
+  const active = activeYear==='future'
+    ? D.intersections.filter(d=>d.coords&&d.coords.lat)
+    : D.intersections.filter(d=>d.coords&&d.coords.lat&&!isNew(d));
+
+  RES = active.map(d=>{
+    const s25 = d.synchro_2025||{};
+    const c25 = d.calc_2025||{};
+    const c30 = d.calc_2030||{};
+    const icuCalc = calcICU(d);
+
+    // Synchro ICU (scaled by sensitivity, year-aware)
+    const rawSynchro = activeYear==='future'
+      ? (s25.icu_pct||0)*1.15
+      : (s25.icu_pct||0);
+    const icuSynchro     = +(rawSynchro*sensitivityMult).toFixed(1);
+    const losSynchro     = icuLOS(icuSynchro);
+
+    // ICU 2030 recomputed
+    const icu30val  = icu30(d);
+    const los30val  = icu30val!=null ? icuLOS(+(icu30val*sensitivityMult).toFixed(1)) : null;
+
+    // LOS change 2025→2030
+    const los25     = icuLOS((c25.icu_pct||0));
+    const losChgStr = los30val==null ? null
+      : los25===los30val ? null
+      : ORDER.indexOf(los30val)>ORDER.indexOf(los25) ? los25+'→'+los30val
+      : los25+'→'+los30val;
+    const worsens   = los30val && ORDER.indexOf(los30val)>ORDER.indexOf(los25);
+
+    const factor    = inferFactor(d)??GLOBAL_FACTOR;
+    const v25       = c25.vol_total_vph||0;
+    const v30e      = vol30(d);
+    const discr     = s25.icu_los && c25.icu_los && s25.icu_los!==c25.icu_los;
+    const det       = (c30.deterioro||'estable')!=='estable';
+    const isLowVol  = v25 < 50;
+    const isNewInt  = isNew(d);
+
+    return {
+      id:d.id, label:d.label, ct:d.control_type,
+      ir:icuSynchro, ilr:losSynchro,
+      ic:icuCalc.icu, ilc:icuCalc.los,
+      icu30:icu30val!=null?+(icu30val*sensitivityMult).toFixed(1):null,
+      los30:los30val,
+      losChg:losChgStr, worsens,
+      v25, v30:v30e, factor,
+      discr, det, isLowVol, isNewInt,
+      deterioro: c30.deterioro||'estable'
+    };
+  });
+}
+
+// ── BADGES ────────────────────────────────────────────────────────────────────
+function bd(l){
+  if(!l) return '<span class="badge NA">—</span>';
+  return '<span class="badge '+l+'">'+l+'</span>';
+}
+function ctTag(ct){
+  const c = ct.includes('Pretimed')||ct.includes('Actuated')?'tS':ct==='Roundabout'?'tR':ct==='Multiple'?'tM':'tU';
+  return '<span class="tag '+c+'">'+ct+'</span>';
+}
+function dChip(r,c){
+  if(c==null) return '<span class="chip na">N/D</span>';
+  const d=+(c-r).toFixed(1), p=r?Math.abs(d/r*100):0;
+  const cl = p<2?'ok':p<8?'warn':'err';
+  return '<span class="chip '+cl+'">'+(d>=0?'+':'')+d+'% ('+p.toFixed(0)+'%)</span>';
+}
+function volCell(vol, pctOfMax, isLow){
+  const col = isLow?'#ff9800':vol<200?'#ffc107':vol<800?'#90caf9':'#4caf50';
+  return '<div class="vol-bar-wrap">'+
+    '<span style="font-size:11px;font-weight:700;color:'+col+';min-width:42px;text-align:right">'+vol.toLocaleString()+'</span>'+
+    '<div class="vol-bar-bg"><div class="vol-bar-fill" style="width:'+pctOfMax+'%;background:'+col+'"></div></div>'+
+    (isLow?'<span class="vol-warn">⚠</span>':'')+
+  '</div>';
+}
+
+// ── FILTERS & SORT ────────────────────────────────────────────────────────────
+function setFilt(f,btn){
+  filt=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active','active-warn'));
+  btn.classList.add(['Crit','Diff','Det','LowVol'].includes(f)?'active-warn':'active');
+  renderSum();
+}
+function doSort(k){ srt={k, asc:srt.k===k?!srt.asc:true}; renderSum(); }
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderSum(){
+  const q = (document.getElementById('srch')||{}).value||'';
+  const ql = q.toLowerCase();
+
+  let rows = [...RES];
+  if(filt==='Sig')    rows=rows.filter(r=>r.ct.includes('Pretimed')||r.ct.includes('Actuated'));
+  if(filt==='UnSig')  rows=rows.filter(r=>r.ct==='Unsignalized');
+  if(filt==='Round')  rows=rows.filter(r=>r.ct==='Roundabout');
+  if(filt==='Crit')   rows=rows.filter(r=>r.ic>=90);
+  if(filt==='Diff')   rows=rows.filter(r=>r.discr);
+  if(filt==='Det')    rows=rows.filter(r=>r.det);
+  if(filt==='LowVol') rows=rows.filter(r=>r.isLowVol);
+  if(filt==='New')    rows=rows.filter(r=>r.isNewInt);
+  if(ql) rows=rows.filter(r=>String(r.label).includes(ql)||r.ct.toLowerCase().includes(ql));
+
+  rows.sort((a,b)=>{
+    let va=a[srt.k], vb=b[srt.k];
+    if(va==null) va=-Infinity; if(vb==null) vb=-Infinity;
+    if(typeof va==='string') return srt.asc?va.localeCompare(vb):vb.localeCompare(va);
+    return srt.asc?(va>vb?1:-1):(va<vb?1:-1);
+  });
+
+  // stats
+  const total  = RES.length;
+  const crit   = RES.filter(r=>r.ic>=90).length;
+  const diff   = RES.filter(r=>r.discr).length;
+  const det    = RES.filter(r=>r.det).length;
+  const newInt = RES.filter(r=>r.isNewInt).length;
+  const avgICU = total?+(RES.reduce((s,r)=>s+r.ic,0)/total).toFixed(1):0;
+  const yrLabel= activeYear==='future'
+    ? '<span style="color:#ffc107">2030</span>'
+    : '<span style="color:#4caf50">2025</span>';
+  const multInfo = sensitivityMult!==1
+    ? ' · <span style="color:'+(sensitivityMult>1?'#f44336':'#4caf50')+'">×'+sensitivityMult.toFixed(1)+' sensibilidad</span>':' ';
+
+  document.getElementById('sstats').innerHTML =
+    '<div class="schip"><b>'+total+'</b> intersecciones</div>'+
+    '<div class="schip"><b>'+crit+'</b> ICU calc ≥90%</div>'+
+    '<div class="schip"><b>'+diff+'</b> discrepancias</div>'+
+    '<div class="schip"><b>'+det+'</b> deterioro 2030</div>'+
+    (activeYear==='future'?'<div class="schip"><b>'+newInt+'</b> nuevas 2030</div>':'')+
+    '<div class="schip">ICU calc prom. <b>'+avgICU+'%</b></div>'+
+    '<div class="schip">Factor global <b>×'+GLOBAL_FACTOR.toFixed(3)+'</b></div>'+
+    '<div class="schip">Año: '+yrLabel+multInfo+'</div>'+
+    '<div class="schip">mostrando <b>'+rows.length+'</b></div>';
+
+  const maxV25 = RES.length?Math.max(...RES.map(r=>r.v25),1):1;
+  const maxV30 = RES.length?Math.max(...RES.map(r=>r.v30),1):1;
+
+  let h='';
+  rows.forEach(r=>{
+    const rowCls = r.isNewInt?'new-row':r.ic>=90?'crit-row':r.discr?'warn-row':'';
+    const cls = rowCls+(r.isLowVol?' lovol-row':'');
+
+    const multPill = sensitivityMult!==1
+      ?'<span class="'+(sensitivityMult>1?'delta-up':'delta-dn')+'">×'+sensitivityMult.toFixed(1)+'</span>':'';
+
+    // Δ ICU synchro vs calc
+    const deltaICU = +(r.ic-r.ir).toFixed(1);
+    const deltaPill = '<span class="chip '+(Math.abs(deltaICU)<2?'ok':Math.abs(deltaICU)<8?'warn':'err')+'">'+(deltaICU>=0?'+':'')+deltaICU+'%</span>';
+
+    // LOS 2030 column
+    const los30Cell = r.los30
+      ? bd(r.los30)+'<span style="font-size:9px;color:#888;margin-left:3px">'+(r.icu30!=null?r.icu30+'%':'')+'</span>'
+      : '<span style="color:#333">—</span>';
+
+    // Δ LOS 2030 vs 2025
+    let losChgCell = '<span style="color:#333">—</span>';
+    if(r.losChg){
+      const w = r.worsens;
+      losChgCell = '<span class="'+(w?'delta-up':'delta-dn')+'">'+(w?'↑':'↓')+r.losChg+'</span>';
+    } else if(r.los30){
+      losChgCell = '<span class="delta-eq">= '+r.los30+'</span>';
+    }
+
+    // Factor badge
+    const isGlobal = inferFactor(D.intersections.find(d=>d.id===r.id)??{})==null;
+    const facBadge = '<span style="font-size:10px;font-weight:700;color:'+(r.factor>1.3?'#f44336':r.factor>1.1?'#ffc107':'#4caf50')+'">×'+r.factor.toFixed(2)+'</span>'+
+      (isGlobal?'<span style="font-size:8px;color:#555;margin-left:2px">[g]</span>':'');
+
+    // Deterioro badge
+    const detCell = r.deterioro==='estable'
+      ? '<span style="color:#444">estable</span>'
+      : '<span style="color:#f44336;font-weight:700">'+r.deterioro+'</span>';
+
+    // New intersection badge
+    const newBadge = r.isNewInt?'<span class="tag" style="background:#0a2a2a;color:#26c6da;border:1px solid #0d4a50">★ nueva</span>':'';
+
+    h += '<tr class="'+cls+'">'+
+      '<td style="font-weight:700;color:#90caf9">'+r.label+newBadge+'</td>'+
+      '<td>'+ctTag(r.ct)+'</td>'+
+      '<td style="color:'+gc(r.ir)+';font-weight:700">'+r.ir+'%</td>'+
+      '<td style="color:'+gc(r.ic)+';font-weight:700">'+r.ic+'%'+multPill+'</td>'+
+      '<td>'+deltaPill+'</td>'+
+      '<td>'+bd(r.ilr)+'</td>'+
+      '<td>'+bd(r.ilc)+'</td>'+
+      '<td>'+los30Cell+'</td>'+
+      '<td>'+losChgCell+'</td>'+
+      '<td>'+volCell(r.v25,Math.round(r.v25/maxV25*100),r.isLowVol)+'</td>'+
+      '<td>'+volCell(r.v30,Math.round(r.v30/maxV30*100),r.v30<50)+'</td>'+
+      '<td>'+facBadge+'</td>'+
+      '<td>'+detCell+'</td>'+
+    '</tr>';
+  });
+  document.getElementById('tbody').innerHTML = h;
+}
+
+// ── LOAD ──────────────────────────────────────────────────────────────────────
+async function init(){
+  try{
+    const r = await fetch('datalos_latlong.json');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    D = await r.json();
+    GLOBAL_FACTOR = globalFactor(D.intersections);
+    console.log('Cargado: '+D.intersections.length+' ints · factor global ×'+GLOBAL_FACTOR.toFixed(4));
+  } catch(e){
+    console.warn('No se cargó datalos_latlong.json:',e.message);
+    document.getElementById('sstats').innerHTML =
+      '<div class="schip" style="color:#f44336;border-color:#f44336">'+
+      '⚠ No se cargó datalos_latlong.json — usa: <code>npx serve .</code> o <code>python -m http.server</code></div>';
+  }
+  buildResults();
+  renderSum();
+}
+init();
+</script>
+</body>
+</html>
