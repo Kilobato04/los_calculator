@@ -252,52 +252,70 @@ function buildResults(){
     : D.intersections.filter(d=>d.coords&&d.coords.lat&&!isNew(d));
 
   RES = active.map(d=>{
-    const s25 = d.synchro_2025||{};
-    const c25 = d.calc_2025||{};
-    const c30 = d.calc_2030||{};
-    const icuCalc = calcICU(d);
+    // ── Acceso correcto al esquema JSON anidado ──
+    const s25 = d.synchro_2025 || {};
+    const c25 = d.calc_2025    || {};
+    const c30 = d.calc_2030    || {};
 
-    // Synchro ICU (scaled by sensitivity, year-aware)
-    const rawSynchro = activeYear==='future'
-      ? (s25.icu_pct||0)*1.15
-      : (s25.icu_pct||0);
-    const icuSynchro     = +(rawSynchro*sensitivityMult).toFixed(1);
-    const losSynchro     = icuLOS(icuSynchro);
+    // Synchro 2025
+    const synIcu25  = s25.icu_pct  || 0;
+    const synLos25  = s25.icu_los  || icuLOS(synIcu25);
 
-    // ICU 2030 — Synchro estimado (×1.15 sobre synchro_2025)
-    const rawSynchro30   = (s25.icu_pct||0)*1.15;
-    const icuSynchro30sc = +(rawSynchro30*sensitivityMult).toFixed(1);
-    const losSynchro30   = icuLOS(icuSynchro30sc);
+    // Calc 2025
+    const calIcu25  = c25.icu_pct  || 0;
+    const calLos25  = c25.icu_los  || icuLOS(calIcu25);
+    const vol25     = c25.vol_total_vph || 0;
 
-    // ICU 2030 — Calculado recomputado (icu_2025 × factor crecimiento)
+    // Calc 2030 (JSON)
+    const calIcu30j = c30.icu_pct  || 0;
+    const deterioro = c30.deterioro || 'estable';
+
+    // ── ICU activo según año + sensibilidad ──
+    // Synchro: año base = synchro_2025, año futuro = synchro_2025 × 1.15
+    const rawSyn    = activeYear==='future' ? synIcu25*1.15 : synIcu25;
+    const icuSyn    = +(rawSyn * sensitivityMult).toFixed(1);
+    const losSyn    = icuLOS(icuSyn);
+
+    // Calc: año base = calc_2025, año futuro = recomputado con factor
+    const rawCalc   = activeYear==='future' ? (icu30(d) ?? calIcu30j) : calIcu25;
+    const icuCalc   = +(rawCalc * sensitivityMult).toFixed(1);
+    const losCalc   = icuLOS(icuCalc);
+
+    // ── Columnas 2030 fijas (siempre muestran proyección) ──
+    // Synchro 2030~
+    const icuSyn30  = +(synIcu25 * 1.15 * sensitivityMult).toFixed(1);
+    const losSyn30  = icuLOS(icuSyn30);
+
+    // Calc 2030 recomputado
     const icu30val  = icu30(d);
-    const icu30sc   = icu30val!=null ? +(icu30val*sensitivityMult).toFixed(1) : null;
-    const losCalc30 = icu30sc!=null ? icuLOS(icu30sc) : null;
+    const icu30sc   = icu30val != null ? +(icu30val * sensitivityMult).toFixed(1) : null;
+    const losCalc30 = icu30sc  != null ? icuLOS(icu30sc) : null;
 
-    // Deterioro: usa LOS calc 2030 vs LOS calc 2025 como referencia
-    const los25     = icuLOS((c25.icu_pct||0));
-    const los30ref  = losCalc30??losSynchro30;
-    const losChgStr = los25===los30ref ? null : los25+'→'+los30ref;
-    const worsens   = ORDER.indexOf(los30ref)>ORDER.indexOf(los25);
+    // ── Δ LOS 2030: compara LOS calc 2025 vs LOS calc 2030 ──
+    const los25base = icuLOS(calIcu25);
+    const los30ref  = losCalc30 ?? losSyn30;
+    const losChgStr = los25base === los30ref ? null : los25base + '→' + los30ref;
+    const worsens   = ORDER.indexOf(los30ref) > ORDER.indexOf(los25base);
 
-    const factor    = inferFactor(d)??GLOBAL_FACTOR;
-    const v25       = c25.vol_total_vph||0;
-    const v30e      = vol30(d);
-    const discr     = s25.icu_los && c25.icu_los && s25.icu_los!==c25.icu_los;
-    const det       = (c30.deterioro||'estable')!=='estable';
-    const isLowVol  = v25 < 50;
-    const isNewInt  = isNew(d);
+    // ── Discrepancia: Synchro LOS 2025 ≠ Calc LOS 2025 ──
+    const discr = synLos25 && calLos25 && synLos25 !== calLos25;
+    const det   = deterioro !== 'estable';
+
+    const factor   = inferFactor(d) ?? GLOBAL_FACTOR;
+    const v30e     = vol30(d);
+    const isLowVol = vol25 < 50;
+    const isNewInt = isNew(d);
 
     return {
       id:d.id, label:d.label, ct:d.control_type,
-      ir:icuSynchro, ilr:losSynchro,
-      ic:icuCalc.icu, ilc:icuCalc.los,
-      icuSynchro30:icuSynchro30sc, losSynchro30,
-      icu30:icu30sc, losCalc30,
+      ir:icuSyn,  ilr:losSyn,
+      ic:icuCalc, ilc:losCalc,
+      icuSynchro30:icuSyn30,  losSynchro30:losSyn30,
+      icu30:icu30sc,           losCalc30,
       losChg:losChgStr, worsens,
-      v25, v30:v30e, factor,
+      v25:vol25, v30:v30e, factor,
       discr, det, isLowVol, isNewInt,
-      deterioro: c30.deterioro||'estable'
+      deterioro
     };
   });
 }
