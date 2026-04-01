@@ -236,78 +236,183 @@ function getDirectionVols(d, y30){
     .sort((a,b)=>b.vol-a.vol);
 }
 
+// ── LANE REQUIREMENT CALC ─────────────────────────────────────────────────────
+const SAT_PER_LANE = 1800; // veh/h per lane (planning assumption)
+
+// Aggregate lane_group_flow and satd_flow_perm by direction prefix
+// lane_group_flow = future_vph / PHF → used for geometric design (HCM)
+// satd_flow_perm  = current installed capacity for that direction
+function getLaneGroupsByDir(d){
+  const map = {};
+  for(const g of (d.lane_groups||[])){
+    const dir = dirOf(g.group);
+    if(!map[dir]) map[dir] = { lgf:0, sat:0, angle: DIR_ANGLE[dir]??0 };
+    map[dir].lgf += (g.lane_group_flow||0);
+    map[dir].sat += (g.satd_flow_perm||0);
+  }
+  // carriles requeridos = ceil(lgf / 1800)
+  // carriles actuales   = round(sat / 1800)  (from satd_flow_perm)
+  return Object.entries(map)
+    .filter(([,v])=>v.lgf>0)
+    .map(([dir,v])=>({
+      dir,
+      angle: v.angle,
+      lgf:   v.lgf,
+      nReq:  Math.ceil(v.lgf / SAT_PER_LANE),
+      nCur:  Math.max(1, Math.round(v.sat / SAT_PER_LANE)),
+      needsMore: Math.ceil(v.lgf/SAT_PER_LANE) > Math.max(1,Math.round(v.sat/SAT_PER_LANE))
+    }))
+    .sort((a,b)=>b.lgf-a.lgf);
+}
+
 function buildSatelliteSVG(d, y30){
-  const dirs=getDirectionVols(d,y30);
-  if(!dirs.length) return null;
+  // Satellite always shows 2030 lane requirements (geometric design tool)
+  // For 2025 view, show volume diagram instead
+  if(!y30){
+    // 2025: show raw volume by direction (original behavior)
+    const dirs=getDirectionVols(d,false);
+    if(!dirs.length) return null;
+    return buildVolumeSVG(d, dirs, false);
+  }
 
+  // 2030: show lane requirements per direction
+  const laneData = getLaneGroupsByDir(d);
+  if(!laneData.length) return null;
+  return buildLaneSVG(d, laneData);
+}
+
+// ── 2025 volume satellite (original) ─────────────────────────────────────────
+function buildVolumeSVG(d, dirs, y30){
   const W=240,H=240,cx=W/2,cy=H/2;
-  const ARROW_END=80, ARROW_START=18, LBL_R=108, CIRCLE_R=115;
-  const domColor='#ce93d8', restColor='#64b5f6';
-
+  const ARROW_END=80,ARROW_START=18,LBL_R=108,CIRCLE_R=115;
+  const domColor='#ce93d8',restColor='#64b5f6';
   const dominant=dirs[0];
-  const restDir =dirs.length>1?dirs[1]:null;
-  const restVol =dirs.slice(1).reduce((s,x)=>s+x.vol,0);
-  const total   =dominant.vol+restVol;
-  const pctDom  =total>0?Math.round(dominant.vol/total*100):0;
-  const pctRest =100-pctDom;
-  const yrLabel =y30?'2030':'2025';
+  const restDir=dirs.length>1?dirs[1]:null;
+  const restVol=dirs.slice(1).reduce((s,x)=>s+x.vol,0);
+  const total=dominant.vol+restVol;
+  const pctDom=total>0?Math.round(dominant.vol/total*100):0;
 
   function arrow(angle,len,startR){
     const rad=(angle-90)*Math.PI/180;
-    const sx=cx+Math.cos(rad)*startR, sy=cy+Math.sin(rad)*startR;
-    const ex=cx+Math.cos(rad)*len,    ey=cy+Math.sin(rad)*len;
+    const sx=cx+Math.cos(rad)*startR,sy=cy+Math.sin(rad)*startR;
+    const ex=cx+Math.cos(rad)*len,ey=cy+Math.sin(rad)*len;
     const hs=8;
-    const l1x=ex+Math.cos(rad+2.5)*hs, l1y=ey+Math.sin(rad+2.5)*hs;
-    const r1x=ex+Math.cos(rad-2.5)*hs, r1y=ey+Math.sin(rad-2.5)*hs;
-    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${l1x.toFixed(1)},${l1y.toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${r1x.toFixed(1)},${r1y.toFixed(1)}`;
+    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
   }
-
-  function labelBlock(angle,r,dir,vol,pct,col){
+  function lbl(angle,r,dir,vol,pct,col){
     const rad=(angle-90)*Math.PI/180;
-    const lx=cx+Math.cos(rad)*r, ly=cy+Math.sin(rad)*r;
+    const lx=cx+Math.cos(rad)*r,ly=cy+Math.sin(rad)*r;
     const vStr=vol>=1000?(vol/1000).toFixed(1)+'k':String(vol);
     return `<text x="${lx.toFixed(1)}" y="${(ly-10).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="${col}">${dir}</text>`+
            `<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
+           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
   }
-
-  const domAngle  = dominant.angle;
-  const restAngle = restDir?restDir.angle:(domAngle+180)%360;
-
+  const domAngle=dominant.angle;
+  const restAngle=restDir?restDir.angle:(domAngle+180)%360;
   let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   s+=`<defs><clipPath id="satClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="${domColor}" stroke-width="1.5" stroke-opacity=".55"/>`;
-
-  // Cardinal guide lines
   s+=`<g clip-path="url(#satClip)">`;
   [0,90,180,270].forEach(a=>{
     const rad=(a-90)*Math.PI/180;
-    const ex=cx+Math.cos(rad)*(CIRCLE_R-2), ey=cy+Math.sin(rad)*(CIRCLE_R-2);
-    s+=`<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
+    s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+Math.cos(rad)*(CIRCLE_R-2)).toFixed(1)}" y2="${(cy+Math.sin(rad)*(CIRCLE_R-2)).toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
   });
-  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
-  s+=`</g>`;
-
-  // Center node
+  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/></g>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="${domColor}" fill-opacity=".7"/>`;
-
-  // Arrows
   s+=`<path d="${arrow(domAngle,ARROW_END,ARROW_START)}" stroke="${domColor}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-  if(restVol>0)
-    s+=`<path d="${arrow(restAngle,ARROW_END-12,ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
-
-  // Labels inside circle
-  s+=labelBlock(domAngle,LBL_R,dominant.dir,dominant.vol,pctDom,domColor);
-  if(restVol>0)
-    s+=labelBlock(restAngle,LBL_R,restDir?restDir.dir:'otros',restVol,pctRest,restColor);
-
-  // Center totals
-  s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  fill="#555">total</text>`;
+  if(restVol>0) s+=`<path d="${arrow(restAngle,ARROW_END-12,ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
+  s+=lbl(domAngle,LBL_R,dominant.dir,dominant.vol,pctDom,domColor);
+  if(restVol>0) s+=lbl(restAngle,LBL_R,restDir?restDir.dir:'otros',restVol,100-pctDom,restColor);
+  s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="#555">total</text>`;
   s+=`<text x="${cx}" y="${cy+6}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="14px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
-  s+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px"  fill="#444">${yrLabel}</text>`;
+  s+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#444">2025</text>`;
+  s+=`<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="${domColor}" fill-opacity=".55">#${d.label} · ${d.control_type}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+// ── 2030 lane requirements satellite ─────────────────────────────────────────
+function buildLaneSVG(d, laneData){
+  const W=240,H=240,cx=W/2,cy=H/2,CIRCLE_R=115;
+  const ARROW_END=75,ARROW_START=18,LBL_R=104;
+
+  function arrow(angle,len,startR){
+    const rad=(angle-90)*Math.PI/180;
+    const sx=cx+Math.cos(rad)*startR,sy=cy+Math.sin(rad)*startR;
+    const ex=cx+Math.cos(rad)*len,ey=cy+Math.sin(rad)*len;
+    const hs=7;
+    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
+  }
+
+  // Color: red=needs more lanes, green=ok
+  function laneColor(entry){ return entry.needsMore?'#f44336':'#4caf50'; }
+
+  // Lane count dots drawn along the arrow shaft
+  function laneDots(angle, n, col, startR, endR){
+    const rad=(angle-90)*Math.PI/180;
+    let out='';
+    const spacing=(endR-startR)/(n+1);
+    for(let i=1;i<=n;i++){
+      const r=startR+spacing*i;
+      const dx=cx+Math.cos(rad)*r, dy=cy+Math.sin(rad)*r;
+      out+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="3.5" fill="${col}" fill-opacity=".85"/>`;
+    }
+    return out;
+  }
+
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<defs><clipPath id="satClip2"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
+
+  // Background
+  s+=`<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="#ffc107" stroke-width="1.5" stroke-opacity=".5"/>`;
+
+  // Guide lines
+  s+=`<g clip-path="url(#satClip2)">`;
+  [0,90,180,270].forEach(a=>{
+    const rad=(a-90)*Math.PI/180;
+    s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+Math.cos(rad)*(CIRCLE_R-2)).toFixed(1)}" y2="${(cy+Math.sin(rad)*(CIRCLE_R-2)).toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
+  });
+  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/></g>`;
+
+  // Center
+  s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="#ffc107" fill-opacity=".7"/>`;
+
+  // Per-direction arrows + labels
+  laneData.forEach((entry,i)=>{
+    const col=laneColor(entry);
+    const arrowLen = i===0 ? ARROW_END : ARROW_END-10;
+
+    // Arrow
+    s+=`<path d="${arrow(entry.angle,arrowLen,ARROW_START)}" stroke="${col}" stroke-width="${i===0?2.8:1.8}" fill="none" stroke-linecap="round" stroke-linejoin="round"${i>0?' stroke-dasharray="5,3"':''}/>`;
+
+    // Lane dots along shaft (nReq dots)
+    s+=laneDots(entry.angle, Math.min(entry.nReq,6), col, ARROW_START+4, arrowLen-6);
+
+    // Label block
+    const rad=(entry.angle-90)*Math.PI/180;
+    const lx=cx+Math.cos(rad)*LBL_R, ly=cy+Math.sin(rad)*LBL_R;
+    const lgfStr=entry.lgf>=1000?(entry.lgf/1000).toFixed(1)+'k':String(entry.lgf);
+
+    // Direction name
+    s+=`<text x="${lx.toFixed(1)}" y="${(ly-14).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="${col}">${entry.dir}</text>`;
+    // Lane group flow
+    s+=`<text x="${lx.toFixed(1)}" y="${(ly-2).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="#888">${lgfStr} vph</text>`;
+    // Required lanes — BIG
+    s+=`<text x="${lx.toFixed(1)}" y="${(ly+12).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15px" font-weight="900" fill="${col}">${entry.nReq} carril${entry.nReq!==1?'es':''}</text>`;
+    // Current vs required indicator
+    const indicator = entry.needsMore
+      ? `+${entry.nReq-entry.nCur} vs hoy`
+      : `ok (${entry.nCur} act.)`;
+    s+=`<text x="${lx.toFixed(1)}" y="${(ly+24).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="600" fill="${col}" fill-opacity=".8">${indicator}</text>`;
+  });
+
+  // Center label
+  s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#555">diseño 2030</text>`;
+  s+=`<text x="${cx}" y="${cy+5}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#444">lgf/1,800</text>`;
 
   // Footer
-  s+=`<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="${domColor}" fill-opacity=".55">#${d.label} · ${d.control_type}</text>`;
+  s+=`<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="#ffc107" fill-opacity=".55">#${d.label} · ${d.control_type}</text>`;
+
   s+=`</svg>`;
   return s;
 }
