@@ -147,10 +147,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#b8e47a"></div><span class="ll">100 – 500 vph</span></div>
     <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#4caf50"></div><span class="ll">&lt; 100 vph</span></div>
     <hr class="leg-div">
-    <div class="leg-h">Factor crecimiento inferido</div>
     <div style="font-size:9px;color:#aaa;line-height:1.7">
-      Vol 2030 = vol_total_vph × factor inferido.<br>
-      Satélite: click en marcador · datos crudos lane_groups.
+      2025: Σ volume_vph · 2030: Σ future_vph<br>
+      Datos crudos lane_groups (Synchro).<br>
+      Click en marcador → diagrama de movimientos.
     </div>
   </div>
   <hr class="leg-div">
@@ -169,7 +169,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
-const LC  = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
+const LC = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
 const OUTLIER_THRESHOLD = 200;
 const EXCLUDE_2025 = new Set([
   '125','72','37','39','140','19','151','144',
@@ -182,29 +182,27 @@ function c25(d){ return d.calc_2025||{}; }
 function c30(d){ return d.calc_2030||{}; }
 function s25(d){ return d.synchro_2025||{}; }
 
-// ── GROWTH FACTOR ENGINE ──────────────────────────────────────────────────────
-let GLOBAL_FACTOR = 1.20;
+// ── VOLUME: source of truth = lane_groups ─────────────────────────────────────
+// 2025: Σ volume_vph  |  2030: Σ future_vph  (raw Synchro field counts)
+function sumLaneVol(d, y30){
+  return (d.lane_groups||[]).reduce((s,g)=>s+(y30?(g.future_vph||0):(g.volume_vph||0)),0);
+}
 
-// ── GROWTH FACTOR ENGINE ──────────────────────────────────────────────────────
-// Infer per-intersection growth factor from lane_groups:
-  const lanes = d.lane_groups||[];
-  let sumV=0, sumF=0;
-  for(const g of lanes){
-    if((g.volume_vph||0)>0){ sumV+=g.volume_vph; sumF+=g.future_vph||0; }
-  }
-  return sumV>=50 ? sumF/sumV : null;
+// ── GROWTH FACTOR (used only for ICU 2030 recompute) ──────────────────────────
+let GLOBAL_FACTOR = 1.20;
+function computeGrowthFactor(d){
+  const lanes=d.lane_groups||[]; let sv=0,sf=0;
+  for(const g of lanes) if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=g.future_vph||0; }
+  return sv>=50 ? sf/sv : null;
 }
-function computeGlobalFactor(intersections){
-  let sumV=0, sumF=0;
-  for(const d of intersections)
-    for(const g of (d.lane_groups||[]))
-      if((g.volume_vph||0)>0){ sumV+=g.volume_vph; sumF+=g.future_vph||0; }
-  return sumV>0 ? sumF/sumV : 1.20;
+function computeGlobalFactor(ints){
+  let sv=0,sf=0;
+  for(const d of ints) for(const g of (d.lane_groups||[]))
+    if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=g.future_vph||0; }
+  return sv>0 ? sf/sv : 1.20;
 }
-function vol2030(d){ return sumLaneVol(d, true); }
 function computeICU2030(d){
-  const icu25=c25(d).icu_pct;
-  if(icu25==null) return null;
+  const icu25=c25(d).icu_pct; if(icu25==null) return null;
   return +(icu25*(computeGrowthFactor(d)??GLOBAL_FACTOR)).toFixed(1);
 }
 function isOutlier(d){
@@ -212,205 +210,147 @@ function isOutlier(d){
   return delta!=null && Math.abs(delta)>OUTLIER_THRESHOLD;
 }
 
-// ── SATELLITE: direction movement data ───────────────────────────────────────
-// Direction prefixes and their cardinal angles (degrees, 0=up/north, clockwise)
+// ── SATELLITE helpers ─────────────────────────────────────────────────────────
 const DIR_ANGLE = {
-  NB:0, SB:180, EB:90, WB:270,
-  NE:45, NW:315, SE:135, SW:225,
-  NET:45, NWT:315, SET:135, SWT:225
+  NB:0,SB:180,EB:90,WB:270,
+  NE:45,NW:315,SE:135,SW:225,
+  NET:45,NWT:315,SET:135,SWT:225
 };
-
-// Extract 2-letter direction prefix from group code (NBL→NB, EBT→EB, NET→NE, etc.)
 function dirOf(group){
-  const prefixes = ['NET','NWT','SET','SWT','NE','NW','SE','SW','NB','SB','EB','WB'];
+  const prefixes=['NET','NWT','SET','SWT','NE','NW','SE','SW','NB','SB','EB','WB'];
   for(const p of prefixes) if(group.startsWith(p)) return p;
   return group.slice(0,2).toUpperCase();
 }
 
-// Aggregate lane_groups by direction — raw, no scaling
-// 2025: volume_vph  |  2030: future_vph
-function getDirectionVols(d, useY30){
-  const map = {};
+// Aggregate by direction — raw, no scaling (2025=volume_vph, 2030=future_vph)
+function getDirectionVols(d, y30){
+  const map={};
   for(const g of (d.lane_groups||[])){
-    const vol = useY30 ? (g.future_vph||0) : (g.volume_vph||0);
+    const vol = y30?(g.future_vph||0):(g.volume_vph||0);
     const dir = dirOf(g.group);
-    map[dir] = (map[dir]||0) + vol;
+    map[dir]=(map[dir]||0)+vol;
   }
   return Object.entries(map)
-    .map(([dir,vol])=>({ dir, vol, angle: DIR_ANGLE[dir]??0 }))
+    .map(([dir,vol])=>({dir,vol,angle:DIR_ANGLE[dir]??0}))
     .filter(x=>x.vol>0)
     .sort((a,b)=>b.vol-a.vol);
 }
 
-// Build satellite SVG: dominant direction + rest
-// All labels and arrows stay INSIDE the circle boundary
-function buildSatelliteSVG(d, useY30){
-  const dirs = getDirectionVols(d, useY30);
+function buildSatelliteSVG(d, y30){
+  const dirs=getDirectionVols(d,y30);
   if(!dirs.length) return null;
 
-  // Canvas: large enough that content is never clipped
-  const W=240, H=240, cx=W/2, cy=H/2;
-  // Inner radius where arrows end (leaving room for labels inside)
-  const ARROW_END = 80;   // arrow tip stops here
-  const ARROW_START = 18; // arrow starts away from center
-  const LBL_R = 100;      // label midpoint radius (inside circle boundary of R=115)
-  const CIRCLE_R = 115;   // visible circle radius
+  const W=240,H=240,cx=W/2,cy=H/2;
+  const ARROW_END=80, ARROW_START=18, LBL_R=108, CIRCLE_R=115;
+  const domColor='#ce93d8', restColor='#64b5f6';
 
-  const dominant = dirs[0];
-  const restDir  = dirs.length>1 ? dirs[1] : null;
-  const restVol  = dirs.slice(1).reduce((s,x)=>s+x.vol,0);
-  const total    = dominant.vol + restVol;
-  const pctDom   = total>0 ? Math.round(dominant.vol/total*100) : 0;
-  const pctRest  = 100-pctDom;
+  const dominant=dirs[0];
+  const restDir =dirs.length>1?dirs[1]:null;
+  const restVol =dirs.slice(1).reduce((s,x)=>s+x.vol,0);
+  const total   =dominant.vol+restVol;
+  const pctDom  =total>0?Math.round(dominant.vol/total*100):0;
+  const pctRest =100-pctDom;
+  const yrLabel =y30?'2030':'2025';
 
-  const domColor  = '#ce93d8';
-  const restColor = '#64b5f6';
-  const yrLabel   = useY30?'2030':'2025';
-
-  // Arrow: shaft + arrowhead, fully inside circle
-  function arrow(angle, len, startR){
-    const rad = (angle-90)*Math.PI/180;
-    const sx = cx + Math.cos(rad)*startR;
-    const sy = cy + Math.sin(rad)*startR;
-    const ex = cx + Math.cos(rad)*len;
-    const ey = cy + Math.sin(rad)*len;
-    const hs = 8; // head size
-    const l1x = ex + Math.cos(rad+2.5)*hs;
-    const l1y = ey + Math.sin(rad+2.5)*hs;
-    const r1x = ex + Math.cos(rad-2.5)*hs;
-    const r1y = ey + Math.sin(rad-2.5)*hs;
+  function arrow(angle,len,startR){
+    const rad=(angle-90)*Math.PI/180;
+    const sx=cx+Math.cos(rad)*startR, sy=cy+Math.sin(rad)*startR;
+    const ex=cx+Math.cos(rad)*len,    ey=cy+Math.sin(rad)*len;
+    const hs=8;
+    const l1x=ex+Math.cos(rad+2.5)*hs, l1y=ey+Math.sin(rad+2.5)*hs;
+    const r1x=ex+Math.cos(rad-2.5)*hs, r1y=ey+Math.sin(rad-2.5)*hs;
     return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${l1x.toFixed(1)},${l1y.toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${r1x.toFixed(1)},${r1y.toFixed(1)}`;
   }
 
-  // Label block: 3 lines centered at (lx,ly)
-  // line1=dir, line2=volume, line3=pct
-  function labelBlock(angle, r, dir, vol, pct, col){
-    const rad = (angle-90)*Math.PI/180;
-    const lx  = cx + Math.cos(rad)*r;
-    const ly  = cy + Math.sin(rad)*r;
-    const vStr = vol>=1000?(vol/1000).toFixed(1)+'k':String(vol);
+  function labelBlock(angle,r,dir,vol,pct,col){
+    const rad=(angle-90)*Math.PI/180;
+    const lx=cx+Math.cos(rad)*r, ly=cy+Math.sin(rad)*r;
+    const vStr=vol>=1000?(vol/1000).toFixed(1)+'k':String(vol);
     return `<text x="${lx.toFixed(1)}" y="${(ly-10).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="${col}">${dir}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+14).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
+           `<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
   }
 
   const domAngle  = dominant.angle;
-  const restAngle = restDir ? restDir.angle : (domAngle+180)%360;
+  const restAngle = restDir?restDir.angle:(domAngle+180)%360;
 
-  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<defs><clipPath id="satClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="${domColor}" stroke-width="1.5" stroke-opacity=".55"/>`;
 
-  // Clip everything to the circle
-  s += `<defs><clipPath id="satClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
-
-  // Background circle fill
-  s += `<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="${domColor}" stroke-width="1.5" stroke-opacity=".55"/>`;
-
-  // Cardinal guide lines (clipped)
-  s += `<g clip-path="url(#satClip)">`;
+  // Cardinal guide lines
+  s+=`<g clip-path="url(#satClip)">`;
   [0,90,180,270].forEach(a=>{
     const rad=(a-90)*Math.PI/180;
     const ex=cx+Math.cos(rad)*(CIRCLE_R-2), ey=cy+Math.sin(rad)*(CIRCLE_R-2);
-    s += `<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
+    s+=`<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
   });
-  // Thin ring at ARROW_END to visually separate shaft from label area
-  s += `<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
-  s += `</g>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
+  s+=`</g>`;
 
   // Center node
-  s += `<circle cx="${cx}" cy="${cy}" r="5" fill="${domColor}" fill-opacity=".7"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="${domColor}" fill-opacity=".7"/>`;
 
-  // Dominant arrow (thick, solid)
-  s += `<path d="${arrow(domAngle, ARROW_END, ARROW_START)}" stroke="${domColor}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-
-  // Rest arrow (thinner, dashed)
+  // Arrows
+  s+=`<path d="${arrow(domAngle,ARROW_END,ARROW_START)}" stroke="${domColor}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
   if(restVol>0)
-    s += `<path d="${arrow(restAngle, ARROW_END-12, ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
+    s+=`<path d="${arrow(restAngle,ARROW_END-12,ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
 
-  // Label blocks — placed at LBL_R along each direction, fully inside CIRCLE_R
-  s += labelBlock(domAngle,  LBL_R, dominant.dir, dominant.vol, pctDom, domColor);
+  // Labels inside circle
+  s+=labelBlock(domAngle,LBL_R,dominant.dir,dominant.vol,pctDom,domColor);
   if(restVol>0)
-    s += labelBlock(restAngle, LBL_R, restDir?restDir.dir:'otros', restVol, pctRest, restColor);
+    s+=labelBlock(restAngle,LBL_R,restDir?restDir.dir:'otros',restVol,pctRest,restColor);
 
   // Center totals
-  s += `<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  fill="#555">total</text>`;
-  s += `<text x="${cx}" y="${cy+6}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
-  s += `<text x="${cx}" y="${cy+17}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px"  fill="#444">${yrLabel}</text>`;
+  s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  fill="#555">total</text>`;
+  s+=`<text x="${cx}" y="${cy+6}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="14px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
+  s+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px"  fill="#444">${yrLabel}</text>`;
 
-  // Intersection id — bottom of circle
-  s += `<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="${domColor}" fill-opacity=".6">#${d.label} · ${d.control_type}</text>`;
-
-  s += '</svg>';
+  // Footer
+  s+=`<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="${domColor}" fill-opacity=".55">#${d.label} · ${d.control_type}</text>`;
+  s+=`</svg>`;
   return s;
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let D           = {intersections:[]};
-let markers     = [];
-let activeFilt  = 'all';
-let activeLayer = 'synchro';
-let useY30      = false;
-let sensMult    = 1.0;
-
-// Satellite state
-let activeSatellite = null;   // { marker: L.Marker, connector: L.Polyline }
+let D={intersections:[]}, markers=[], activeFilt='all', activeLayer='synchro', useY30=false, sensMult=1.0;
+let activeSatellite=null;
 
 function clearSatellite(){
   if(activeSatellite){
     map.removeLayer(activeSatellite.marker);
     map.removeLayer(activeSatellite.connector);
-    activeSatellite = null;
+    activeSatellite=null;
   }
 }
 
-function showSatellite(d, latlng, mainRadius){
+function showSatellite(d, latlng, mainR){
   clearSatellite();
-
-  const svgHtml = buildSatelliteSVG(d, useY30);
+  const svgHtml=buildSatelliteSVG(d,useY30);
   if(!svgHtml) return;
-
-  const W = 240, H = 240;
-
-  // Offset: place satellite to the right of the main marker
-  // Convert pixel offset to lat/lng offset at current zoom
-  const zoom   = map.getZoom();
-  const pt     = map.latLngToContainerPoint(latlng);
-  const offset = mainRadius + W/2 + 14;   // px gap between edges
-  const satPt  = L.point(pt.x + offset, pt.y);
-  const satLL  = map.containerPointToLatLng(satPt);
-
-  // Connector line from main marker edge to satellite edge
-  const connStartPt = L.point(pt.x + mainRadius + 2, pt.y);
-  const connEndPt   = L.point(pt.x + offset - W/2, pt.y);
-  const connStart   = map.containerPointToLatLng(connStartPt);
-  const connEnd     = map.containerPointToLatLng(connEndPt);
-
-  const connector = L.polyline([connStart, connEnd], {
-    color: '#ce93d8', weight: 1, opacity: 0.5, dashArray: '3,3'
-  }).addTo(map);
-
-  const satIcon = L.divIcon({
-    className: '',
-    iconSize:   [W, H],
-    iconAnchor: [W/2, H/2],
-    html: svgHtml
-  });
-
-  const satMarker = L.marker(satLL, { icon: satIcon, interactive: false, zIndexOffset: 500 }).addTo(map);
-
-  activeSatellite = { marker: satMarker, connector };
+  const W=240,H=240;
+  const pt=map.latLngToContainerPoint(latlng);
+  const offset=mainR+W/2+14;
+  const satPt=L.point(pt.x+offset,pt.y);
+  const satLL=map.containerPointToLatLng(satPt);
+  const connStart=map.containerPointToLatLng(L.point(pt.x+mainR+2,pt.y));
+  const connEnd  =map.containerPointToLatLng(L.point(pt.x+offset-W/2,pt.y));
+  const connector=L.polyline([connStart,connEnd],{color:'#ce93d8',weight:1,opacity:.5,dashArray:'3,3'}).addTo(map);
+  const satIcon=L.divIcon({className:'',iconSize:[W,H],iconAnchor:[W/2,H/2],html:svgHtml});
+  const satMarker=L.marker(satLL,{icon:satIcon,interactive:false,zIndexOffset:500}).addTo(map);
+  activeSatellite={marker:satMarker,connector,_label:d.label};
 }
 
 // ── SENSITIVITY ───────────────────────────────────────────────────────────────
 function setSens(v){
-  sensMult = Math.round(v*10)/10;
-  document.getElementById('sensSlider').value = sensMult;
-  document.getElementById('sensDisplay').textContent = '×'+sensMult.toFixed(1);
-  const pct = Math.round((sensMult-1)*100);
-  const el  = document.getElementById('sensPct');
-  el.textContent = pct===0?'+0%':(pct>0?'+'+pct+'%':pct+'%');
-  el.style.color = pct>0?'#f44336':pct<0?'#4caf50':'#666';
-  clearSatellite();
-  buildMarkers();
+  sensMult=Math.round(v*10)/10;
+  document.getElementById('sensSlider').value=sensMult;
+  document.getElementById('sensDisplay').textContent='×'+sensMult.toFixed(1);
+  const pct=Math.round((sensMult-1)*100);
+  const el=document.getElementById('sensPct');
+  el.textContent=pct===0?'+0%':(pct>0?'+'+pct+'%':pct+'%');
+  el.style.color=pct>0?'#f44336':pct<0?'#4caf50':'#666';
+  clearSatellite(); buildMarkers();
 }
 function stepSens(d){ setSens(Math.min(3.0,Math.max(0.5,sensMult+d))); }
 function resetSens(){ setSens(1.0); }
@@ -418,40 +358,30 @@ function scaledICU(r){ return +(r*sensMult).toFixed(1); }
 
 function getDisplayLOS(d){
   if(activeLayer==='synchro'){
-    const raw = useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
-    const icu = scaledICU(raw);
-    return {icu, los:icuLOS(icu), source:useY30?'Synchro 2030~':'Synchro rptd'};
+    const raw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
+    const icu=scaledICU(raw);
+    return {icu,los:icuLOS(icu),source:useY30?'Synchro 2030~':'Synchro rptd'};
   } else {
-    const raw = useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
-    const icu = scaledICU(raw);
-    return {icu, los:icuLOS(icu), source:useY30?'ICU calc 2030 (recomp.)':'ICU calc 2025'};
+    const raw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
+    const icu=scaledICU(raw);
+    return {icu,los:icuLOS(icu),source:useY30?'ICU calc 2030 (recomp.)':'ICU calc 2025'};
   }
 }
 
 function volToR(vol){
   const v=Math.round(vol*sensMult);
-  if(!v||v<=0) return 5;
-  if(v<50) return 6;
-  if(v>=8000) return 26;
+  if(!v||v<=0) return 5; if(v<50) return 6; if(v>=8000) return 26;
   return Math.round(6+(Math.log(v)-Math.log(50))/(Math.log(8000)-Math.log(50))*20);
 }
 function volToRaw(vol){
-  if(!vol||vol<=0) return 6;
-  if(vol>=8000) return 28;
-  if(vol>=5000) return 24;
-  if(vol>=3000) return 20;
-  if(vol>=1500) return 16;
-  if(vol>=500)  return 12;
-  if(vol>=100)  return 8;
-  return 6;
+  if(!vol||vol<=0) return 6; if(vol>=8000) return 28; if(vol>=5000) return 24;
+  if(vol>=3000) return 20; if(vol>=1500) return 16; if(vol>=500) return 12;
+  if(vol>=100) return 8; return 6;
 }
 function volToColor(vol){
-  if(vol>=8000) return '#4a1a6e';
-  if(vol>=5000) return '#8b2fc9';
-  if(vol>=3000) return '#d44caa';
-  if(vol>=1500) return '#f0813a';
-  if(vol>=500)  return '#f7c948';
-  if(vol>=100)  return '#b8e47a';
+  if(vol>=8000) return '#4a1a6e'; if(vol>=5000) return '#8b2fc9';
+  if(vol>=3000) return '#d44caa'; if(vol>=1500) return '#f0813a';
+  if(vol>=500)  return '#f7c948'; if(vol>=100)  return '#b8e47a';
   return '#4caf50';
 }
 function ctrlGlyph(ct){
@@ -461,77 +391,62 @@ function ctrlGlyph(ct){
   return {g:'≡',c:'#81c784'};
 }
 function hasDeterioroReal(d){ return (c30(d).deterioro||'estable')!=='estable'; }
-function hasDiscrepancia(d){
-  const sL=s25(d).icu_los, cL=c25(d).icu_los;
-  return sL&&cL&&sL!==cL;
-}
+function hasDiscrepancia(d){ const sL=s25(d).icu_los,cL=c25(d).icu_los; return sL&&cL&&sL!==cL; }
 function isSigD(d){ return s25(d).signal_delay_s!=null; }
 
 // ── MAP ───────────────────────────────────────────────────────────────────────
-const map = L.map('map',{zoomControl:true}).setView([14.652,-90.543],15);
+const map=L.map('map',{zoomControl:true}).setView([14.652,-90.543],15);
 L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
-  attribution:'© OSM © CARTO', maxZoom:20
+  attribution:'© OSM © CARTO',maxZoom:20
 }).addTo(map);
-
-// Click on map background closes satellite
-map.on('click', ()=>clearSatellite());
-
-// When map moves/zooms, clear satellite (position would be stale)
-map.on('movestart', ()=>clearSatellite());
+map.on('click',()=>clearSatellite());
+map.on('movestart',()=>clearSatellite());
 
 // ── BUILD MARKERS ─────────────────────────────────────────────────────────────
 function buildMarkers(){
   clearSatellite();
-  markers.forEach(m=>map.removeLayer(m));
-  markers=[];
-  const criticals=[];
-  const isVolLayer = activeLayer==='vol';
+  markers.forEach(m=>map.removeLayer(m)); markers=[];
+  const criticals=[], isVolLayer=activeLayer==='vol';
 
-  const items = D.intersections.filter(d=>
-    d.coords&&d.coords.lat&&
-    (useY30||!EXCLUDE_2025.has(String(d.label)))
+  const items=D.intersections.filter(d=>
+    d.coords&&d.coords.lat&&(useY30||!EXCLUDE_2025.has(String(d.label)))
   );
 
   items.forEach(d=>{
-    const v25     = c25(d).vol_total_vph||0;
-    const v30     = vol2030(d);
-    const dispVol = useY30?v30:v25;
-    const factor  = computeGrowthFactor(d)??GLOBAL_FACTOR;
-    const factorPct = Math.round((factor-1)*100);
-
-    const scaledVol = Math.round(dispVol*(isVolLayer?1:sensMult));
-    const isLow  = scaledVol<50;
-    const isDet  = hasDeterioroReal(d);
-    const isDisc = hasDiscrepancia(d);
-    const isOut  = isOutlier(d);
+    const v25=sumLaneVol(d,false);   // Σ volume_vph
+    const v30=sumLaneVol(d,true);    // Σ future_vph
+    const dispVol=useY30?v30:v25;
+    const factor=computeGrowthFactor(d)??GLOBAL_FACTOR;
+    const factorPct=Math.round((factor-1)*100);
+    const scaledVol=Math.round(dispVol*(isVolLayer?1:sensMult));
+    const isLow=scaledVol<50, isDet=hasDeterioroReal(d);
+    const isDisc=hasDiscrepancia(d), isOut=isOutlier(d);
 
     let activeIcuRaw;
-    if(activeLayer==='synchro')      activeIcuRaw = useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
-    else if(activeLayer==='calc')    activeIcuRaw = useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
-    else                             activeIcuRaw = c25(d).icu_pct||0;
-    const activeIcu = scaledICU(activeIcuRaw);
+    if(activeLayer==='synchro') activeIcuRaw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
+    else if(activeLayer==='calc') activeIcuRaw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
+    else activeIcuRaw=c25(d).icu_pct||0;
+    const activeIcu=scaledICU(activeIcuRaw);
 
-    if(activeFilt==='sig'        && !isSigD(d)) return;
-    if(activeFilt==='unsig'      && (isSigD(d)||d.control_type==='Roundabout')) return;
-    if(activeFilt==='roundabout' && d.control_type!=='Roundabout') return;
-    if(activeFilt==='crit'       && activeIcu<90) return;
-    if(activeFilt==='det'        && !isDet) return;
-    if(activeFilt==='discr'      && !isDisc) return;
-    if(activeFilt==='lovol'      && !isLow) return;
-    if(activeFilt==='outlier'    && !isOut) return;
+    if(activeFilt==='sig'        &&!isSigD(d)) return;
+    if(activeFilt==='unsig'      &&(isSigD(d)||d.control_type==='Roundabout')) return;
+    if(activeFilt==='roundabout' &&d.control_type!=='Roundabout') return;
+    if(activeFilt==='crit'       &&activeIcu<90) return;
+    if(activeFilt==='det'        &&!isDet) return;
+    if(activeFilt==='discr'      &&!isDisc) return;
+    if(activeFilt==='lovol'      &&!isLow) return;
+    if(activeFilt==='outlier'    &&!isOut) return;
 
-    const ctrl = ctrlGlyph(d.control_type);
-
+    const ctrl=ctrlGlyph(d.control_type);
     let icon, markerRadius;
+
     if(isVolLayer){
-      const r  = volToRaw(dispVol); markerRadius = r;
-      const sz = r*2+10, cx=sz/2;
-      const col= volToColor(dispVol);
-      const op = isLow?0.35:0.88;
-      const dashAttr = isOut?'stroke-dasharray="3,2"':'';
-      const strokeCol= isOut?'#ff6b6b':'rgba(255,255,255,0.4)';
-      icon = L.divIcon({
-        className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
+      const r=volToRaw(dispVol); markerRadius=r;
+      const sz=r*2+10, cx=sz/2;
+      const col=volToColor(dispVol), op=isLow?0.35:0.88;
+      const dashAttr=isOut?'stroke-dasharray="3,2"':'';
+      const strokeCol=isOut?'#ff6b6b':'rgba(255,255,255,0.4)';
+      icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[cx,cx],
         html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
           <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
             stroke="${strokeCol}" stroke-width="${isOut?2:1}" ${dashAttr}/>
@@ -540,21 +455,17 @@ function buildMarkers(){
             font-size="${Math.max(6,Math.min(10,r*0.7))}px"
             font-weight="700" fill="#000" fill-opacity=".75">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</text>
           <text x="${sz-2}" y="6" text-anchor="end"
-            font-family="Segoe UI,Arial,sans-serif" font-size="9px"
-            fill="${ctrl.c}">${ctrl.g}</text>
+            font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="${ctrl.c}">${ctrl.g}</text>
         </svg>`
       });
     } else {
-      const {icu,los,source} = getDisplayLOS(d);
-      const col=lc(los);
-      const r=volToR(v25); markerRadius=r;
-      const sz=r*2+14, cx=sz/2;
-      const op=isLow?0.4:0.85;
+      const {icu,los}=getDisplayLOS(d);
+      const col=lc(los), r=volToR(v25); markerRadius=r;
+      const sz=r*2+14, cx=sz/2, op=isLow?0.4:0.85;
       const strokeCol=isOut?'#ff6b6b':isDet?'#f44336':isDisc?'#ffc107':'#ffffff';
       const strokeW=(isOut||isDet||isDisc)?2:1;
       const dashAttr=isOut?'stroke-dasharray="3,2"':'';
-      icon = L.divIcon({
-        className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
+      icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[cx,cx],
         html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
           <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
             stroke="${strokeCol}" stroke-width="${strokeW}" stroke-opacity=".9" ${dashAttr}/>
@@ -563,8 +474,7 @@ function buildMarkers(){
             font-size="${Math.max(7,Math.min(12,r*0.85))}px"
             font-weight="700" fill="#000" fill-opacity=".8">${los}</text>
           <text x="${sz-2}" y="6" text-anchor="end"
-            font-family="Segoe UI,Arial,sans-serif" font-size="9px"
-            fill="${ctrl.c}">${ctrl.g}</text>
+            font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="${ctrl.c}">${ctrl.g}</text>
         </svg>`
       });
     }
@@ -581,7 +491,7 @@ function buildMarkers(){
     const detRow=det!=='estable'?`<div class="tt-det">↑ Deterioro 2030: ${det}</div>`:'';
     const lowWarn=isLow?`<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>`:'';
     const sensNote=sensMult!==1.0?`<div class="tt-row"><span>Sensibilidad</span><b style="color:${sensMult>1?'#f44336':'#4caf50'}">×${sensMult.toFixed(1)}</b></div>`:'';
-    const outlierNote=isOut?`<div class="tt-outlier">⚠ Outlier: delta JSON = ${(c30(d).icu_delta_pct??'N/A')}% — usando ICU recomputado</div>`:'';
+    const outlierNote=isOut?`<div class="tt-outlier">⚠ Outlier: delta JSON=${c30(d).icu_delta_pct??'N/A'}%</div>`:'';
     const growthNote=`<div class="tt-growth">📈 ×${factor.toFixed(3)} (${factorPct>=0?'+':''}${factorPct}%)${computeGrowthFactor(d)==null?' [global]':' [inferido]'}</div>`;
     const icuDiff=Math.abs(cIcu30j-cIcu30rc);
     const icu30Row=icuDiff>2
@@ -591,14 +501,12 @@ function buildMarkers(){
     let ttHeader, ttMain;
     if(isVolLayer){
       const col=volToColor(dispVol);
-      const satHint=`<div style="font-size:9px;color:#ce93d8;margin-top:4px">🔵 Click para ver movimientos</div>`;
       ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${col};font-size:22px">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</div><div class="tt-los-sub">vph ${useY30?'2030':'2025'}<br>${d.control_type}</div></div>`;
-      ttMain=`<div class="tt-row"><span>Vol. 2025</span><b>${v25.toLocaleString()} vph</b></div>
-        <div class="tt-row"><span>Vol. 2030 (×${factor.toFixed(2)})</span><b>${v30.toLocaleString()} vph <span style="color:${volDelta>0?'#4caf50':'#f44336'};font-size:9px">(${volDS})</span></b></div>
-        ${growthNote}${satHint}`;
+      ttMain=`<div class="tt-row"><span>Vol. 2025 (Σ lane_groups)</span><b>${v25.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Vol. 2030 (Σ future_vph)</span><b>${v30.toLocaleString()} vph <span style="color:${volDelta>0?'#4caf50':'#f44336'};font-size:9px">(${volDS})</span></b></div>
+        ${growthNote}<div style="font-size:9px;color:#ce93d8;margin-top:4px">🔵 Click → diagrama de movimientos</div>`;
     } else {
-      const {icu,los,source}=getDisplayLOS(d);
-      const col=lc(los);
+      const {icu,los,source}=getDisplayLOS(d); const col=lc(los);
       ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${col}">${los}</div><div class="tt-los-sub">${source}<br>${icu}%</div></div>`;
       ttMain=`<div class="tt-row"><span>Synchro ICU 2025</span><b>${sIcuSc}% <span style="color:${lc(sLosSc)}">${sLosSc}</span></b></div>
         <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcuSc}% <span style="color:${lc(cLosSc)}">${cLosSc}</span></b></div>
@@ -608,50 +516,38 @@ function buildMarkers(){
         ${growthNote}${sensNote}`;
     }
 
-    const tipR = isVolLayer?volToRaw(dispVol):volToR(v25);
-    const mk = L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
+    const tipR=isVolLayer?volToRaw(dispVol):volToR(v25);
+    const mk=L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
     mk.bindTooltip(`<div class="los-tooltip">
       <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
       ${ttHeader}<hr class="tt-div">${ttMain}
       ${discWarn}${detRow}${lowWarn}${outlierNote}
     </div>`,{permanent:false,direction:'top',offset:[0,-(tipR+4)],opacity:1,className:''});
 
-    // ── CLICK: show/close satellite (vol layer only) ──
-    const _d = d, _r = markerRadius;
-    mk.on('click', function(e){
+    const _d=d, _r=markerRadius;
+    mk.on('click',function(e){
       L.DomEvent.stopPropagation(e);
-      if(activeLayer!=='vol'){
-        clearSatellite();
-        return;
-      }
-      // If same marker clicked again, toggle off
-      if(activeSatellite && activeSatellite._label===_d.label){
-        clearSatellite();
-        return;
-      }
+      if(activeLayer!=='vol'){ clearSatellite(); return; }
+      if(activeSatellite&&activeSatellite._label===_d.label){ clearSatellite(); return; }
       clearSatellite();
-      showSatellite(_d, mk.getLatLng(), _r);
-      activeSatellite._label = _d.label;
+      showSatellite(_d,mk.getLatLng(),_r);
     });
 
-    mk.addTo(map);
-    markers.push(mk);
+    mk.addTo(map); markers.push(mk);
     if(!isVolLayer&&activeIcu>=90)
       criticals.push({label:d.label,icu:activeIcu,los:icuLOS(activeIcu)});
   });
 
   // ── STATS ──
-  const losE =items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
-  const nDet =items.filter(hasDeterioroReal).length;
+  const losE=items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
+  const nDet=items.filter(hasDeterioroReal).length;
   const nDisc=items.filter(hasDiscrepancia).length;
-  const nOut =items.filter(isOutlier).length;
+  const nOut=items.filter(isOutlier).length;
   if(isVolLayer){
-    const tot=items.reduce((s,d)=>s+(useY30?vol2030(d):(c25(d).vol_total_vph||0)),0);
-    document.getElementById('stats').textContent=
-      `${markers.length} int. · Vol total: ${(tot/1000).toFixed(1)}k vph · ×${GLOBAL_FACTOR.toFixed(3)} global`;
+    const tot=items.reduce((s,d)=>s+sumLaneVol(d,useY30),0);
+    document.getElementById('stats').textContent=`${markers.length} int. · Vol total: ${(tot/1000).toFixed(1)}k vph`;
   } else {
-    document.getElementById('stats').textContent=
-      `${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr. · ${nOut} outliers`;
+    document.getElementById('stats').textContent=`${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr. · ${nOut} outliers`;
   }
 
   // ── CRITICAL / TOP VOL ──
@@ -659,19 +555,18 @@ function buildMarkers(){
   const hdr=document.getElementById('leg-crit-hdr');
   if(isVolLayer){
     hdr.textContent='📊 Mayor volumen';
-    const topVol=items.map(d=>({label:d.label,vol:useY30?vol2030(d):(c25(d).vol_total_vph||0),factor:computeGrowthFactor(d)??GLOBAL_FACTOR}))
+    const topVol=items.map(d=>({label:d.label,vol:sumLaneVol(d,useY30)}))
       .sort((a,b)=>b.vol-a.vol).slice(0,8);
     cl.innerHTML=topVol.map(x=>`<div class="crit-item">• <b>#${x.label}</b> — ${x.vol>=1000?(x.vol/1000).toFixed(1)+'k':x.vol} vph <span style="color:${volToColor(x.vol)}">■</span></div>`).join('');
     document.getElementById('leg-growth-info').style.display='block';
     document.getElementById('leg-growth-info').innerHTML=
-      `Factor global: <b style="color:#a5d6a7">×${GLOBAL_FACTOR.toFixed(3)}</b> (+${Math.round((GLOBAL_FACTOR-1)*100)}%)`;
+      `Factor global ICU: <b style="color:#a5d6a7">×${GLOBAL_FACTOR.toFixed(3)}</b> (+${Math.round((GLOBAL_FACTOR-1)*100)}%)`;
   } else {
     document.getElementById('leg-growth-info').style.display='none';
     hdr.textContent='⚠ Puntos críticos';
     if(criticals.length){
       criticals.sort((a,b)=>b.icu-a.icu);
-      cl.innerHTML=criticals.slice(0,8).map(c=>
-        `<div class="crit-item">• <b>#${c.label}</b> — ${c.icu}% <span style="color:${lc(c.los)}">[${c.los}]</span></div>`).join('');
+      cl.innerHTML=criticals.slice(0,8).map(c=>`<div class="crit-item">• <b>#${c.label}</b> — ${c.icu}% <span style="color:${lc(c.los)}">[${c.los}]</span></div>`).join('');
       if(criticals.length>8) cl.innerHTML+=`<div style="font-size:9px;color:#555">+${criticals.length-8} más…</div>`;
     } else {
       cl.innerHTML='<div style="font-size:9px;color:#555">Sin puntos críticos en esta vista.</div>';
@@ -684,13 +579,12 @@ function buildMarkers(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 function setLayer(l,btn){
-  clearSatellite();
-  activeLayer=l;
+  clearSatellite(); activeLayer=l;
   document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol'));
   btn.classList.add(l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol');
-  document.getElementById('leg-los').style.display =l==='vol'?'none':'block';
-  document.getElementById('leg-vol').style.display =l==='vol'?'block':'none';
-  document.getElementById('sens-group').style.opacity      =l==='vol'?'0.4':'1';
+  document.getElementById('leg-los').style.display=l==='vol'?'none':'block';
+  document.getElementById('leg-vol').style.display=l==='vol'?'block':'none';
+  document.getElementById('sens-group').style.opacity=l==='vol'?'0.4':'1';
   document.getElementById('sens-group').style.pointerEvents=l==='vol'?'none':'auto';
   const titles={synchro:'LOS ICU — Synchro rptd',calc:'LOS ICU — Calculado',vol:'Aforos — Volumen Total'};
   document.getElementById('leg-title').textContent=titles[l];
@@ -698,8 +592,7 @@ function setLayer(l,btn){
   buildMarkers();
 }
 function setFilt(f,btn){
-  clearSatellite();
-  activeFilt=f;
+  clearSatellite(); activeFilt=f;
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active','active-warn'));
   btn.classList.add(['crit','det','discr','lovol','outlier'].includes(f)?'active-warn':'active');
   buildMarkers();
@@ -712,9 +605,8 @@ async function loadData(){
     const r=await fetch('datalos_latlong.json');
     if(!r.ok) throw new Error('HTTP '+r.status);
     D=await r.json();
-    const active=D.intersections.filter(d=>d.coords&&d.coords.lat);
-    GLOBAL_FACTOR=computeGlobalFactor(active);
-    console.log(`Cargado: ${D.intersections.length} int · factor ×${GLOBAL_FACTOR.toFixed(4)}`);
+    GLOBAL_FACTOR=computeGlobalFactor(D.intersections.filter(d=>d.coords&&d.coords.lat));
+    console.log(`Cargado: ${D.intersections.length} int · factor global ×${GLOBAL_FACTOR.toFixed(4)}`);
   } catch(e){
     console.warn('No se cargó datalos_latlong.json:',e.message);
     document.getElementById('stats').textContent='⚠ Sirve con: npx serve .  |  python -m http.server';
