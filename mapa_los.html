@@ -284,7 +284,7 @@ function buildSatelliteSVG(d, y30){
 // ── 2025 volume satellite (original) ─────────────────────────────────────────
 function buildVolumeSVG(d, dirs, y30){
   const W=240,H=240,cx=W/2,cy=H/2;
-  const ARROW_END=30,ARROW_START=14,LBL_R=80,CIRCLE_R=115;
+  const ARROW_END=42,ARROW_START=14,LBL_R=80,CIRCLE_R=115;
   const domColor='#ce93d8',restColor='#64b5f6';
   const dominant=dirs[0];
   const restDir=dirs.length>1?dirs[1]:null;
@@ -321,8 +321,13 @@ function buildVolumeSVG(d, dirs, y30){
   s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="${domColor}" fill-opacity=".7"/>`;
   s+=`<path d="${arrow(domAngle,ARROW_END,ARROW_START)}" stroke="${domColor}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
   if(restVol>0) s+=`<path d="${arrow(restAngle,ARROW_END-12,ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
-  s+=lbl(domAngle,LBL_R,dominant.dir,dominant.vol,pctDom,domColor);
-  if(restVol>0) s+=lbl(restAngle,LBL_R,restDir?restDir.dir:'otros',restVol,100-pctDom,restColor);
+// Separate labels if angles are too close (< 60°)
+  const angDiff = Math.abs(((restAngle - domAngle + 540) % 360) - 180);
+  const domLblAngle  = (restVol>0 && angDiff<60) ? domAngle-18  : domAngle;
+  const restLblAngle = (restVol>0 && angDiff<60) ? restAngle+18 : restAngle;
+  s+=lbl(domLblAngle,  LBL_R, dominant.dir, dominant.vol, pctDom,       domColor);
+  if(restVol>0)
+    s+=lbl(restLblAngle, LBL_R, restDir?restDir.dir:'otros', restVol, 100-pctDom, restColor);
   s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="#555">total</text>`;
   s+=`<text x="${cx}" y="${cy+6}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="14px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
   s+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#444">2025</text>`;
