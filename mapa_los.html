@@ -18,6 +18,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 .layer-btn.active-synchro{background:#1b3a4e;color:#29b6f6;border-color:#29b6f6}
 .layer-btn.active-calc{background:#1b3a1e;color:#4caf50;border-color:#4caf50}
 .layer-btn.active-vol{background:#2a1e3a;color:#ce93d8;border-color:#ce93d8}
+.layer-btn.active-amx{background:#0d2a1a;color:#69f0ae;border-color:#69f0ae}
 .fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
 .fbtn:hover{color:#aaa;background:#1a2030}
 .fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
@@ -35,6 +36,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 .yr-wrap input{accent-color:#4a90d9;cursor:pointer}
 .tbl-btn{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#90caf9;font-size:10px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all .15s;margin-left:auto}
 .tbl-btn:hover{background:#1e3050;border-color:#4a90d9}
+.amx-badge{display:inline-block;padding:1px 5px;border-radius:3px;background:#0d2a1a;color:#69f0ae;font-size:8px;font-weight:700;border:1px solid #69f0ae;margin-left:3px;vertical-align:middle}
 #stats{font-size:10px;color:#555;white-space:nowrap;border-left:1px solid #2a3044;padding-left:8px}
 #map{flex:1;width:100%}
 .los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;font-family:'Segoe UI',Arial,sans-serif;min-width:220px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.7);color:#e0e0e0}
@@ -71,6 +73,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <button id="btn-synchro" class="layer-btn active-synchro" onclick="setLayer('synchro',this)">● Synchro rptd</button>
     <button id="btn-calc"    class="layer-btn" onclick="setLayer('calc',this)">● ICU calc</button>
     <button id="btn-vol"     class="layer-btn" onclick="setLayer('vol',this)">● Aforos</button>
+    <button id="btn-amx"     class="layer-btn" onclick="toggleAMX(this)" title="Escenario AMX: +1 carril en ints. críticas 2030">● Esc. AMX</button>
   </div>
   <div class="fgroup">
     <span class="fgroup-label">Filtro</span>
@@ -153,6 +156,19 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
       Click en marcador → diagrama de movimientos.
     </div>
   </div>
+  <div id="leg-amx" style="display:none">
+    <div style="font-size:9px;color:#69f0ae;font-weight:700;margin-bottom:5px">● Escenario AMX 2030</div>
+    <div style="font-size:9px;color:#aaa;line-height:1.7">
+      +1 carril en movimiento crítico<br>
+      Ints: #17 · #47 · #66 · #103 · #105<br>
+      Base: ICU calc 2025 × factor crecimiento<br>
+      Ajuste: satd_new = satd_old + 1,800 vph
+    </div>
+    <hr class="leg-div">
+    <div class="leg-h">Marcadores</div>
+    <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #69f0ae;flex-shrink:0"></span><span class="ll">Intersección AMX (con ajuste)</span></div>
+    <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid #444;flex-shrink:0;opacity:.4"></span><span class="ll">Resto de red (contexto)</span></div>
+  </div>
   <hr class="leg-div">
   <div class="leg-h">Control</div>
   <div class="lr"><span style="font-size:13px;color:#29b6f6;width:18px;text-align:center">▶</span><span class="ll">Semaforizada</span></div>
@@ -176,30 +192,33 @@ const EXCLUDE_2025 = new Set([
   '84','138','40','38','15','79','112','80','104','89'
 ]);
 
+// ── ESCENARIO AMX ─────────────────────────────────────────────────────────────
+const AMX_INTS       = new Set(['66','17','103','47','105']);
+const SAT_PER_LANE   = 1800;
+
 function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
 function lc(l){ return LC[l]||'#888'; }
 function c25(d){ return d.calc_2025||{}; }
 function c30(d){ return d.calc_2030||{}; }
 function s25(d){ return d.synchro_2025||{}; }
 
-// ── VOLUME: source of truth = lane_groups ─────────────────────────────────────
-// 2025: Σ volume_vph  |  2030: Σ future_vph  (raw Synchro field counts)
-function sumLaneVol(d, y30){
+// ── VOLUME ────────────────────────────────────────────────────────────────────
+function sumLaneVol(d,y30){
   return (d.lane_groups||[]).reduce((s,g)=>s+(y30?(g.future_vph||0):(g.volume_vph||0)),0);
 }
 
-// ── GROWTH FACTOR (used only for ICU 2030 recompute) ──────────────────────────
-let GLOBAL_FACTOR = 1.20;
+// ── GROWTH FACTOR ─────────────────────────────────────────────────────────────
+let GLOBAL_FACTOR=1.20;
 function computeGrowthFactor(d){
   const lanes=d.lane_groups||[]; let sv=0,sf=0;
   for(const g of lanes) if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=g.future_vph||0; }
-  return sv>=50 ? sf/sv : null;
+  return sv>=50?sf/sv:null;
 }
 function computeGlobalFactor(ints){
   let sv=0,sf=0;
   for(const d of ints) for(const g of (d.lane_groups||[]))
     if((g.volume_vph||0)>0){ sv+=g.volume_vph; sf+=g.future_vph||0; }
-  return sv>0 ? sf/sv : 1.20;
+  return sv>0?sf/sv:1.20;
 }
 function computeICU2030(d){
   const icu25=c25(d).icu_pct; if(icu25==null) return null;
@@ -207,82 +226,91 @@ function computeICU2030(d){
 }
 function isOutlier(d){
   const delta=c30(d).icu_delta_pct;
-  return delta!=null && Math.abs(delta)>OUTLIER_THRESHOLD;
+  return delta!=null&&Math.abs(delta)>OUTLIER_THRESHOLD;
+}
+
+// ── ICU AMX: +1 carril en grupo más cargado ───────────────────────────────────
+function computeICU2030_AMX(d){
+  const icu30base=computeICU2030(d);
+  if(icu30base==null) return null;
+  const lanes=d.lane_groups||[];
+  if(!lanes.length) return icu30base;
+  // Find most loaded group by v/c ratio
+  let critG=null, maxR=-1;
+  for(const g of lanes){
+    if((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0){
+      const r=g.lane_group_flow/g.satd_flow_perm;
+      if(r>maxR){ maxR=r; critG=g; }
+    }
+  }
+  if(!critG) return icu30base;
+  // Recompute ICU with new saturation flow
+  const totalRatio=lanes.reduce((s,g)=>
+    s+((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0?g.lane_group_flow/g.satd_flow_perm:0),0);
+  const critOld=critG.lane_group_flow/critG.satd_flow_perm;
+  const critNew=critG.lane_group_flow/(critG.satd_flow_perm+SAT_PER_LANE);
+  const newRatio=totalRatio-critOld+critNew;
+  return totalRatio>0?+(icu30base*(newRatio/totalRatio)).toFixed(1):icu30base;
+}
+function getCritGroupAMX(d){
+  const lanes=d.lane_groups||[]; let critG=null,maxR=-1;
+  for(const g of lanes){
+    if((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0){
+      const r=g.lane_group_flow/g.satd_flow_perm;
+      if(r>maxR){ maxR=r; critG=g; }
+    }
+  }
+  return critG;
 }
 
 // ── SATELLITE helpers ─────────────────────────────────────────────────────────
-const DIR_ANGLE = {
-  NB:0,SB:180,EB:90,WB:270,
-  NE:45,NW:315,SE:135,SW:225,
-  NET:45,NWT:315,SET:135,SWT:225
-};
+const DIR_ANGLE={NB:0,SB:180,EB:90,WB:270,NE:45,NW:315,SE:135,SW:225,NET:45,NWT:315,SET:135,SWT:225};
 function dirOf(group){
-  const prefixes=['NET','NWT','SET','SWT','NE','NW','SE','SW','NB','SB','EB','WB'];
-  for(const p of prefixes) if(group.startsWith(p)) return p;
+  const pfx=['NET','NWT','SET','SWT','NE','NW','SE','SW','NB','SB','EB','WB'];
+  for(const p of pfx) if(group.startsWith(p)) return p;
   return group.slice(0,2).toUpperCase();
 }
-
-// Aggregate by direction — raw, no scaling (2025=volume_vph, 2030=future_vph)
-function getDirectionVols(d, y30){
+function getDirectionVols(d,y30){
   const map={};
   for(const g of (d.lane_groups||[])){
-    const vol = y30?(g.future_vph||0):(g.volume_vph||0);
-    const dir = dirOf(g.group);
+    const vol=y30?(g.future_vph||0):(g.volume_vph||0);
+    const dir=dirOf(g.group);
     map[dir]=(map[dir]||0)+vol;
   }
-  return Object.entries(map)
-    .map(([dir,vol])=>({dir,vol,angle:DIR_ANGLE[dir]??0}))
-    .filter(x=>x.vol>0)
-    .sort((a,b)=>b.vol-a.vol);
+  return Object.entries(map).map(([dir,vol])=>({dir,vol,angle:DIR_ANGLE[dir]??0}))
+    .filter(x=>x.vol>0).sort((a,b)=>b.vol-a.vol);
 }
-
-// ── LANE REQUIREMENT CALC ─────────────────────────────────────────────────────
-const SAT_PER_LANE = 1800; // veh/h per lane (planning assumption)
-
-// Aggregate lane_group_flow and satd_flow_perm by direction prefix
-// lane_group_flow = future_vph / PHF → used for geometric design (HCM)
-// satd_flow_perm  = current installed capacity for that direction
 function getLaneGroupsByDir(d){
-  const map = {};
+  const map={};
   for(const g of (d.lane_groups||[])){
-    const dir = dirOf(g.group);
-    if(!map[dir]) map[dir] = { lgf:0, sat:0, angle: DIR_ANGLE[dir]??0 };
-    map[dir].lgf += (g.lane_group_flow||0);
-    map[dir].sat += (g.satd_flow_perm||0);
+    const dir=dirOf(g.group);
+    if(!map[dir]) map[dir]={lgf:0,sat:0,angle:DIR_ANGLE[dir]??0};
+    map[dir].lgf+=(g.lane_group_flow||0);
+    map[dir].sat+=(g.satd_flow_perm||0);
   }
-  // carriles requeridos = ceil(lgf / 1800)
-  // carriles actuales   = round(sat / 1800)  (from satd_flow_perm)
-  return Object.entries(map)
-    .filter(([,v])=>v.lgf>0)
+  return Object.entries(map).filter(([,v])=>v.lgf>0)
     .map(([dir,v])=>({
-      dir,
-      angle: v.angle,
-      lgf:   v.lgf,
-      nReq:  Math.ceil(v.lgf / SAT_PER_LANE),
-      nCur:  Math.max(1, Math.round(v.sat / SAT_PER_LANE)),
-      needsMore: Math.ceil(v.lgf/SAT_PER_LANE) > Math.max(1,Math.round(v.sat/SAT_PER_LANE))
-    }))
-    .sort((a,b)=>b.lgf-a.lgf);
+      dir, angle:v.angle, lgf:v.lgf,
+      nReq:Math.ceil(v.lgf/SAT_PER_LANE),
+      nCur:Math.max(1,Math.round(v.sat/SAT_PER_LANE)),
+      needsMore:Math.ceil(v.lgf/SAT_PER_LANE)>Math.max(1,Math.round(v.sat/SAT_PER_LANE))
+    })).sort((a,b)=>b.lgf-a.lgf);
 }
 
-function buildSatelliteSVG(d, y30){
-  // Satellite always shows 2030 lane requirements (geometric design tool)
-  // For 2025 view, show volume diagram instead
+// ── SATELLITE SVG dispatcher ──────────────────────────────────────────────────
+function buildSatelliteSVG(d,y30){
   if(!y30){
-    // 2025: show raw volume by direction (original behavior)
     const dirs=getDirectionVols(d,false);
     if(!dirs.length) return null;
-    return buildVolumeSVG(d, dirs, false);
+    return buildVolumeSVG(d,dirs);
   }
-
-  // 2030: show lane requirements per direction
-  const laneData = getLaneGroupsByDir(d);
+  const laneData=getLaneGroupsByDir(d);
   if(!laneData.length) return null;
-  return buildLaneSVG(d, laneData);
+  return buildLaneSVG(d,laneData);
 }
 
-// ── 2025 volume satellite (original) ─────────────────────────────────────────
-function buildVolumeSVG(d, dirs, y30){
+// ── 2025 volume satellite ─────────────────────────────────────────────────────
+function buildVolumeSVG(d,dirs){
   const W=240,H=240,cx=W/2,cy=H/2;
   const ARROW_END=42,ARROW_START=14,LBL_R=80,CIRCLE_R=115;
   const domColor='#ce93d8',restColor='#64b5f6';
@@ -297,18 +325,26 @@ function buildVolumeSVG(d, dirs, y30){
     const sx=cx+Math.cos(rad)*startR,sy=cy+Math.sin(rad)*startR;
     const ex=cx+Math.cos(rad)*len,ey=cy+Math.sin(rad)*len;
     const hs=8;
-    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
+    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} `+
+      `L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} `+
+      `M${ex.toFixed(1)},${ey.toFixed(1)} `+
+      `L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
   }
   function lbl(angle,r,dir,vol,pct,col){
     const rad=(angle-90)*Math.PI/180;
     const lx=cx+Math.cos(rad)*r,ly=cy+Math.sin(rad)*r;
     const vStr=vol>=1000?(vol/1000).toFixed(1)+'k':String(vol);
     return `<text x="${lx.toFixed(1)}" y="${(ly-8).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="${col}">${dir}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
            `<text x="${lx.toFixed(1)}" y="${(ly+14).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
   }
+
   const domAngle=dominant.angle;
   const restAngle=restDir?restDir.angle:(domAngle+180)%360;
+  const angDiff=Math.abs(((restAngle-domAngle+540)%360)-180);
+  const domLblA =(restVol>0&&angDiff<60)?domAngle-18:domAngle;
+  const restLblA=(restVol>0&&angDiff<60)?restAngle+18:restAngle;
+
   let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   s+=`<defs><clipPath id="satClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="${domColor}" stroke-width="1.5" stroke-opacity=".55"/>`;
@@ -321,159 +357,97 @@ function buildVolumeSVG(d, dirs, y30){
   s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="${domColor}" fill-opacity=".7"/>`;
   s+=`<path d="${arrow(domAngle,ARROW_END,ARROW_START)}" stroke="${domColor}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
   if(restVol>0) s+=`<path d="${arrow(restAngle,ARROW_END-12,ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
-// Separate labels if angles are too close (< 60°)
-  const angDiff = Math.abs(((restAngle - domAngle + 540) % 360) - 180);
-  const domLblAngle  = (restVol>0 && angDiff<60) ? domAngle-18  : domAngle;
-  const restLblAngle = (restVol>0 && angDiff<60) ? restAngle+18 : restAngle;
-  s+=lbl(domLblAngle,  LBL_R, dominant.dir, dominant.vol, pctDom,       domColor);
-  if(restVol>0)
-    s+=lbl(restLblAngle, LBL_R, restDir?restDir.dir:'otros', restVol, 100-pctDom, restColor);
-  s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="#555">total</text>`;
-  s+=`<text x="${cx}" y="${cy+6}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="14px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
+  s+=lbl(domLblA,LBL_R,dominant.dir,dominant.vol,pctDom,domColor);
+  if(restVol>0) s+=lbl(restLblA,LBL_R,restDir?restDir.dir:'otros',restVol,100-pctDom,restColor);
+  s+=`<text x="${cx}" y="${cy-8}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="#555">total</text>`;
+  s+=`<text x="${cx}" y="${cy+6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="14px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
   s+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#444">2025</text>`;
   s+=`<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="${domColor}" fill-opacity=".55">#${d.label} · ${d.control_type}</text>`;
-  s+=`</svg>`;
-  return s;
+  return s+`</svg>`;
 }
 
 // ── 2030 lane requirements satellite ─────────────────────────────────────────
-function buildLaneSVG(d, laneData){
+function buildLaneSVG(d,laneData){
   const W=280,H=280,cx=W/2,cy=H/2,CIRCLE_R=130;
-  const ARROW_LEN=26, ARROW_START=14; // short arrows, well inside center zone
-
-  function arrow(angle,len,startR){
-    const rad=(angle-90)*Math.PI/180;
-    const sx=cx+Math.cos(rad)*startR, sy=cy+Math.sin(rad)*startR;
-    const ex=cx+Math.cos(rad)*(startR+len), ey=cy+Math.sin(rad)*(startR+len);
-    const hs=6;
-    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} `+
-           `L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} `+
-           `M${ex.toFixed(1)},${ey.toFixed(1)} `+
-           `L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
-  }
-
-  function laneDots(angle,n,col,startR,len){
-    const rad=(angle-90)*Math.PI/180;
-    let out='';
-    const cnt=Math.min(n,5);
-    const spacing=len/(cnt+1);
-    for(let i=1;i<=cnt;i++){
-      const r=startR+spacing*i;
-      out+=`<circle cx="${(cx+Math.cos(rad)*r).toFixed(1)}" cy="${(cy+Math.sin(rad)*r).toFixed(1)}" r="2.8" fill="${col}" fill-opacity=".9"/>`;
-    }
-    return out;
-  }
+  const ARROW_LEN=26,ARROW_START=14;
 
   function laneColor(e){ return e.needsMore?'#f44336':'#4caf50'; }
 
-  // Separate entries that share the same angle by applying a small offset
-  // so their labels and arrows don't overlap
-  const placed = laneData.map((e,i)=>({...e, idx:i}));
-  // group by angle
+  // Spread entries sharing same angle
+  const placed=laneData.map((e,i)=>({...e,idx:i}));
   const byAngle={};
+  placed.forEach(e=>{ if(!byAngle[e.angle]) byAngle[e.angle]=[]; byAngle[e.angle].push(e); });
   placed.forEach(e=>{
-    const key=e.angle;
-    if(!byAngle[key]) byAngle[key]=[];
-    byAngle[key].push(e);
-  });
-  // assign angular offsets within same-angle group: spread ±18° around base angle
-  placed.forEach(e=>{
-    const group=byAngle[e.angle];
-    const pos=group.indexOf(e);
-    const spread=20; // degrees between entries sharing same angle
-    const offset=(pos-(group.length-1)/2)*spread;
-    e.displayAngle=e.angle+offset;
+    const grp=byAngle[e.angle], pos=grp.indexOf(e);
+    e.displayAngle=e.angle+(pos-(grp.length-1)/2)*20;
   });
 
-  // Label center: arrow tip + gap, clamped inside circle
-  function labelCenter(displayAngle){
-    const rad=(displayAngle-90)*Math.PI/180;
-    const tipR=ARROW_START+ARROW_LEN;
-    const GAP=48; // gap between arrow tip and label center
-    let lr=tipR+GAP;
-    // clamp: label block is ~55px tall, 70px wide — keep center at least 36px from edge
-    const margin=36;
-    const rawDist=lr;
-    if(rawDist+margin>CIRCLE_R) lr=CIRCLE_R-margin;
-    return { lx: cx+Math.cos(rad)*lr, ly: cy+Math.sin(rad)*lr };
+  function labelCenter(da){
+    const rad=(da-90)*Math.PI/180;
+    let lr=ARROW_START+ARROW_LEN+48;
+    if(lr+36>CIRCLE_R) lr=CIRCLE_R-36;
+    return {lx:cx+Math.cos(rad)*lr, ly:cy+Math.sin(rad)*lr};
   }
-
   function labelBlock(entry){
     const col=laneColor(entry);
     const lgfStr=entry.lgf>=1000?(entry.lgf/1000).toFixed(1)+'k':String(entry.lgf);
-    const nLabel=`${entry.nReq} carril${entry.nReq!==1?'es':''}`;
-    const indic=entry.needsMore?`+${entry.nReq-entry.nCur} vs hoy`:`ok (${entry.nCur} act.)`;
+    const nLbl=`${entry.nReq} carril${entry.nReq!==1?'es':''}`;
+    const ind=entry.needsMore?`+${entry.nReq-entry.nCur} vs hoy`:`ok (${entry.nCur} act.)`;
     const {lx,ly}=labelCenter(entry.displayAngle);
     return `<text x="${lx.toFixed(1)}" y="${(ly-12).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="${col}">${entry.dir} · ${lgfStr} vph</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+2).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15px" font-weight="900" fill="${col}">${nLabel}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="600" fill="${col}" fill-opacity=".85">${indic}</text>`;
+           `<text x="${lx.toFixed(1)}" y="${(ly+2).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15px" font-weight="900" fill="${col}">${nLbl}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="600" fill="${col}" fill-opacity=".85">${ind}</text>`;
   }
 
   let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   s+=`<defs><clipPath id="laneClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="#ffc107" stroke-width="1.5" stroke-opacity=".5"/>`;
-
   s+=`<g clip-path="url(#laneClip)">`;
   [0,90,180,270].forEach(a=>{
     const rad=(a-90)*Math.PI/180;
     s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+Math.cos(rad)*(CIRCLE_R-1)).toFixed(1)}" y2="${(cy+Math.sin(rad)*(CIRCLE_R-1)).toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
   });
-  // inner zone circle — arrows stay inside this
-  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_START+ARROW_LEN+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
-  s+=`</g>`;
-
+  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_START+ARROW_LEN+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/></g>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="4" fill="#ffc107" fill-opacity=".7"/>`;
-  s+=`<text x="${cx}" y="${cy-7}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7.5px" fill="#555">diseño 2030</text>`;
-  s+=`<text x="${cx}" y="${cy+8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7px" fill="#333">lgf / 1,800</text>`;
+  s+=`<text x="${cx}" y="${cy-7}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7.5px" fill="#555">diseño 2030</text>`;
+  s+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7px" fill="#333">lgf / 1,800</text>`;
 
-  // Draw arrows + dots + labels using displayAngle
   placed.forEach((entry,i)=>{
     const col=laneColor(entry);
     const rad=(entry.displayAngle-90)*Math.PI/180;
-    // arrow along displayAngle
     const sx=cx+Math.cos(rad)*ARROW_START, sy=cy+Math.sin(rad)*ARROW_START;
     const ex=cx+Math.cos(rad)*(ARROW_START+ARROW_LEN), ey=cy+Math.sin(rad)*(ARROW_START+ARROW_LEN);
     const hs=6;
-    const aPath=`M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} `+
+    const ap=`M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} `+
       `L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} `+
       `M${ex.toFixed(1)},${ey.toFixed(1)} `+
       `L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
-    s+=`<path d="${aPath}" stroke="${col}" stroke-width="${i===0?2.6:1.8}" fill="none" stroke-linecap="round" stroke-linejoin="round"${i>0?' stroke-dasharray="4,2"':''}/>`;
-    // label
+    s+=`<path d="${ap}" stroke="${col}" stroke-width="${i===0?2.6:1.8}" fill="none" stroke-linecap="round" stroke-linejoin="round"${i>0?' stroke-dasharray="4,2"':''}/>`;
     s+=labelBlock(entry);
   });
-
   s+=`<text x="${cx}" y="${cy+CIRCLE_R-7}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="700" fill="#ffc107" fill-opacity=".5">#${d.label} · ${d.control_type}</text>`;
-  s+=`</svg>`;
-  return s;
+  return s+`</svg>`;
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let D={intersections:[]}, markers=[], activeFilt='all', activeLayer='synchro', useY30=false, sensMult=1.0;
-let activeSatellite=null;
+let activeSatellite=null, amxMode=false;
 
 function clearSatellite(){
-  if(activeSatellite){
-    map.removeLayer(activeSatellite.marker);
-    map.removeLayer(activeSatellite.connector);
-    activeSatellite=null;
-  }
+  if(activeSatellite){ map.removeLayer(activeSatellite.marker); map.removeLayer(activeSatellite.connector); activeSatellite=null; }
 }
-
-function showSatellite(d, latlng, mainR){
+function showSatellite(d,latlng,mainR){
   clearSatellite();
   const svgHtml=buildSatelliteSVG(d,useY30);
   if(!svgHtml) return;
-  const W=280,H=280;
+  const W=useY30?280:240, H=useY30?280:240;
   const pt=map.latLngToContainerPoint(latlng);
   const offset=mainR+W/2+14;
-  const satPt=L.point(pt.x+offset,pt.y);
-  const satLL=map.containerPointToLatLng(satPt);
+  const satLL=map.containerPointToLatLng(L.point(pt.x+offset,pt.y));
   const connStart=map.containerPointToLatLng(L.point(pt.x+mainR+2,pt.y));
   const connEnd  =map.containerPointToLatLng(L.point(pt.x+offset-W/2,pt.y));
   const connector=L.polyline([connStart,connEnd],{color:'#ce93d8',weight:1,opacity:.5,dashArray:'3,3'}).addTo(map);
-  const satIcon=L.divIcon({className:'',iconSize:[W,H],iconAnchor:[W/2,H/2],html:svgHtml});
-  const satMarker=L.marker(satLL,{icon:satIcon,interactive:false,zIndexOffset:500}).addTo(map);
+  const satMarker=L.marker(satLL,{icon:L.divIcon({className:'',iconSize:[W,H],iconAnchor:[W/2,H/2],html:svgHtml}),interactive:false,zIndexOffset:500}).addTo(map);
   activeSatellite={marker:satMarker,connector,_label:d.label};
 }
 
@@ -493,15 +467,20 @@ function resetSens(){ setSens(1.0); }
 function scaledICU(r){ return +(r*sensMult).toFixed(1); }
 
 function getDisplayLOS(d){
+  if(amxMode){
+    const isA=AMX_INTS.has(String(d.label));
+    const raw=isA?(computeICU2030_AMX(d)??0):(computeICU2030(d)??c30(d).icu_pct??0);
+    const icu=scaledICU(raw);
+    return {icu,los:icuLOS(icu),source:isA?'ICU AMX 2030 (+1 carril)':'ICU calc 2030'};
+  }
   if(activeLayer==='synchro'){
     const raw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
     const icu=scaledICU(raw);
     return {icu,los:icuLOS(icu),source:useY30?'Synchro 2030~':'Synchro rptd'};
-  } else {
-    const raw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
-    const icu=scaledICU(raw);
-    return {icu,los:icuLOS(icu),source:useY30?'ICU calc 2030 (recomp.)':'ICU calc 2025'};
   }
+  const raw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
+  const icu=scaledICU(raw);
+  return {icu,los:icuLOS(icu),source:useY30?'ICU calc 2030 (recomp.)':'ICU calc 2025'};
 }
 
 function volToR(vol){
@@ -532,9 +511,7 @@ function isSigD(d){ return s25(d).signal_delay_s!=null; }
 
 // ── MAP ───────────────────────────────────────────────────────────────────────
 const map=L.map('map',{zoomControl:true}).setView([14.652,-90.543],15);
-L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
-  attribution:'© OSM © CARTO',maxZoom:20
-}).addTo(map);
+L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OSM © CARTO',maxZoom:20}).addTo(map);
 map.on('click',()=>clearSatellite());
 map.on('movestart',()=>clearSatellite());
 
@@ -545,72 +522,73 @@ function buildMarkers(){
   const criticals=[], isVolLayer=activeLayer==='vol';
 
   const items=D.intersections.filter(d=>
-    d.coords&&d.coords.lat&&(useY30||!EXCLUDE_2025.has(String(d.label)))
+    d.coords&&d.coords.lat&&(useY30||amxMode||!EXCLUDE_2025.has(String(d.label)))
   );
 
   items.forEach(d=>{
-    const v25=sumLaneVol(d,false);   // Σ volume_vph
-    const v30=sumLaneVol(d,true);    // Σ future_vph
+    const v25=sumLaneVol(d,false), v30=sumLaneVol(d,true);
     const dispVol=useY30?v30:v25;
     const factor=computeGrowthFactor(d)??GLOBAL_FACTOR;
     const factorPct=Math.round((factor-1)*100);
     const scaledVol=Math.round(dispVol*(isVolLayer?1:sensMult));
     const isLow=scaledVol<50, isDet=hasDeterioroReal(d);
     const isDisc=hasDiscrepancia(d), isOut=isOutlier(d);
+    const isAMXInt=amxMode&&AMX_INTS.has(String(d.label));
+    const isAMXDim=amxMode&&!AMX_INTS.has(String(d.label));
 
     let activeIcuRaw;
-    if(activeLayer==='synchro') activeIcuRaw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
-    else if(activeLayer==='calc') activeIcuRaw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
-    else activeIcuRaw=c25(d).icu_pct||0;
+    if(amxMode)                activeIcuRaw=isAMXInt?(computeICU2030_AMX(d)??0):(computeICU2030(d)??c30(d).icu_pct??0);
+    else if(activeLayer==='synchro') activeIcuRaw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
+    else if(activeLayer==='calc')    activeIcuRaw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
+    else                             activeIcuRaw=c25(d).icu_pct||0;
     const activeIcu=scaledICU(activeIcuRaw);
 
-    if(activeFilt==='sig'        &&!isSigD(d)) return;
-    if(activeFilt==='unsig'      &&(isSigD(d)||d.control_type==='Roundabout')) return;
-    if(activeFilt==='roundabout' &&d.control_type!=='Roundabout') return;
-    if(activeFilt==='crit'       &&activeIcu<90) return;
-    if(activeFilt==='det'        &&!isDet) return;
-    if(activeFilt==='discr'      &&!isDisc) return;
-    if(activeFilt==='lovol'      &&!isLow) return;
-    if(activeFilt==='outlier'    &&!isOut) return;
+    if(!amxMode){
+      if(activeFilt==='sig'        &&!isSigD(d)) return;
+      if(activeFilt==='unsig'      &&(isSigD(d)||d.control_type==='Roundabout')) return;
+      if(activeFilt==='roundabout' &&d.control_type!=='Roundabout') return;
+      if(activeFilt==='crit'       &&activeIcu<90) return;
+      if(activeFilt==='det'        &&!isDet) return;
+      if(activeFilt==='discr'      &&!isDisc) return;
+      if(activeFilt==='lovol'      &&!isLow) return;
+      if(activeFilt==='outlier'    &&!isOut) return;
+    }
 
     const ctrl=ctrlGlyph(d.control_type);
+    const {icu,los,source}=getDisplayLOS(d);
+    const col=lc(los);
     let icon, markerRadius;
 
-    if(isVolLayer){
+    if(isVolLayer&&!amxMode){
       const r=volToRaw(dispVol); markerRadius=r;
-      const sz=r*2+10, cx=sz/2;
-      const col=volToColor(dispVol), op=isLow?0.35:0.88;
-      const dashAttr=isOut?'stroke-dasharray="3,2"':'';
-      const strokeCol=isOut?'#ff6b6b':'rgba(255,255,255,0.4)';
-      icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[cx,cx],
+      const sz=r*2+10, vcx=sz/2;
+      const vcol=volToColor(dispVol), op=isLow?0.35:0.88;
+      icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[vcx,vcx],
         html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
-            stroke="${strokeCol}" stroke-width="${isOut?2:1}" ${dashAttr}/>
-          <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
-            font-family="Segoe UI,Arial,sans-serif"
-            font-size="${Math.max(6,Math.min(10,r*0.7))}px"
+          <circle cx="${vcx}" cy="${vcx}" r="${r}" fill="${vcol}" fill-opacity="${op}"
+            stroke="${isOut?'#ff6b6b':'rgba(255,255,255,0.4)'}" stroke-width="${isOut?2:1}" ${isOut?'stroke-dasharray="3,2"':''}/>
+          <text x="${vcx}" y="${vcx}" text-anchor="middle" dominant-baseline="central"
+            font-family="Segoe UI,Arial,sans-serif" font-size="${Math.max(6,Math.min(10,r*0.7))}px"
             font-weight="700" fill="#000" fill-opacity=".75">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</text>
-          <text x="${sz-2}" y="6" text-anchor="end"
-            font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="${ctrl.c}">${ctrl.g}</text>
+          <text x="${sz-2}" y="6" text-anchor="end" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="${ctrl.c}">${ctrl.g}</text>
         </svg>`
       });
     } else {
-      const {icu,los}=getDisplayLOS(d);
-      const col=lc(los), r=volToR(v25); markerRadius=r;
-      const sz=r*2+14, cx=sz/2, op=isLow?0.4:0.85;
-      const strokeCol=isOut?'#ff6b6b':isDet?'#f44336':isDisc?'#ffc107':'#ffffff';
-      const strokeW=(isOut||isDet||isDisc)?2:1;
-      const dashAttr=isOut?'stroke-dasharray="3,2"':'';
-      icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[cx,cx],
+      const r=volToR(v25); markerRadius=r;
+      const sz=r*2+14, mcx=sz/2;
+      const op=isAMXDim?0.15:isLow?0.4:0.85;
+      const strokeCol=isAMXInt?'#69f0ae':isOut?'#ff6b6b':isDet?'#f44336':isDisc?'#ffc107':'#ffffff';
+      const strokeW=(isAMXInt||isOut||isDet||isDisc)?2:1;
+      const amxG=isAMXInt?`<text x="${sz-2}" y="${sz-2}" text-anchor="end" font-family="Segoe UI,Arial,sans-serif" font-size="7px" font-weight="700" fill="#69f0ae">AMX</text>`:'';
+      icon=L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[mcx,mcx],
         html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
-            stroke="${strokeCol}" stroke-width="${strokeW}" stroke-opacity=".9" ${dashAttr}/>
-          <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
-            font-family="Segoe UI,Arial,sans-serif"
-            font-size="${Math.max(7,Math.min(12,r*0.85))}px"
-            font-weight="700" fill="#000" fill-opacity=".8">${los}</text>
-          <text x="${sz-2}" y="6" text-anchor="end"
-            font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="${ctrl.c}">${ctrl.g}</text>
+          <circle cx="${mcx}" cy="${mcx}" r="${r}" fill="${col}" fill-opacity="${op}"
+            stroke="${strokeCol}" stroke-width="${strokeW}" stroke-opacity=".9" ${isOut?'stroke-dasharray="3,2"':''}/>
+          <text x="${mcx}" y="${mcx}" text-anchor="middle" dominant-baseline="central"
+            font-family="Segoe UI,Arial,sans-serif" font-size="${Math.max(7,Math.min(12,r*0.85))}px"
+            font-weight="700" fill="#000" fill-opacity="${isAMXDim?'.3':'.8'}">${los}</text>
+          <text x="${sz-2}" y="6" text-anchor="end" font-family="Segoe UI,Arial,sans-serif" font-size="9px" fill="${ctrl.c}">${ctrl.g}</text>
+          ${amxG}
         </svg>`
       });
     }
@@ -618,31 +596,45 @@ function buildMarkers(){
     // ── TOOLTIP ──
     const sIcu25=s25(d).icu_pct||0, cIcu25=c25(d).icu_pct||0;
     const cIcu30j=c30(d).icu_pct||0, cIcu30rc=computeICU2030(d)??cIcu30j;
+    const cIcu30amx=computeICU2030_AMX(d)??cIcu30rc;
     const sIcuSc=scaledICU(sIcu25), cIcuSc=scaledICU(cIcu25);
-    const cIcu30Sc=scaledICU(cIcu30rc), cIcu30JSc=scaledICU(cIcu30j);
-    const sLosSc=icuLOS(sIcuSc), cLosSc=icuLOS(cIcuSc), cLos30Sc=icuLOS(cIcu30Sc);
+    const cIcu30Sc=scaledICU(cIcu30rc), cIcu30JSc=scaledICU(cIcu30j), cIcu30AmxSc=scaledICU(cIcu30amx);
+    const sLosSc=icuLOS(sIcuSc), cLosSc=icuLOS(cIcuSc), cLos30Sc=icuLOS(cIcu30Sc), cLos30AmxSc=icuLOS(cIcu30AmxSc);
     const det=c30(d).deterioro||'estable';
     const volDelta=v30-v25, volDS=(volDelta>=0?'+':'')+volDelta.toLocaleString();
+    const icuDiff=Math.abs(cIcu30j-cIcu30rc);
+    const icu30Row=icuDiff>2
+      ?`<div class="tt-row"><span>ICU 2030 JSON</span><b style="color:#666">${cIcu30JSc}%</b></div><div class="tt-row"><span>ICU 2030 recomp.</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`
+      :`<div class="tt-row"><span>ICU 2030</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`;
+    const amxRows=isAMXInt?(()=>{
+      const crit=getCritGroupAMX(d);
+      const satOld=crit?crit.satd_flow_perm:0;
+      const delta=+(cIcu30rc-cIcu30amx).toFixed(1);
+      return `<hr class="tt-div">
+        <div style="font-size:9px;color:#69f0ae;font-weight:700;margin-bottom:2px">🟢 Esc. AMX +1 carril</div>
+        <div class="tt-row"><span>Grupo crítico</span><b style="color:#69f0ae">${crit?crit.group:'—'}</b></div>
+        <div class="tt-row"><span>Sat. flow old→new</span><b style="color:#69f0ae">${satOld.toLocaleString()} → ${(satOld+SAT_PER_LANE).toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>ICU 2030 base</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>
+        <div class="tt-row"><span>ICU 2030 AMX</span><b style="color:#69f0ae">${cIcu30AmxSc}% <span style="color:${lc(cLos30AmxSc)}">${cLos30AmxSc}</span></b></div>
+        <div class="tt-row"><span>Mejora ICU</span><b style="color:#69f0ae">−${delta}%</b></div>`;
+    })():'';
+
     const discWarn=hasDiscrepancia(d)||sLosSc!==cLosSc?`<div class="tt-discr">⚡ Synchro ${sLosSc} (${sIcuSc}%) vs Calc ${cLosSc} (${cIcuSc}%)</div>`:'';
     const detRow=det!=='estable'?`<div class="tt-det">↑ Deterioro 2030: ${det}</div>`:'';
     const lowWarn=isLow?`<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>`:'';
     const sensNote=sensMult!==1.0?`<div class="tt-row"><span>Sensibilidad</span><b style="color:${sensMult>1?'#f44336':'#4caf50'}">×${sensMult.toFixed(1)}</b></div>`:'';
     const outlierNote=isOut?`<div class="tt-outlier">⚠ Outlier: delta JSON=${c30(d).icu_delta_pct??'N/A'}%</div>`:'';
     const growthNote=`<div class="tt-growth">📈 ×${factor.toFixed(3)} (${factorPct>=0?'+':''}${factorPct}%)${computeGrowthFactor(d)==null?' [global]':' [inferido]'}</div>`;
-    const icuDiff=Math.abs(cIcu30j-cIcu30rc);
-    const icu30Row=icuDiff>2
-      ?`<div class="tt-row"><span>ICU 2030 JSON</span><b style="color:#666">${cIcu30JSc}%</b></div><div class="tt-row"><span>ICU 2030 recomp.</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`
-      :`<div class="tt-row"><span>ICU 2030</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`;
+    const amxBadge=isAMXInt?'<span class="amx-badge">AMX</span>':'';
 
-    let ttHeader, ttMain;
-    if(isVolLayer){
-      const col=volToColor(dispVol);
-      ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${col};font-size:22px">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</div><div class="tt-los-sub">vph ${useY30?'2030':'2025'}<br>${d.control_type}</div></div>`;
+    let ttHeader,ttMain;
+    if(isVolLayer&&!amxMode){
+      const vcol=volToColor(dispVol);
+      ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${vcol};font-size:22px">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</div><div class="tt-los-sub">vph ${useY30?'2030':'2025'}<br>${d.control_type}</div></div>`;
       ttMain=`<div class="tt-row"><span>Vol. 2025 (Σ lane_groups)</span><b>${v25.toLocaleString()} vph</b></div>
         <div class="tt-row"><span>Vol. 2030 (Σ future_vph)</span><b>${v30.toLocaleString()} vph <span style="color:${volDelta>0?'#4caf50':'#f44336'};font-size:9px">(${volDS})</span></b></div>
         ${growthNote}<div style="font-size:9px;color:#ce93d8;margin-top:4px">🔵 Click → diagrama de movimientos</div>`;
     } else {
-      const {icu,los,source}=getDisplayLOS(d); const col=lc(los);
       ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${col}">${los}</div><div class="tt-los-sub">${source}<br>${icu}%</div></div>`;
       ttMain=`<div class="tt-row"><span>Synchro ICU 2025</span><b>${sIcuSc}% <span style="color:${lc(sLosSc)}">${sLosSc}</span></b></div>
         <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcuSc}% <span style="color:${lc(cLosSc)}">${cLosSc}</span></b></div>
@@ -652,21 +644,20 @@ function buildMarkers(){
         ${growthNote}${sensNote}`;
     }
 
-    const tipR=isVolLayer?volToRaw(dispVol):volToR(v25);
+    const tipR=isVolLayer&&!amxMode?volToRaw(dispVol):volToR(v25);
     const mk=L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
     mk.bindTooltip(`<div class="los-tooltip">
-      <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
+      <div class="tt-id">Int. #${d.label}${amxBadge} — ${d.control_type}</div>
       ${ttHeader}<hr class="tt-div">${ttMain}
-      ${discWarn}${detRow}${lowWarn}${outlierNote}
+      ${amxRows}${discWarn}${detRow}${lowWarn}${outlierNote}
     </div>`,{permanent:false,direction:'top',offset:[0,-(tipR+4)],opacity:1,className:''});
 
-    const _d=d, _r=markerRadius;
+    const _d=d,_r=markerRadius;
     mk.on('click',function(e){
       L.DomEvent.stopPropagation(e);
-      if(activeLayer!=='vol'){ clearSatellite(); return; }
+      if(activeLayer!=='vol'||amxMode){ clearSatellite(); return; }
       if(activeSatellite&&activeSatellite._label===_d.label){ clearSatellite(); return; }
-      clearSatellite();
-      showSatellite(_d,mk.getLatLng(),_r);
+      clearSatellite(); showSatellite(_d,mk.getLatLng(),_r);
     });
 
     mk.addTo(map); markers.push(mk);
@@ -679,9 +670,11 @@ function buildMarkers(){
   const nDet=items.filter(hasDeterioroReal).length;
   const nDisc=items.filter(hasDiscrepancia).length;
   const nOut=items.filter(isOutlier).length;
-  if(isVolLayer){
+  if(isVolLayer&&!amxMode){
     const tot=items.reduce((s,d)=>s+sumLaneVol(d,useY30),0);
     document.getElementById('stats').textContent=`${markers.length} int. · Vol total: ${(tot/1000).toFixed(1)}k vph`;
+  } else if(amxMode){
+    document.getElementById('stats').textContent=`Esc. AMX 2030 · ${AMX_INTS.size} ints. ajustadas · +1 carril grupo crítico`;
   } else {
     document.getElementById('stats').textContent=`${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr. · ${nOut} outliers`;
   }
@@ -689,14 +682,23 @@ function buildMarkers(){
   // ── CRITICAL / TOP VOL ──
   const cl=document.getElementById('critical-list');
   const hdr=document.getElementById('leg-crit-hdr');
-  if(isVolLayer){
+  if(amxMode){
+    hdr.textContent='🟢 Impacto AMX';
+    cl.innerHTML=[...AMX_INTS].map(lbl=>{
+      const d=D.intersections.find(x=>String(x.label)===lbl);
+      if(!d) return '';
+      const base=+(computeICU2030(d)??0).toFixed(1);
+      const amx =+(computeICU2030_AMX(d)??0).toFixed(1);
+      const delta=+(base-amx).toFixed(1);
+      const losB=icuLOS(base), losA=icuLOS(amx);
+      return `<div class="crit-item">• <b>#${lbl}</b> ${losB}→<span style="color:${lc(losA)}">${losA}</span> <span style="color:#69f0ae">−${delta}%</span></div>`;
+    }).join('');
+  } else if(isVolLayer){
     hdr.textContent='📊 Mayor volumen';
-    const topVol=items.map(d=>({label:d.label,vol:sumLaneVol(d,useY30)}))
-      .sort((a,b)=>b.vol-a.vol).slice(0,8);
+    const topVol=items.map(d=>({label:d.label,vol:sumLaneVol(d,useY30)})).sort((a,b)=>b.vol-a.vol).slice(0,8);
     cl.innerHTML=topVol.map(x=>`<div class="crit-item">• <b>#${x.label}</b> — ${x.vol>=1000?(x.vol/1000).toFixed(1)+'k':x.vol} vph <span style="color:${volToColor(x.vol)}">■</span></div>`).join('');
     document.getElementById('leg-growth-info').style.display='block';
-    document.getElementById('leg-growth-info').innerHTML=
-      `Factor global ICU: <b style="color:#a5d6a7">×${GLOBAL_FACTOR.toFixed(3)}</b> (+${Math.round((GLOBAL_FACTOR-1)*100)}%)`;
+    document.getElementById('leg-growth-info').innerHTML=`Factor global ICU: <b style="color:#a5d6a7">×${GLOBAL_FACTOR.toFixed(3)}</b> (+${Math.round((GLOBAL_FACTOR-1)*100)}%)`;
   } else {
     document.getElementById('leg-growth-info').style.display='none';
     hdr.textContent='⚠ Puntos críticos';
@@ -715,8 +717,9 @@ function buildMarkers(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 function setLayer(l,btn){
+  if(amxMode){ amxMode=false; document.getElementById('leg-amx').style.display='none'; }
   clearSatellite(); activeLayer=l;
-  document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol'));
+  document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
   btn.classList.add(l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol');
   document.getElementById('leg-los').style.display=l==='vol'?'none':'block';
   document.getElementById('leg-vol').style.display=l==='vol'?'block':'none';
@@ -726,6 +729,30 @@ function setLayer(l,btn){
   document.getElementById('leg-title').textContent=titles[l];
   document.getElementById('leg-title').style.color=l==='vol'?'#ce93d8':'#4a90d9';
   buildMarkers();
+}
+function toggleAMX(btn){
+  amxMode=!amxMode;
+  if(amxMode){
+    useY30=true; activeLayer='calc';
+    document.getElementById('yrToggle').checked=true;
+    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
+    btn.classList.add('active-amx');
+    document.getElementById('leg-los').style.display='block';
+    document.getElementById('leg-vol').style.display='none';
+    document.getElementById('leg-amx').style.display='block';
+    document.getElementById('leg-title').textContent='Esc. AMX 2030 — +1 carril';
+    document.getElementById('leg-title').style.color='#69f0ae';
+    document.getElementById('sens-group').style.opacity='1';
+    document.getElementById('sens-group').style.pointerEvents='auto';
+  } else {
+    document.getElementById('leg-amx').style.display='none';
+    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
+    document.getElementById('btn-calc').classList.add('active-calc');
+    activeLayer='calc';
+    document.getElementById('leg-title').textContent='LOS ICU — Calculado';
+    document.getElementById('leg-title').style.color='#4a90d9';
+  }
+  clearSatellite(); buildMarkers();
 }
 function setFilt(f,btn){
   clearSatellite(); activeFilt=f;
