@@ -384,7 +384,7 @@ function buildLaneSVG(d, laneData){
   function labelCenter(displayAngle){
     const rad=(displayAngle-90)*Math.PI/180;
     const tipR=ARROW_START+ARROW_LEN;
-    const GAP=28; // gap between arrow tip and label center
+    const GAP=48; // gap between arrow tip and label center
     let lr=tipR+GAP;
     // clamp: label block is ~55px tall, 70px wide — keep center at least 36px from edge
     const margin=36;
