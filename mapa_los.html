@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa LOS ICU — Naranjo 2026</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#14161e;border-bottom:1px solid #2a3044;flex-wrap:wrap;z-index:1000;flex-shrink:0}
+.topbar h1{font-size:11px;color:#90caf9;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-right:2px}
+.fgroup{display:flex;align-items:center;gap:3px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:2px 4px}
+.fgroup-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;padding:0 4px;white-space:nowrap}
+.layer-btn{padding:3px 11px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#888;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.layer-btn:hover{color:#ccc;background:#1e2a3a}
+.layer-btn.active-synchro{background:#1b3a4e;color:#29b6f6;border-color:#29b6f6}
+.layer-btn.active-calc{background:#1b3a1e;color:#4caf50;border-color:#4caf50}
+.layer-btn.active-vol{background:#2a1e3a;color:#ce93d8;border-color:#ce93d8}
+.fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
+.fbtn:hover{color:#aaa;background:#1a2030}
+.fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.fbtn.active-warn{background:#b83a22;color:#ffb4a2;border-color:#f44336}
+.sens-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a4060;border-radius:5px;padding:3px 9px}
+.sens-wrap span{font-size:10px;color:#4a90d9;font-weight:600;white-space:nowrap}
+.sens-btn{width:22px;height:22px;border-radius:4px;border:1px solid #2a4060;background:#1a2a3a;color:#90caf9;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0}
+.sens-btn:hover{background:#1e3a5a}
+#sensDisplay{font-size:13px;font-weight:700;color:#e0e0e0;min-width:36px;text-align:center}
+#sensSlider{width:90px;accent-color:#4a90d9}
+#sensPct{font-size:10px;font-weight:700;min-width:38px}
+.yr-wrap{display:flex;align-items:center;gap:5px;background:#0d1220;border:1px solid #2a3044;border-radius:5px;padding:3px 9px}
+.yr-wrap span{font-size:10px;color:#555}
+.yr-wrap label{font-size:10px;color:#90caf9;cursor:pointer;white-space:nowrap}
+.yr-wrap input{accent-color:#4a90d9;cursor:pointer}
+.tbl-btn{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;border:1px solid #2a3044;background:#1a1f2e;color:#90caf9;font-size:10px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all .15s;margin-left:auto}
+.tbl-btn:hover{background:#1e3050;border-color:#4a90d9}
+#stats{font-size:10px;color:#555;white-space:nowrap;border-left:1px solid #2a3044;padding-left:8px}
+#map{flex:1;width:100%}
+.los-tooltip{background:#14161e;border:1px solid #2a3044;border-radius:8px;padding:10px 12px;font-family:'Segoe UI',Arial,sans-serif;min-width:220px;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.7);color:#e0e0e0}
+.tt-id{font-size:11px;color:#90caf9;font-weight:700;margin-bottom:3px}
+.tt-los-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.tt-los{font-size:30px;font-weight:900;line-height:1}
+.tt-los-sub{font-size:9px;color:#555;line-height:1.4}
+.tt-row{font-size:10px;color:#888;margin-top:2px;display:flex;justify-content:space-between;gap:8px}
+.tt-row b{color:#ccc}
+.tt-div{border:none;border-top:1px solid #1e2538;margin:5px 0}
+.tt-warn{font-size:9px;color:#ff9800;margin-top:3px}
+.tt-discr{font-size:9px;color:#ffc107;margin-top:3px}
+.tt-det{font-size:9px;color:#f44336;margin-top:3px}
+.tt-outlier{font-size:9px;color:#ff6b6b;margin-top:3px;background:#2a1010;border-radius:3px;padding:2px 5px}
+.tt-growth{font-size:9px;color:#a5d6a7;margin-top:2px}
+#legend{position:absolute;top:54px;right:10px;z-index:1000;background:#14161eee;border:1px solid #2a3044;border-radius:8px;padding:11px 13px;width:230px;font-size:10px;max-height:calc(100vh - 80px);overflow-y:auto;box-shadow:0 6px 24px rgba(0,0,0,.6)}
+#legend h3{font-size:10px;color:#4a90d9;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:7px}
+.leg-h{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.4px;margin:8px 0 4px}
+.lr{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ls{border-radius:50%;border:1px solid rgba(255,255,255,.15);flex-shrink:0}
+.ll{font-size:10px;color:#aaa;flex:1}
+.ld{font-size:9px;color:#555;text-align:right}
+.lc{border-radius:50%;background:#4a90d9;opacity:.7;flex-shrink:0}
+.leg-div{border:none;border-top:1px solid #2a3044;margin:7px 0}
+.crit-item{font-size:9px;color:#ccc;line-height:1.8}
+.vol-swatch{border-radius:4px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>🚦 LOS ICU · Naranjo 2026</h1>
+  <div class="fgroup">
+    <span class="fgroup-label">Capa</span>
+    <button id="btn-synchro" class="layer-btn active-synchro" onclick="setLayer('synchro',this)">● Synchro rptd</button>
+    <button id="btn-calc"    class="layer-btn" onclick="setLayer('calc',this)">● ICU calc</button>
+    <button id="btn-vol"     class="layer-btn" onclick="setLayer('vol',this)">● Aforos</button>
+  </div>
+  <div class="fgroup">
+    <span class="fgroup-label">Filtro</span>
+    <button class="fbtn active" onclick="setFilt('all',this)">Todas</button>
+    <button class="fbtn" onclick="setFilt('sig',this)">Semaforizadas</button>
+    <button class="fbtn" onclick="setFilt('unsig',this)">No semaf.</button>
+    <button class="fbtn" onclick="setFilt('roundabout',this)">Glorietas</button>
+  </div>
+  <div class="fgroup">
+    <span class="fgroup-label">Alerta</span>
+    <button class="fbtn" onclick="setFilt('crit',this)">ICU ≥ 90%</button>
+    <button class="fbtn" onclick="setFilt('det',this)">Deterioro 2030</button>
+    <button class="fbtn" onclick="setFilt('discr',this)">Discrepancia</button>
+    <button class="fbtn" onclick="setFilt('lovol',this)">Vol. &lt;50</button>
+    <button class="fbtn" onclick="setFilt('outlier',this)">⚠ Outliers</button>
+  </div>
+  <div class="sens-wrap" id="sens-group">
+    <span>Vol. ×</span>
+    <button class="sens-btn" onclick="stepSens(-0.1)">−</button>
+    <span id="sensDisplay">×1.0</span>
+    <button class="sens-btn" onclick="stepSens(0.1)">+</button>
+    <input type="range" id="sensSlider" min="0.5" max="3.0" step="0.1" value="1.0" oninput="setSens(+this.value)">
+    <span id="sensPct" style="color:#666">+0%</span>
+    <button onclick="resetSens()" style="padding:2px 7px;background:#1a2030;border:1px solid #2a3044;border-radius:4px;color:#888;cursor:pointer;font-size:9px">Reset</button>
+  </div>
+  <div class="yr-wrap">
+    <span>2025</span>
+    <input type="checkbox" id="yrToggle" onchange="setYear(this.checked)">
+    <label for="yrToggle">2030</label>
+  </div>
+  <a class="tbl-btn" href="https://los-calulator-latam.netlify.app/summary_los.html" target="_blank">
+    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <rect x="1" y="1" width="10" height="10" rx="1.5"/>
+      <line x1="1" y1="4" x2="11" y2="4"/>
+      <line x1="4" y1="4" x2="4" y2="11"/>
+    </svg>
+    Tabla resumen
+  </a>
+  <span id="stats">Cargando…</span>
+</div>
+
+<div id="map"></div>
+
+<div id="legend">
+  <h3 id="leg-title">LOS ICU — Synchro rptd</h3>
+  <div id="leg-los">
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#4caf50"></div><span class="ll">A — Excelente</span><span class="ld">≤55%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#8bc34a"></div><span class="ll">B — Muy bueno</span><span class="ld">≤64%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ffc107"></div><span class="ll">C — Aceptable</span><span class="ld">≤73%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ff9800"></div><span class="ll">D — Tolerable</span><span class="ld">≤82%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#ff5722"></div><span class="ll">E — Inestable</span><span class="ld">≤91%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#f44336"></div><span class="ll">F — Saturado</span><span class="ld">≤100%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#e91e63"></div><span class="ll">G — Crítico</span><span class="ld">≤109%</span></div>
+    <div class="lr"><div class="ls" style="width:14px;height:14px;background:#9c27b0"></div><span class="ll">H — Colapso</span><span class="ld">&gt;109%</span></div>
+    <hr class="leg-div">
+    <div class="leg-h">Tamaño · volumen × sensibilidad</div>
+    <div class="lr"><div class="lc" style="width:24px;height:24px"></div><span class="ll">≥ 5 000 vph</span></div>
+    <div class="lr"><div class="lc" style="width:17px;height:17px"></div><span class="ll">1 000 – 5 000 vph</span></div>
+    <div class="lr"><div class="lc" style="width:11px;height:11px"></div><span class="ll">200 – 1 000 vph</span></div>
+    <div class="lr"><div class="lc" style="width:6px;height:6px"></div><span class="ll">&lt; 200 vph</span></div>
+    <hr class="leg-div">
+    <div class="leg-h">Borde del marcador</div>
+    <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #ffc107;flex-shrink:0"></span><span class="ll">Discrepancia Synchro ≠ Calc</span></div>
+    <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #f44336;flex-shrink:0"></span><span class="ll">Deterioro proyectado 2030</span></div>
+    <div class="lr"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:2px dashed #ff6b6b;flex-shrink:0"></span><span class="ll">Outlier ICU 2030 (delta &gt;200%)</span></div>
+  </div>
+  <div id="leg-vol" style="display:none">
+    <div class="leg-h">Volumen total (vph)</div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#4a1a6e"></div><span class="ll">≥ 8 000 vph</span></div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#8b2fc9"></div><span class="ll">5 000 – 8 000 vph</span></div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#d44caa"></div><span class="ll">3 000 – 5 000 vph</span></div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#f0813a"></div><span class="ll">1 500 – 3 000 vph</span></div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#f7c948"></div><span class="ll">500 – 1 500 vph</span></div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#b8e47a"></div><span class="ll">100 – 500 vph</span></div>
+    <div class="lr"><div class="vol-swatch" style="width:20px;height:14px;background:#4caf50"></div><span class="ll">&lt; 100 vph</span></div>
+    <hr class="leg-div">
+    <div class="leg-h">Factor crecimiento inferido</div>
+    <div style="font-size:9px;color:#aaa;line-height:1.7">
+      Vol 2030 = vol_total_vph × factor inferido.<br>
+      Satélite: click en marcador · datos crudos lane_groups.
+    </div>
+  </div>
+  <hr class="leg-div">
+  <div class="leg-h">Control</div>
+  <div class="lr"><span style="font-size:13px;color:#29b6f6;width:18px;text-align:center">▶</span><span class="ll">Semaforizada</span></div>
+  <div class="lr"><span style="font-size:13px;color:#ffc107;width:18px;text-align:center">▷</span><span class="ll">No semaforizada</span></div>
+  <div class="lr"><span style="font-size:13px;color:#ce93d8;width:18px;text-align:center">⟳</span><span class="ll">Glorieta</span></div>
+  <div class="lr"><span style="font-size:13px;color:#81c784;width:18px;text-align:center">≡</span><span class="ll">Múltiple / Otro</span></div>
+  <hr class="leg-div">
+  <h3 style="color:#ff9800" id="leg-crit-hdr">⚠ Puntos críticos</h3>
+  <div id="critical-list">Cargando…</div>
+  <hr class="leg-div">
+  <div id="leg-growth-info" style="font-size:9px;color:#444;line-height:1.6;display:none"></div>
+  <div style="font-size:9px;color:#333;line-height:1.6">AM Peak · ICU<br>Synchro 11 · 01-29-2026<br>datalos_latlong.json</div>
+</div>
+
+<script>
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const LC  = {A:'#4caf50',B:'#8bc34a',C:'#ffc107',D:'#ff9800',E:'#ff5722',F:'#f44336',G:'#e91e63',H:'#9c27b0'};
+const OUTLIER_THRESHOLD = 200;
+const EXCLUDE_2025 = new Set([
+  '125','72','37','39','140','19','151','144',
+  '84','138','40','38','15','79','112','80','104','89'
+]);
+
+function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
+function lc(l){ return LC[l]||'#888'; }
+function c25(d){ return d.calc_2025||{}; }
+function c30(d){ return d.calc_2030||{}; }
+function s25(d){ return d.synchro_2025||{}; }
+
+// ── GROWTH FACTOR ENGINE ──────────────────────────────────────────────────────
+let GLOBAL_FACTOR = 1.20;
+
+function computeGrowthFactor(d){
+  const lanes = d.lane_groups||[];
+  let sumV=0, sumF=0;
+  for(const g of lanes){
+    if((g.volume_vph||0)>0){ sumV+=g.volume_vph; sumF+=g.future_vph||0; }
+  }
+  return sumV>=50 ? sumF/sumV : null;
+}
+function computeGlobalFactor(intersections){
+  let sumV=0, sumF=0;
+  for(const d of intersections)
+    for(const g of (d.lane_groups||[]))
+      if((g.volume_vph||0)>0){ sumV+=g.volume_vph; sumF+=g.future_vph||0; }
+  return sumV>0 ? sumF/sumV : 1.20;
+}
+function vol2030(d){
+  return Math.round((c25(d).vol_total_vph||0)*(computeGrowthFactor(d)??GLOBAL_FACTOR));
+}
+function computeICU2030(d){
+  const icu25=c25(d).icu_pct;
+  if(icu25==null) return null;
+  return +(icu25*(computeGrowthFactor(d)??GLOBAL_FACTOR)).toFixed(1);
+}
+function isOutlier(d){
+  const delta=c30(d).icu_delta_pct;
+  return delta!=null && Math.abs(delta)>OUTLIER_THRESHOLD;
+}
+
+// ── SATELLITE: direction movement data ───────────────────────────────────────
+// Direction prefixes and their cardinal angles (degrees, 0=up/north, clockwise)
+const DIR_ANGLE = {
+  NB:0, SB:180, EB:90, WB:270,
+  NE:45, NW:315, SE:135, SW:225,
+  NET:45, NWT:315, SET:135, SWT:225
+};
+
+// Extract 2-letter direction prefix from group code (NBL→NB, EBT→EB, NET→NE, etc.)
+function dirOf(group){
+  const prefixes = ['NET','NWT','SET','SWT','NE','NW','SE','SW','NB','SB','EB','WB'];
+  for(const p of prefixes) if(group.startsWith(p)) return p;
+  return group.slice(0,2).toUpperCase();
+}
+
+// Aggregate lane_groups by direction, return sorted array [{dir, vol, angle}]
+function getDirectionVols(d, useY30){
+  const map = {};
+  for(const g of (d.lane_groups||[])){
+    const vol = useY30 ? (g.future_vph||0) : (g.volume_vph||0);
+    const dir = dirOf(g.group);
+    map[dir] = (map[dir]||0) + vol;
+  }
+  return Object.entries(map)
+    .map(([dir,vol])=>({ dir, vol, angle: DIR_ANGLE[dir]??0 }))
+    .filter(x=>x.vol>0)
+    .sort((a,b)=>b.vol-a.vol);
+}
+
+// Build satellite SVG: dominant direction + rest
+function buildSatelliteSVG(d, useY30){
+  const dirs = getDirectionVols(d, useY30);
+  if(!dirs.length) return null;
+
+  const W=170, H=170, cx=W/2, cy=H/2, R=74;
+  const dominant = dirs[0];
+  const restVol  = dirs.slice(1).reduce((s,x)=>s+x.vol,0);
+  const total    = dominant.vol + restVol;
+
+  // Arrow SVG path pointing in a given angle (0=up)
+  function arrowPath(ax, ay, angle, len, headSize){
+    const rad = (angle-90)*Math.PI/180;
+    const ex  = ax + Math.cos(rad)*len;
+    const ey  = ay + Math.sin(rad)*len;
+    const lx  = ex + Math.cos(rad+2.4)*headSize;
+    const ly  = ey + Math.sin(rad+2.4)*headSize;
+    const rx  = ex + Math.cos(rad-2.4)*headSize;
+    const ry  = ey + Math.sin(rad-2.4)*headSize;
+    return `M${ax.toFixed(1)},${ay.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${rx.toFixed(1)},${ry.toFixed(1)}`;
+  }
+
+  // Position for dominant label (opposite side of arrow)
+  function labelPos(angle, dist){
+    const rad = (angle-90)*Math.PI/180;
+    return { x: cx+Math.cos(rad)*dist, y: cy+Math.sin(rad)*dist };
+  }
+
+  const domAngle  = dominant.angle;
+  const domRad    = (domAngle-90)*Math.PI/180;
+  const domColor  = '#ce93d8';   // purple-pink for dominant
+  const restColor = '#90caf9';   // blue for rest
+  const pctDom    = total>0 ? Math.round(dominant.vol/total*100) : 0;
+
+  // Dominant arrow: from center outward
+  const domArrow = arrowPath(cx, cy, domAngle, R-10, 7);
+
+  // Rest: show as a small arc/arrow in opposite quadrant or secondary dirs
+  // Use the second direction if it exists, else opposite of dominant
+  const restDir   = dirs.length>1 ? dirs[1] : null;
+  const restAngle = restDir ? restDir.angle : (domAngle+180)%360;
+  const restArrow = arrowPath(cx, cy, restAngle, R-22, 5);
+
+  // Label positions
+  const domLbl  = labelPos(domAngle, R+2);
+  const restLbl = labelPos(restAngle, R+2);
+
+  // Direction label anchor
+  function anchor(angle){
+    const a = ((angle%360)+360)%360;
+    if(a>337.5||a<=22.5) return 'middle';
+    if(a<=67.5)  return 'start';
+    if(a<=112.5) return 'start';
+    if(a<=157.5) return 'start';
+    if(a<=202.5) return 'middle';
+    if(a<=247.5) return 'end';
+    if(a<=292.5) return 'end';
+    if(a<=337.5) return 'end';
+    return 'middle';
+  }
+
+  // Year label
+  const yrLabel = useY30 ? '2030' : '2025';
+
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Background circle
+  s += `<circle cx="${cx}" cy="${cy}" r="${R+6}" fill="#14161e" stroke="#ce93d8" stroke-width="1.2" stroke-opacity=".5"/>`;
+
+  // Subtle radial grid lines for cardinal directions
+  ['N','S','E','W'].forEach(dir=>{
+    const a = {N:0,S:180,E:90,W:270}[dir];
+    const rad = (a-90)*Math.PI/180;
+    const x2 = cx+Math.cos(rad)*(R+4);
+    const y2 = cy+Math.sin(rad)*(R+4);
+    s += `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#2a3044" stroke-width=".5"/>`;
+  });
+
+  // Center dot
+  s += `<circle cx="${cx}" cy="${cy}" r="4" fill="#ce93d8" fill-opacity=".6"/>`;
+
+  // Dominant arrow
+  s += `<path d="${domArrow}" stroke="${domColor}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+  // Rest arrow (thinner)
+  if(restVol>0)
+    s += `<path d="${restArrow}" stroke="${restColor}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4,2"/>`;
+
+  // Dominant label: direction + volume + %
+  s += `<text x="${domLbl.x.toFixed(1)}" y="${(domLbl.y-6).toFixed(1)}" text-anchor="${anchor(domAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="9.5px" font-weight="700" fill="${domColor}">${dominant.dir}</text>`;
+  s += `<text x="${domLbl.x.toFixed(1)}" y="${(domLbl.y+5).toFixed(1)}" text-anchor="${anchor(domAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="#e0e0e0">${dominant.vol>=1000?(dominant.vol/1000).toFixed(1)+'k':dominant.vol}</text>`;
+  s += `<text x="${domLbl.x.toFixed(1)}" y="${(domLbl.y+15).toFixed(1)}" text-anchor="${anchor(domAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="${domColor}" fill-opacity=".7">${pctDom}%</text>`;
+
+  // Rest label
+  if(restVol>0){
+    s += `<text x="${restLbl.x.toFixed(1)}" y="${(restLbl.y-6).toFixed(1)}" text-anchor="${anchor(restAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="600" fill="${restColor}">${restDir?restDir.dir:'otros'}</text>`;
+    s += `<text x="${restLbl.x.toFixed(1)}" y="${(restLbl.y+5).toFixed(1)}" text-anchor="${anchor(restAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="#e0e0e0">${restVol>=1000?(restVol/1000).toFixed(1)+'k':restVol}</text>`;
+    s += `<text x="${restLbl.x.toFixed(1)}" y="${(restLbl.y+15).toFixed(1)}" text-anchor="${anchor(restAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="${restColor}" fill-opacity=".7">${100-pctDom}%</text>`;
+  }
+
+  // Center: total + year
+  s += `<text x="${cx}" y="${cy-1}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
+  s += `<text x="${cx}" y="${cy+9}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7px" fill="#555">${yrLabel}</text>`;
+
+  // Intersection label top-left inside circle
+  s += `<text x="8" y="14" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#ce93d8" font-weight="700">#${d.label}</text>`;
+
+  s += '</svg>';
+  return s;
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let D           = {intersections:[]};
+let markers     = [];
+let activeFilt  = 'all';
+let activeLayer = 'synchro';
+let useY30      = false;
+let sensMult    = 1.0;
+
+// Satellite state
+let activeSatellite = null;   // { marker: L.Marker, connector: L.Polyline }
+
+function clearSatellite(){
+  if(activeSatellite){
+    map.removeLayer(activeSatellite.marker);
+    map.removeLayer(activeSatellite.connector);
+    activeSatellite = null;
+  }
+}
+
+function showSatellite(d, latlng, mainRadius){
+  clearSatellite();
+
+  const svgHtml = buildSatelliteSVG(d, useY30);
+  if(!svgHtml) return;
+
+  const W = 170, H = 170;
+
+  // Offset: place satellite to the right of the main marker
+  // Convert pixel offset to lat/lng offset at current zoom
+  const zoom   = map.getZoom();
+  const pt     = map.latLngToContainerPoint(latlng);
+  const offset = mainRadius + W/2 + 14;   // px gap between edges
+  const satPt  = L.point(pt.x + offset, pt.y);
+  const satLL  = map.containerPointToLatLng(satPt);
+
+  // Connector line from main marker edge to satellite edge
+  const connStartPt = L.point(pt.x + mainRadius + 2, pt.y);
+  const connEndPt   = L.point(pt.x + offset - W/2, pt.y);
+  const connStart   = map.containerPointToLatLng(connStartPt);
+  const connEnd     = map.containerPointToLatLng(connEndPt);
+
+  const connector = L.polyline([connStart, connEnd], {
+    color: '#ce93d8', weight: 1, opacity: 0.5, dashArray: '3,3'
+  }).addTo(map);
+
+  const satIcon = L.divIcon({
+    className: '',
+    iconSize:   [W, H],
+    iconAnchor: [W/2, H/2],
+    html: svgHtml
+  });
+
+  const satMarker = L.marker(satLL, { icon: satIcon, interactive: false, zIndexOffset: 500 }).addTo(map);
+
+  activeSatellite = { marker: satMarker, connector };
+}
+
+// ── SENSITIVITY ───────────────────────────────────────────────────────────────
+function setSens(v){
+  sensMult = Math.round(v*10)/10;
+  document.getElementById('sensSlider').value = sensMult;
+  document.getElementById('sensDisplay').textContent = '×'+sensMult.toFixed(1);
+  const pct = Math.round((sensMult-1)*100);
+  const el  = document.getElementById('sensPct');
+  el.textContent = pct===0?'+0%':(pct>0?'+'+pct+'%':pct+'%');
+  el.style.color = pct>0?'#f44336':pct<0?'#4caf50':'#666';
+  clearSatellite();
+  buildMarkers();
+}
+function stepSens(d){ setSens(Math.min(3.0,Math.max(0.5,sensMult+d))); }
+function resetSens(){ setSens(1.0); }
+function scaledICU(r){ return +(r*sensMult).toFixed(1); }
+
+function getDisplayLOS(d){
+  if(activeLayer==='synchro'){
+    const raw = useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
+    const icu = scaledICU(raw);
+    return {icu, los:icuLOS(icu), source:useY30?'Synchro 2030~':'Synchro rptd'};
+  } else {
+    const raw = useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
+    const icu = scaledICU(raw);
+    return {icu, los:icuLOS(icu), source:useY30?'ICU calc 2030 (recomp.)':'ICU calc 2025'};
+  }
+}
+
+function volToR(vol){
+  const v=Math.round(vol*sensMult);
+  if(!v||v<=0) return 5;
+  if(v<50) return 6;
+  if(v>=8000) return 26;
+  return Math.round(6+(Math.log(v)-Math.log(50))/(Math.log(8000)-Math.log(50))*20);
+}
+function volToRaw(vol){
+  if(!vol||vol<=0) return 6;
+  if(vol>=8000) return 28;
+  if(vol>=5000) return 24;
+  if(vol>=3000) return 20;
+  if(vol>=1500) return 16;
+  if(vol>=500)  return 12;
+  if(vol>=100)  return 8;
+  return 6;
+}
+function volToColor(vol){
+  if(vol>=8000) return '#4a1a6e';
+  if(vol>=5000) return '#8b2fc9';
+  if(vol>=3000) return '#d44caa';
+  if(vol>=1500) return '#f0813a';
+  if(vol>=500)  return '#f7c948';
+  if(vol>=100)  return '#b8e47a';
+  return '#4caf50';
+}
+function ctrlGlyph(ct){
+  if(ct.includes('Pretimed')||ct.includes('Actuated')) return {g:'▶',c:'#29b6f6'};
+  if(ct==='Roundabout') return {g:'⟳',c:'#ce93d8'};
+  if(ct==='Unsignalized') return {g:'▷',c:'#ffc107'};
+  return {g:'≡',c:'#81c784'};
+}
+function hasDeterioroReal(d){ return (c30(d).deterioro||'estable')!=='estable'; }
+function hasDiscrepancia(d){
+  const sL=s25(d).icu_los, cL=c25(d).icu_los;
+  return sL&&cL&&sL!==cL;
+}
+function isSigD(d){ return s25(d).signal_delay_s!=null; }
+
+// ── MAP ───────────────────────────────────────────────────────────────────────
+const map = L.map('map',{zoomControl:true}).setView([14.652,-90.543],15);
+L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'© OSM © CARTO', maxZoom:20
+}).addTo(map);
+
+// Click on map background closes satellite
+map.on('click', ()=>clearSatellite());
+
+// When map moves/zooms, clear satellite (position would be stale)
+map.on('movestart', ()=>clearSatellite());
+
+// ── BUILD MARKERS ─────────────────────────────────────────────────────────────
+function buildMarkers(){
+  clearSatellite();
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+  const criticals=[];
+  const isVolLayer = activeLayer==='vol';
+
+  const items = D.intersections.filter(d=>
+    d.coords&&d.coords.lat&&
+    (useY30||!EXCLUDE_2025.has(String(d.label)))
+  );
+
+  items.forEach(d=>{
+    const v25     = c25(d).vol_total_vph||0;
+    const v30     = vol2030(d);
+    const dispVol = useY30?v30:v25;
+    const factor  = computeGrowthFactor(d)??GLOBAL_FACTOR;
+    const factorPct = Math.round((factor-1)*100);
+
+    const scaledVol = Math.round(dispVol*(isVolLayer?1:sensMult));
+    const isLow  = scaledVol<50;
+    const isDet  = hasDeterioroReal(d);
+    const isDisc = hasDiscrepancia(d);
+    const isOut  = isOutlier(d);
+
+    let activeIcuRaw;
+    if(activeLayer==='synchro')      activeIcuRaw = useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
+    else if(activeLayer==='calc')    activeIcuRaw = useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
+    else                             activeIcuRaw = c25(d).icu_pct||0;
+    const activeIcu = scaledICU(activeIcuRaw);
+
+    if(activeFilt==='sig'        && !isSigD(d)) return;
+    if(activeFilt==='unsig'      && (isSigD(d)||d.control_type==='Roundabout')) return;
+    if(activeFilt==='roundabout' && d.control_type!=='Roundabout') return;
+    if(activeFilt==='crit'       && activeIcu<90) return;
+    if(activeFilt==='det'        && !isDet) return;
+    if(activeFilt==='discr'      && !isDisc) return;
+    if(activeFilt==='lovol'      && !isLow) return;
+    if(activeFilt==='outlier'    && !isOut) return;
+
+    const ctrl = ctrlGlyph(d.control_type);
+
+    let icon, markerRadius;
+    if(isVolLayer){
+      const r  = volToRaw(dispVol); markerRadius = r;
+      const sz = r*2+10, cx=sz/2;
+      const col= volToColor(dispVol);
+      const op = isLow?0.35:0.88;
+      const dashAttr = isOut?'stroke-dasharray="3,2"':'';
+      const strokeCol= isOut?'#ff6b6b':'rgba(255,255,255,0.4)';
+      icon = L.divIcon({
+        className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
+        html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
+            stroke="${strokeCol}" stroke-width="${isOut?2:1}" ${dashAttr}/>
+          <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
+            font-family="Segoe UI,Arial,sans-serif"
+            font-size="${Math.max(6,Math.min(10,r*0.7))}px"
+            font-weight="700" fill="#000" fill-opacity=".75">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</text>
+          <text x="${sz-2}" y="6" text-anchor="end"
+            font-family="Segoe UI,Arial,sans-serif" font-size="9px"
+            fill="${ctrl.c}">${ctrl.g}</text>
+        </svg>`
+      });
+    } else {
+      const {icu,los,source} = getDisplayLOS(d);
+      const col=lc(los);
+      const r=volToR(v25); markerRadius=r;
+      const sz=r*2+14, cx=sz/2;
+      const op=isLow?0.4:0.85;
+      const strokeCol=isOut?'#ff6b6b':isDet?'#f44336':isDisc?'#ffc107':'#ffffff';
+      const strokeW=(isOut||isDet||isDisc)?2:1;
+      const dashAttr=isOut?'stroke-dasharray="3,2"':'';
+      icon = L.divIcon({
+        className:'', iconSize:[sz,sz], iconAnchor:[cx,cx],
+        html:`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="${cx}" cy="${cx}" r="${r}" fill="${col}" fill-opacity="${op}"
+            stroke="${strokeCol}" stroke-width="${strokeW}" stroke-opacity=".9" ${dashAttr}/>
+          <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
+            font-family="Segoe UI,Arial,sans-serif"
+            font-size="${Math.max(7,Math.min(12,r*0.85))}px"
+            font-weight="700" fill="#000" fill-opacity=".8">${los}</text>
+          <text x="${sz-2}" y="6" text-anchor="end"
+            font-family="Segoe UI,Arial,sans-serif" font-size="9px"
+            fill="${ctrl.c}">${ctrl.g}</text>
+        </svg>`
+      });
+    }
+
+    // ── TOOLTIP ──
+    const sIcu25=s25(d).icu_pct||0, cIcu25=c25(d).icu_pct||0;
+    const cIcu30j=c30(d).icu_pct||0, cIcu30rc=computeICU2030(d)??cIcu30j;
+    const sIcuSc=scaledICU(sIcu25), cIcuSc=scaledICU(cIcu25);
+    const cIcu30Sc=scaledICU(cIcu30rc), cIcu30JSc=scaledICU(cIcu30j);
+    const sLosSc=icuLOS(sIcuSc), cLosSc=icuLOS(cIcuSc), cLos30Sc=icuLOS(cIcu30Sc);
+    const det=c30(d).deterioro||'estable';
+    const volDelta=v30-v25, volDS=(volDelta>=0?'+':'')+volDelta.toLocaleString();
+    const discWarn=hasDiscrepancia(d)||sLosSc!==cLosSc?`<div class="tt-discr">⚡ Synchro ${sLosSc} (${sIcuSc}%) vs Calc ${cLosSc} (${cIcuSc}%)</div>`:'';
+    const detRow=det!=='estable'?`<div class="tt-det">↑ Deterioro 2030: ${det}</div>`:'';
+    const lowWarn=isLow?`<div class="tt-warn">⚠ Volumen bajo — LOS poco representativo</div>`:'';
+    const sensNote=sensMult!==1.0?`<div class="tt-row"><span>Sensibilidad</span><b style="color:${sensMult>1?'#f44336':'#4caf50'}">×${sensMult.toFixed(1)}</b></div>`:'';
+    const outlierNote=isOut?`<div class="tt-outlier">⚠ Outlier: delta JSON = ${(c30(d).icu_delta_pct??'N/A')}% — usando ICU recomputado</div>`:'';
+    const growthNote=`<div class="tt-growth">📈 ×${factor.toFixed(3)} (${factorPct>=0?'+':''}${factorPct}%)${computeGrowthFactor(d)==null?' [global]':' [inferido]'}</div>`;
+    const icuDiff=Math.abs(cIcu30j-cIcu30rc);
+    const icu30Row=icuDiff>2
+      ?`<div class="tt-row"><span>ICU 2030 JSON</span><b style="color:#666">${cIcu30JSc}%</b></div><div class="tt-row"><span>ICU 2030 recomp.</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`
+      :`<div class="tt-row"><span>ICU 2030</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`;
+
+    let ttHeader, ttMain;
+    if(isVolLayer){
+      const col=volToColor(dispVol);
+      const satHint=`<div style="font-size:9px;color:#ce93d8;margin-top:4px">🔵 Click para ver movimientos</div>`;
+      ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${col};font-size:22px">${dispVol>=1000?(dispVol/1000).toFixed(1)+'k':dispVol}</div><div class="tt-los-sub">vph ${useY30?'2030':'2025'}<br>${d.control_type}</div></div>`;
+      ttMain=`<div class="tt-row"><span>Vol. 2025</span><b>${v25.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Vol. 2030 (×${factor.toFixed(2)})</span><b>${v30.toLocaleString()} vph <span style="color:${volDelta>0?'#4caf50':'#f44336'};font-size:9px">(${volDS})</span></b></div>
+        ${growthNote}${satHint}`;
+    } else {
+      const {icu,los,source}=getDisplayLOS(d);
+      const col=lc(los);
+      ttHeader=`<div class="tt-los-row"><div class="tt-los" style="color:${col}">${los}</div><div class="tt-los-sub">${source}<br>${icu}%</div></div>`;
+      ttMain=`<div class="tt-row"><span>Synchro ICU 2025</span><b>${sIcuSc}% <span style="color:${lc(sLosSc)}">${sLosSc}</span></b></div>
+        <div class="tt-row"><span>Calc ICU 2025</span><b>${cIcuSc}% <span style="color:${lc(cLosSc)}">${cLosSc}</span></b></div>
+        ${icu30Row}
+        <div class="tt-row"><span>Vol. 2025</span><b>${v25.toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>Vol. 2030 est.</span><b>${v30.toLocaleString()} vph <span style="color:#4caf50;font-size:9px">(${volDS})</span></b></div>
+        ${growthNote}${sensNote}`;
+    }
+
+    const tipR = isVolLayer?volToRaw(dispVol):volToR(v25);
+    const mk = L.marker([d.coords.lat,d.coords.lng],{icon,title:`Int. ${d.label}`});
+    mk.bindTooltip(`<div class="los-tooltip">
+      <div class="tt-id">Int. #${d.label} — ${d.control_type}</div>
+      ${ttHeader}<hr class="tt-div">${ttMain}
+      ${discWarn}${detRow}${lowWarn}${outlierNote}
+    </div>`,{permanent:false,direction:'top',offset:[0,-(tipR+4)],opacity:1,className:''});
+
+    // ── CLICK: show/close satellite (vol layer only) ──
+    const _d = d, _r = markerRadius;
+    mk.on('click', function(e){
+      L.DomEvent.stopPropagation(e);
+      if(activeLayer!=='vol'){
+        clearSatellite();
+        return;
+      }
+      // If same marker clicked again, toggle off
+      if(activeSatellite && activeSatellite._label===_d.label){
+        clearSatellite();
+        return;
+      }
+      clearSatellite();
+      showSatellite(_d, mk.getLatLng(), _r);
+      activeSatellite._label = _d.label;
+    });
+
+    mk.addTo(map);
+    markers.push(mk);
+    if(!isVolLayer&&activeIcu>=90)
+      criticals.push({label:d.label,icu:activeIcu,los:icuLOS(activeIcu)});
+  });
+
+  // ── STATS ──
+  const losE =items.filter(d=>{ const {los}=getDisplayLOS(d); return 'EFGH'.includes(los); }).length;
+  const nDet =items.filter(hasDeterioroReal).length;
+  const nDisc=items.filter(hasDiscrepancia).length;
+  const nOut =items.filter(isOutlier).length;
+  if(isVolLayer){
+    const tot=items.reduce((s,d)=>s+(useY30?vol2030(d):(c25(d).vol_total_vph||0)),0);
+    document.getElementById('stats').textContent=
+      `${markers.length} int. · Vol total: ${(tot/1000).toFixed(1)}k vph · ×${GLOBAL_FACTOR.toFixed(3)} global`;
+  } else {
+    document.getElementById('stats').textContent=
+      `${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr. · ${nOut} outliers`;
+  }
+
+  // ── CRITICAL / TOP VOL ──
+  const cl=document.getElementById('critical-list');
+  const hdr=document.getElementById('leg-crit-hdr');
+  if(isVolLayer){
+    hdr.textContent='📊 Mayor volumen';
+    const topVol=items.map(d=>({label:d.label,vol:useY30?vol2030(d):(c25(d).vol_total_vph||0),factor:computeGrowthFactor(d)??GLOBAL_FACTOR}))
+      .sort((a,b)=>b.vol-a.vol).slice(0,8);
+    cl.innerHTML=topVol.map(x=>`<div class="crit-item">• <b>#${x.label}</b> — ${x.vol>=1000?(x.vol/1000).toFixed(1)+'k':x.vol} vph <span style="color:${volToColor(x.vol)}">■</span></div>`).join('');
+    document.getElementById('leg-growth-info').style.display='block';
+    document.getElementById('leg-growth-info').innerHTML=
+      `Factor global: <b style="color:#a5d6a7">×${GLOBAL_FACTOR.toFixed(3)}</b> (+${Math.round((GLOBAL_FACTOR-1)*100)}%)`;
+  } else {
+    document.getElementById('leg-growth-info').style.display='none';
+    hdr.textContent='⚠ Puntos críticos';
+    if(criticals.length){
+      criticals.sort((a,b)=>b.icu-a.icu);
+      cl.innerHTML=criticals.slice(0,8).map(c=>
+        `<div class="crit-item">• <b>#${c.label}</b> — ${c.icu}% <span style="color:${lc(c.los)}">[${c.los}]</span></div>`).join('');
+      if(criticals.length>8) cl.innerHTML+=`<div style="font-size:9px;color:#555">+${criticals.length-8} más…</div>`;
+    } else {
+      cl.innerHTML='<div style="font-size:9px;color:#555">Sin puntos críticos en esta vista.</div>';
+    }
+  }
+
+  if(markers.length&&map.getZoom()<=15)
+    map.fitBounds(L.featureGroup(markers).getBounds(),{padding:[50,50]});
+}
+
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+function setLayer(l,btn){
+  clearSatellite();
+  activeLayer=l;
+  document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol'));
+  btn.classList.add(l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol');
+  document.getElementById('leg-los').style.display =l==='vol'?'none':'block';
+  document.getElementById('leg-vol').style.display =l==='vol'?'block':'none';
+  document.getElementById('sens-group').style.opacity      =l==='vol'?'0.4':'1';
+  document.getElementById('sens-group').style.pointerEvents=l==='vol'?'none':'auto';
+  const titles={synchro:'LOS ICU — Synchro rptd',calc:'LOS ICU — Calculado',vol:'Aforos — Volumen Total'};
+  document.getElementById('leg-title').textContent=titles[l];
+  document.getElementById('leg-title').style.color=l==='vol'?'#ce93d8':'#4a90d9';
+  buildMarkers();
+}
+function setFilt(f,btn){
+  clearSatellite();
+  activeFilt=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active','active-warn'));
+  btn.classList.add(['crit','det','discr','lovol','outlier'].includes(f)?'active-warn':'active');
+  buildMarkers();
+}
+function setYear(v){ useY30=v; clearSatellite(); buildMarkers(); }
+
+// ── LOAD ──────────────────────────────────────────────────────────────────────
+async function loadData(){
+  try{
+    const r=await fetch('datalos_latlong.json');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    D=await r.json();
+    const active=D.intersections.filter(d=>d.coords&&d.coords.lat);
+    GLOBAL_FACTOR=computeGlobalFactor(active);
+    console.log(`Cargado: ${D.intersections.length} int · factor ×${GLOBAL_FACTOR.toFixed(4)}`);
+  } catch(e){
+    console.warn('No se cargó datalos_latlong.json:',e.message);
+    document.getElementById('stats').textContent='⚠ Sirve con: npx serve .  |  python -m http.server';
+  }
+  buildMarkers();
+}
+loadData();
+</script>
+</body>
+</html>
