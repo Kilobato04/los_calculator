@@ -185,7 +185,8 @@ function s25(d){ return d.synchro_2025||{}; }
 // ── GROWTH FACTOR ENGINE ──────────────────────────────────────────────────────
 let GLOBAL_FACTOR = 1.20;
 
-function computeGrowthFactor(d){
+// ── GROWTH FACTOR ENGINE ──────────────────────────────────────────────────────
+// Infer per-intersection growth factor from lane_groups:
   const lanes = d.lane_groups||[];
   let sumV=0, sumF=0;
   for(const g of lanes){
@@ -200,9 +201,7 @@ function computeGlobalFactor(intersections){
       if((g.volume_vph||0)>0){ sumV+=g.volume_vph; sumF+=g.future_vph||0; }
   return sumV>0 ? sumF/sumV : 1.20;
 }
-function vol2030(d){
-  return Math.round((c25(d).vol_total_vph||0)*(computeGrowthFactor(d)??GLOBAL_FACTOR));
-}
+function vol2030(d){ return sumLaneVol(d, true); }
 function computeICU2030(d){
   const icu25=c25(d).icu_pct;
   if(icu25==null) return null;
@@ -228,7 +227,8 @@ function dirOf(group){
   return group.slice(0,2).toUpperCase();
 }
 
-// Aggregate lane_groups by direction, scaled so total matches vol_total_vph
+// Aggregate lane_groups by direction — raw, no scaling
+// 2025: volume_vph  |  2030: future_vph
 function getDirectionVols(d, useY30){
   const map = {};
   for(const g of (d.lane_groups||[])){
@@ -236,17 +236,8 @@ function getDirectionVols(d, useY30){
     const dir = dirOf(g.group);
     map[dir] = (map[dir]||0) + vol;
   }
-
-  const rawTotal = Object.values(map).reduce((s,v)=>s+v, 0);
-
-  // Authoritative total: vol_total_vph for 2025, vol2030() for 2030
-  const authTotal = useY30 ? vol2030(d) : (c25(d).vol_total_vph||0);
-
-  // Scale factor so satellite directions sum to the same total as the main circle
-  const scale = rawTotal > 0 && authTotal > 0 ? authTotal / rawTotal : 1;
-
   return Object.entries(map)
-    .map(([dir,vol])=>({ dir, vol: Math.round(vol*scale), angle: DIR_ANGLE[dir]??0 }))
+    .map(([dir,vol])=>({ dir, vol, angle: DIR_ANGLE[dir]??0 }))
     .filter(x=>x.vol>0)
     .sort((a,b)=>b.vol-a.vol);
 }
