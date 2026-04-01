@@ -334,7 +334,7 @@ function buildVolumeSVG(d, dirs, y30){
 // ── 2030 lane requirements satellite ─────────────────────────────────────────
 function buildLaneSVG(d, laneData){
   const W=280,H=280,cx=W/2,cy=H/2,CIRCLE_R=130;
-  const ARROW_LEN=42, ARROW_START=14; // short arrows, well inside center zone
+  const ARROW_LEN=26, ARROW_START=14; // short arrows, well inside center zone
 
   function arrow(angle,len,startR){
     const rad=(angle-90)*Math.PI/180;
@@ -434,13 +434,6 @@ function buildLaneSVG(d, laneData){
       `M${ex.toFixed(1)},${ey.toFixed(1)} `+
       `L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
     s+=`<path d="${aPath}" stroke="${col}" stroke-width="${i===0?2.6:1.8}" fill="none" stroke-linecap="round" stroke-linejoin="round"${i>0?' stroke-dasharray="4,2"':''}/>`;
-    // dots along arrow
-    const cnt=Math.min(entry.nReq,5);
-    const spacing=ARROW_LEN/(cnt+1);
-    for(let k=1;k<=cnt;k++){
-      const r=ARROW_START+spacing*k;
-      s+=`<circle cx="${(cx+Math.cos(rad)*r).toFixed(1)}" cy="${(cy+Math.sin(rad)*r).toFixed(1)}" r="2.8" fill="${col}" fill-opacity=".9"/>`;
-    }
     // label
     s+=labelBlock(entry);
   });
