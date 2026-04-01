@@ -243,111 +243,101 @@ function getDirectionVols(d, useY30){
 }
 
 // Build satellite SVG: dominant direction + rest
+// All labels and arrows stay INSIDE the circle boundary
 function buildSatelliteSVG(d, useY30){
   const dirs = getDirectionVols(d, useY30);
   if(!dirs.length) return null;
 
-  const W=170, H=170, cx=W/2, cy=H/2, R=74;
+  // Canvas: large enough that content is never clipped
+  const W=240, H=240, cx=W/2, cy=H/2;
+  // Inner radius where arrows end (leaving room for labels inside)
+  const ARROW_END = 80;   // arrow tip stops here
+  const ARROW_START = 18; // arrow starts away from center
+  const LBL_R = 100;      // label midpoint radius (inside circle boundary of R=115)
+  const CIRCLE_R = 115;   // visible circle radius
+
   const dominant = dirs[0];
+  const restDir  = dirs.length>1 ? dirs[1] : null;
   const restVol  = dirs.slice(1).reduce((s,x)=>s+x.vol,0);
   const total    = dominant.vol + restVol;
+  const pctDom   = total>0 ? Math.round(dominant.vol/total*100) : 0;
+  const pctRest  = 100-pctDom;
 
-  // Arrow SVG path pointing in a given angle (0=up)
-  function arrowPath(ax, ay, angle, len, headSize){
+  const domColor  = '#ce93d8';
+  const restColor = '#64b5f6';
+  const yrLabel   = useY30?'2030':'2025';
+
+  // Arrow: shaft + arrowhead, fully inside circle
+  function arrow(angle, len, startR){
     const rad = (angle-90)*Math.PI/180;
-    const ex  = ax + Math.cos(rad)*len;
-    const ey  = ay + Math.sin(rad)*len;
-    const lx  = ex + Math.cos(rad+2.4)*headSize;
-    const ly  = ey + Math.sin(rad+2.4)*headSize;
-    const rx  = ex + Math.cos(rad-2.4)*headSize;
-    const ry  = ey + Math.sin(rad-2.4)*headSize;
-    return `M${ax.toFixed(1)},${ay.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${rx.toFixed(1)},${ry.toFixed(1)}`;
+    const sx = cx + Math.cos(rad)*startR;
+    const sy = cy + Math.sin(rad)*startR;
+    const ex = cx + Math.cos(rad)*len;
+    const ey = cy + Math.sin(rad)*len;
+    const hs = 8; // head size
+    const l1x = ex + Math.cos(rad+2.5)*hs;
+    const l1y = ey + Math.sin(rad+2.5)*hs;
+    const r1x = ex + Math.cos(rad-2.5)*hs;
+    const r1y = ey + Math.sin(rad-2.5)*hs;
+    return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} L${l1x.toFixed(1)},${l1y.toFixed(1)} M${ex.toFixed(1)},${ey.toFixed(1)} L${r1x.toFixed(1)},${r1y.toFixed(1)}`;
   }
 
-  // Position for dominant label (opposite side of arrow)
-  function labelPos(angle, dist){
+  // Label block: 3 lines centered at (lx,ly)
+  // line1=dir, line2=volume, line3=pct
+  function labelBlock(angle, r, dir, vol, pct, col){
     const rad = (angle-90)*Math.PI/180;
-    return { x: cx+Math.cos(rad)*dist, y: cy+Math.sin(rad)*dist };
+    const lx  = cx + Math.cos(rad)*r;
+    const ly  = cy + Math.sin(rad)*r;
+    const vStr = vol>=1000?(vol/1000).toFixed(1)+'k':String(vol);
+    return `<text x="${lx.toFixed(1)}" y="${(ly-10).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="${col}">${dir}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+14).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
   }
 
   const domAngle  = dominant.angle;
-  const domRad    = (domAngle-90)*Math.PI/180;
-  const domColor  = '#ce93d8';   // purple-pink for dominant
-  const restColor = '#90caf9';   // blue for rest
-  const pctDom    = total>0 ? Math.round(dominant.vol/total*100) : 0;
-
-  // Dominant arrow: from center outward
-  const domArrow = arrowPath(cx, cy, domAngle, R-10, 7);
-
-  // Rest: show as a small arc/arrow in opposite quadrant or secondary dirs
-  // Use the second direction if it exists, else opposite of dominant
-  const restDir   = dirs.length>1 ? dirs[1] : null;
   const restAngle = restDir ? restDir.angle : (domAngle+180)%360;
-  const restArrow = arrowPath(cx, cy, restAngle, R-22, 5);
-
-  // Label positions
-  const domLbl  = labelPos(domAngle, R+2);
-  const restLbl = labelPos(restAngle, R+2);
-
-  // Direction label anchor
-  function anchor(angle){
-    const a = ((angle%360)+360)%360;
-    if(a>337.5||a<=22.5) return 'middle';
-    if(a<=67.5)  return 'start';
-    if(a<=112.5) return 'start';
-    if(a<=157.5) return 'start';
-    if(a<=202.5) return 'middle';
-    if(a<=247.5) return 'end';
-    if(a<=292.5) return 'end';
-    if(a<=337.5) return 'end';
-    return 'middle';
-  }
-
-  // Year label
-  const yrLabel = useY30 ? '2030' : '2025';
 
   let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Background circle
-  s += `<circle cx="${cx}" cy="${cy}" r="${R+6}" fill="#14161e" stroke="#ce93d8" stroke-width="1.2" stroke-opacity=".5"/>`;
+  // Clip everything to the circle
+  s += `<defs><clipPath id="satClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
 
-  // Subtle radial grid lines for cardinal directions
-  ['N','S','E','W'].forEach(dir=>{
-    const a = {N:0,S:180,E:90,W:270}[dir];
-    const rad = (a-90)*Math.PI/180;
-    const x2 = cx+Math.cos(rad)*(R+4);
-    const y2 = cy+Math.sin(rad)*(R+4);
-    s += `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#2a3044" stroke-width=".5"/>`;
+  // Background circle fill
+  s += `<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="${domColor}" stroke-width="1.5" stroke-opacity=".55"/>`;
+
+  // Cardinal guide lines (clipped)
+  s += `<g clip-path="url(#satClip)">`;
+  [0,90,180,270].forEach(a=>{
+    const rad=(a-90)*Math.PI/180;
+    const ex=cx+Math.cos(rad)*(CIRCLE_R-2), ey=cy+Math.sin(rad)*(CIRCLE_R-2);
+    s += `<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
   });
+  // Thin ring at ARROW_END to visually separate shaft from label area
+  s += `<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
+  s += `</g>`;
 
-  // Center dot
-  s += `<circle cx="${cx}" cy="${cy}" r="4" fill="#ce93d8" fill-opacity=".6"/>`;
+  // Center node
+  s += `<circle cx="${cx}" cy="${cy}" r="5" fill="${domColor}" fill-opacity=".7"/>`;
 
-  // Dominant arrow
-  s += `<path d="${domArrow}" stroke="${domColor}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  // Dominant arrow (thick, solid)
+  s += `<path d="${arrow(domAngle, ARROW_END, ARROW_START)}" stroke="${domColor}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
 
-  // Rest arrow (thinner)
+  // Rest arrow (thinner, dashed)
   if(restVol>0)
-    s += `<path d="${restArrow}" stroke="${restColor}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4,2"/>`;
+    s += `<path d="${arrow(restAngle, ARROW_END-12, ARROW_START)}" stroke="${restColor}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5,3"/>`;
 
-  // Dominant label: direction + volume + %
-  s += `<text x="${domLbl.x.toFixed(1)}" y="${(domLbl.y-6).toFixed(1)}" text-anchor="${anchor(domAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="9.5px" font-weight="700" fill="${domColor}">${dominant.dir}</text>`;
-  s += `<text x="${domLbl.x.toFixed(1)}" y="${(domLbl.y+5).toFixed(1)}" text-anchor="${anchor(domAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="#e0e0e0">${dominant.vol>=1000?(dominant.vol/1000).toFixed(1)+'k':dominant.vol}</text>`;
-  s += `<text x="${domLbl.x.toFixed(1)}" y="${(domLbl.y+15).toFixed(1)}" text-anchor="${anchor(domAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="${domColor}" fill-opacity=".7">${pctDom}%</text>`;
+  // Label blocks — placed at LBL_R along each direction, fully inside CIRCLE_R
+  s += labelBlock(domAngle,  LBL_R, dominant.dir, dominant.vol, pctDom, domColor);
+  if(restVol>0)
+    s += labelBlock(restAngle, LBL_R, restDir?restDir.dir:'otros', restVol, pctRest, restColor);
 
-  // Rest label
-  if(restVol>0){
-    s += `<text x="${restLbl.x.toFixed(1)}" y="${(restLbl.y-6).toFixed(1)}" text-anchor="${anchor(restAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="600" fill="${restColor}">${restDir?restDir.dir:'otros'}</text>`;
-    s += `<text x="${restLbl.x.toFixed(1)}" y="${(restLbl.y+5).toFixed(1)}" text-anchor="${anchor(restAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="#e0e0e0">${restVol>=1000?(restVol/1000).toFixed(1)+'k':restVol}</text>`;
-    s += `<text x="${restLbl.x.toFixed(1)}" y="${(restLbl.y+15).toFixed(1)}" text-anchor="${anchor(restAngle)}" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="${restColor}" fill-opacity=".7">${100-pctDom}%</text>`;
-  }
+  // Center totals
+  s += `<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px"  fill="#555">total</text>`;
+  s += `<text x="${cx}" y="${cy+6}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13px" font-weight="900" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
+  s += `<text x="${cx}" y="${cy+17}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px"  fill="#444">${yrLabel}</text>`;
 
-  // Center: total + year
-  s += `<text x="${cx}" y="${cy-1}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="#e0e0e0">${total>=1000?(total/1000).toFixed(1)+'k':total}</text>`;
-  s += `<text x="${cx}" y="${cy+9}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7px" fill="#555">${yrLabel}</text>`;
-
-  // Intersection label top-left inside circle
-  s += `<text x="8" y="14" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#ce93d8" font-weight="700">#${d.label}</text>`;
+  // Intersection id — bottom of circle
+  s += `<text x="${cx}" y="${cy+CIRCLE_R-6}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="${domColor}" fill-opacity=".6">#${d.label} · ${d.control_type}</text>`;
 
   s += '</svg>';
   return s;
