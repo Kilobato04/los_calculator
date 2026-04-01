@@ -228,7 +228,7 @@ function dirOf(group){
   return group.slice(0,2).toUpperCase();
 }
 
-// Aggregate lane_groups by direction, return sorted array [{dir, vol, angle}]
+// Aggregate lane_groups by direction, scaled so total matches vol_total_vph
 function getDirectionVols(d, useY30){
   const map = {};
   for(const g of (d.lane_groups||[])){
@@ -236,8 +236,17 @@ function getDirectionVols(d, useY30){
     const dir = dirOf(g.group);
     map[dir] = (map[dir]||0) + vol;
   }
+
+  const rawTotal = Object.values(map).reduce((s,v)=>s+v, 0);
+
+  // Authoritative total: vol_total_vph for 2025, vol2030() for 2030
+  const authTotal = useY30 ? vol2030(d) : (c25(d).vol_total_vph||0);
+
+  // Scale factor so satellite directions sum to the same total as the main circle
+  const scale = rawTotal > 0 && authTotal > 0 ? authTotal / rawTotal : 1;
+
   return Object.entries(map)
-    .map(([dir,vol])=>({ dir, vol, angle: DIR_ANGLE[dir]??0 }))
+    .map(([dir,vol])=>({ dir, vol: Math.round(vol*scale), angle: DIR_ANGLE[dir]??0 }))
     .filter(x=>x.vol>0)
     .sort((a,b)=>b.vol-a.vol);
 }
@@ -368,7 +377,7 @@ function showSatellite(d, latlng, mainRadius){
   const svgHtml = buildSatelliteSVG(d, useY30);
   if(!svgHtml) return;
 
-  const W = 170, H = 170;
+  const W = 240, H = 240;
 
   // Offset: place satellite to the right of the main marker
   // Convert pixel offset to lat/lng offset at current zoom
