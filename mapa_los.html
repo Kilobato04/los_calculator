@@ -284,7 +284,7 @@ function buildSatelliteSVG(d, y30){
 // ── 2025 volume satellite (original) ─────────────────────────────────────────
 function buildVolumeSVG(d, dirs, y30){
   const W=240,H=240,cx=W/2,cy=H/2;
-  const ARROW_END=80,ARROW_START=18,LBL_R=108,CIRCLE_R=115;
+  const ARROW_END=30,ARROW_START=14,LBL_R=80,CIRCLE_R=115;
   const domColor='#ce93d8',restColor='#64b5f6';
   const dominant=dirs[0];
   const restDir=dirs.length>1?dirs[1]:null;
@@ -303,9 +303,9 @@ function buildVolumeSVG(d, dirs, y30){
     const rad=(angle-90)*Math.PI/180;
     const lx=cx+Math.cos(rad)*r,ly=cy+Math.sin(rad)*r;
     const vStr=vol>=1000?(vol/1000).toFixed(1)+'k':String(vol);
-    return `<text x="${lx.toFixed(1)}" y="${(ly-10).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10px" font-weight="700" fill="${col}">${dir}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
+    return `<text x="${lx.toFixed(1)}" y="${(ly-8).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="${col}">${dir}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11px" font-weight="900" fill="#e8e8e8">${vStr}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+14).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="600" fill="${col}" fill-opacity=".75">${pct}%</text>`;
   }
   const domAngle=dominant.angle;
   const restAngle=restDir?restDir.angle:(domAngle+180)%360;
