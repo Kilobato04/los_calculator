@@ -334,87 +334,117 @@ function buildVolumeSVG(d, dirs, y30){
 // ── 2030 lane requirements satellite ─────────────────────────────────────────
 function buildLaneSVG(d, laneData){
   const W=280,H=280,cx=W/2,cy=H/2,CIRCLE_R=130;
-  const ARROW_END=72,ARROW_START=20;
+  const ARROW_LEN=42, ARROW_START=14; // short arrows, well inside center zone
 
   function arrow(angle,len,startR){
     const rad=(angle-90)*Math.PI/180;
-    const sx=cx+Math.cos(rad)*startR,sy=cy+Math.sin(rad)*startR;
-    const ex=cx+Math.cos(rad)*len,ey=cy+Math.sin(rad)*len;
-    const hs=7;
+    const sx=cx+Math.cos(rad)*startR, sy=cy+Math.sin(rad)*startR;
+    const ex=cx+Math.cos(rad)*(startR+len), ey=cy+Math.sin(rad)*(startR+len);
+    const hs=6;
     return `M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} `+
            `L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} `+
            `M${ex.toFixed(1)},${ey.toFixed(1)} `+
            `L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
   }
 
-  function laneDots(angle,n,col,startR,endR){
+  function laneDots(angle,n,col,startR,len){
     const rad=(angle-90)*Math.PI/180;
     let out='';
-    const spacing=(endR-startR)/Math.max(n+1,2);
-    for(let i=1;i<=Math.min(n,5);i++){
+    const cnt=Math.min(n,5);
+    const spacing=len/(cnt+1);
+    for(let i=1;i<=cnt;i++){
       const r=startR+spacing*i;
-      out+=`<circle cx="${(cx+Math.cos(rad)*r).toFixed(1)}" cy="${(cy+Math.sin(rad)*r).toFixed(1)}" r="3" fill="${col}" fill-opacity=".9"/>`;
+      out+=`<circle cx="${(cx+Math.cos(rad)*r).toFixed(1)}" cy="${(cy+Math.sin(rad)*r).toFixed(1)}" r="2.8" fill="${col}" fill-opacity=".9"/>`;
     }
     return out;
   }
 
   function laneColor(e){ return e.needsMore?'#f44336':'#4caf50'; }
 
-  // Label block — placed at a radius that guarantees all 4 lines stay inside CIRCLE_R
-  // We use a tighter radius and smaller fonts
-  function labelBlock(angle, entry){
-    const col = laneColor(entry);
-    const lgfStr = entry.lgf>=1000?(entry.lgf/1000).toFixed(1)+'k':String(entry.lgf);
-    const nLabel = `${entry.nReq} carril${entry.nReq!==1?'es':''}`;
-    const indic  = entry.needsMore ? `+${entry.nReq-entry.nCur} vs hoy` : `ok (${entry.nCur} act.)`;
+  // Separate entries that share the same angle by applying a small offset
+  // so their labels and arrows don't overlap
+  const placed = laneData.map((e,i)=>({...e, idx:i}));
+  // group by angle
+  const byAngle={};
+  placed.forEach(e=>{
+    const key=e.angle;
+    if(!byAngle[key]) byAngle[key]=[];
+    byAngle[key].push(e);
+  });
+  // assign angular offsets within same-angle group: spread ±18° around base angle
+  placed.forEach(e=>{
+    const group=byAngle[e.angle];
+    const pos=group.indexOf(e);
+    const spread=20; // degrees between entries sharing same angle
+    const offset=(pos-(group.length-1)/2)*spread;
+    e.displayAngle=e.angle+offset;
+  });
 
-    // Compute a safe label center: place at ARROW_END+30 along direction
-    // but clamp so the text block (approx 50px tall, 60px wide) stays inside circle
-    const rad = (angle-90)*Math.PI/180;
-    // raw label center at r=ARROW_END+34
-    let lr = ARROW_END+34;
-    const rawLx = cx+Math.cos(rad)*lr;
-    const rawLy = cy+Math.sin(rad)*lr;
-    // Clamp to keep inside circle: dist from center of label to circle edge >= 28
-    const distFromCenter = Math.sqrt((rawLx-cx)**2+(rawLy-cy)**2);
-    const maxAllowed = CIRCLE_R - 30;
-    if(distFromCenter > maxAllowed) lr = lr * (maxAllowed/distFromCenter);
-    const lx = cx+Math.cos(rad)*lr;
-    const ly = cy+Math.sin(rad)*lr;
+  // Label center: arrow tip + gap, clamped inside circle
+  function labelCenter(displayAngle){
+    const rad=(displayAngle-90)*Math.PI/180;
+    const tipR=ARROW_START+ARROW_LEN;
+    const GAP=28; // gap between arrow tip and label center
+    let lr=tipR+GAP;
+    // clamp: label block is ~55px tall, 70px wide — keep center at least 36px from edge
+    const margin=36;
+    const rawDist=lr;
+    if(rawDist+margin>CIRCLE_R) lr=CIRCLE_R-margin;
+    return { lx: cx+Math.cos(rad)*lr, ly: cy+Math.sin(rad)*lr };
+  }
 
-    return `<text x="${lx.toFixed(1)}" y="${(ly-13).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="700" fill="${col}">${entry.dir} · ${lgfStr} vph</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+2).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="16px" font-weight="900" fill="${col}">${nLabel}</text>`+
-           `<text x="${lx.toFixed(1)}" y="${(ly+16).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9px" font-weight="600" fill="${col}" fill-opacity=".85">${indic}</text>`;
+  function labelBlock(entry){
+    const col=laneColor(entry);
+    const lgfStr=entry.lgf>=1000?(entry.lgf/1000).toFixed(1)+'k':String(entry.lgf);
+    const nLabel=`${entry.nReq} carril${entry.nReq!==1?'es':''}`;
+    const indic=entry.needsMore?`+${entry.nReq-entry.nCur} vs hoy`:`ok (${entry.nCur} act.)`;
+    const {lx,ly}=labelCenter(entry.displayAngle);
+    return `<text x="${lx.toFixed(1)}" y="${(ly-12).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5px" font-weight="700" fill="${col}">${entry.dir} · ${lgfStr} vph</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+2).toFixed(1)}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15px" font-weight="900" fill="${col}">${nLabel}</text>`+
+           `<text x="${lx.toFixed(1)}" y="${(ly+15).toFixed(1)}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="600" fill="${col}" fill-opacity=".85">${indic}</text>`;
   }
 
   let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   s+=`<defs><clipPath id="laneClip"><circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}"/></clipPath></defs>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="${CIRCLE_R}" fill="#12141c" stroke="#ffc107" stroke-width="1.5" stroke-opacity=".5"/>`;
 
-  // Guide lines + inner ring — clipped
   s+=`<g clip-path="url(#laneClip)">`;
   [0,90,180,270].forEach(a=>{
     const rad=(a-90)*Math.PI/180;
     s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+Math.cos(rad)*(CIRCLE_R-1)).toFixed(1)}" y2="${(cy+Math.sin(rad)*(CIRCLE_R-1)).toFixed(1)}" stroke="#252c3e" stroke-width="0.8"/>`;
   });
-  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_END+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
+  // inner zone circle — arrows stay inside this
+  s+=`<circle cx="${cx}" cy="${cy}" r="${ARROW_START+ARROW_LEN+4}" fill="none" stroke="#1e2538" stroke-width="0.8"/>`;
   s+=`</g>`;
 
-  // Center node
-  s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="#ffc107" fill-opacity=".7"/>`;
-  s+=`<text x="${cx}" y="${cy-8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" fill="#555">diseño 2030</text>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="4" fill="#ffc107" fill-opacity=".7"/>`;
+  s+=`<text x="${cx}" y="${cy-7}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7.5px" fill="#555">diseño 2030</text>`;
   s+=`<text x="${cx}" y="${cy+8}"  text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7px" fill="#333">lgf / 1,800</text>`;
 
-  // Per-direction: arrow + dots + label
-  laneData.forEach((entry,i)=>{
+  // Draw arrows + dots + labels using displayAngle
+  placed.forEach((entry,i)=>{
     const col=laneColor(entry);
-    const aLen=i===0?ARROW_END:ARROW_END-8;
-    s+=`<path d="${arrow(entry.angle,aLen,ARROW_START)}" stroke="${col}" stroke-width="${i===0?2.6:1.6}" fill="none" stroke-linecap="round" stroke-linejoin="round"${i>0?' stroke-dasharray="4,3"':''}/>`;
-    s+=laneDots(entry.angle,entry.nReq,col,ARROW_START+4,aLen-8);
-    s+=labelBlock(entry.angle,entry);
+    const rad=(entry.displayAngle-90)*Math.PI/180;
+    // arrow along displayAngle
+    const sx=cx+Math.cos(rad)*ARROW_START, sy=cy+Math.sin(rad)*ARROW_START;
+    const ex=cx+Math.cos(rad)*(ARROW_START+ARROW_LEN), ey=cy+Math.sin(rad)*(ARROW_START+ARROW_LEN);
+    const hs=6;
+    const aPath=`M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${ey.toFixed(1)} `+
+      `L${(ex+Math.cos(rad+2.5)*hs).toFixed(1)},${(ey+Math.sin(rad+2.5)*hs).toFixed(1)} `+
+      `M${ex.toFixed(1)},${ey.toFixed(1)} `+
+      `L${(ex+Math.cos(rad-2.5)*hs).toFixed(1)},${(ey+Math.sin(rad-2.5)*hs).toFixed(1)}`;
+    s+=`<path d="${aPath}" stroke="${col}" stroke-width="${i===0?2.6:1.8}" fill="none" stroke-linecap="round" stroke-linejoin="round"${i>0?' stroke-dasharray="4,2"':''}/>`;
+    // dots along arrow
+    const cnt=Math.min(entry.nReq,5);
+    const spacing=ARROW_LEN/(cnt+1);
+    for(let k=1;k<=cnt;k++){
+      const r=ARROW_START+spacing*k;
+      s+=`<circle cx="${(cx+Math.cos(rad)*r).toFixed(1)}" cy="${(cy+Math.sin(rad)*r).toFixed(1)}" r="2.8" fill="${col}" fill-opacity=".9"/>`;
+    }
+    // label
+    s+=labelBlock(entry);
   });
 
-  // Footer inside bottom of circle
   s+=`<text x="${cx}" y="${cy+CIRCLE_R-7}" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8px" font-weight="700" fill="#ffc107" fill-opacity=".5">#${d.label} · ${d.control_type}</text>`;
   s+=`</svg>`;
   return s;
