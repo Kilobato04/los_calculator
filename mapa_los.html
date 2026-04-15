@@ -193,8 +193,15 @@ const EXCLUDE_2025 = new Set([
 ]);
 
 // ── ESCENARIO AMX ─────────────────────────────────────────────────────────────
-const AMX_INTS       = new Set(['66','17','103','47','105']);
+const AMX_INTS       = new Set(['66','17','103','47','105','49']);
 const SAT_PER_LANE   = 1800;
+
+// Special overrides for specific intersections in AMX scenario
+// Each entry: { group: 'group_name', extraLanes: N, newControlType: 'type' }
+const AMX_OVERRIDES = {
+  '49': { group:'NBT', extraLanes:1, newControlType:'Pretimed',
+          note:'Semaforización + 2do carril NBT (salida residencial)' }
+};
 
 function icuLOS(p){ return p<=55?'A':p<=64?'B':p<=73?'C':p<=82?'D':p<=91?'E':p<=100?'F':p<=109?'G':'H'; }
 function lc(l){ return LC[l]||'#888'; }
@@ -229,14 +236,32 @@ function isOutlier(d){
   return delta!=null&&Math.abs(delta)>OUTLIER_THRESHOLD;
 }
 
-// ── ICU AMX: +1 carril en grupo más cargado ───────────────────────────────────
+// ICU AMX: respects per-intersection overrides, else uses most-loaded group
 function computeICU2030_AMX(d){
   const icu30base=computeICU2030(d);
   if(icu30base==null) return null;
   const lanes=d.lane_groups||[];
   if(!lanes.length) return icu30base;
-  // Find most loaded group by v/c ratio
-  let critG=null, maxR=-1;
+
+  const override=AMX_OVERRIDES[String(d.label)];
+
+  let critG=null;
+  if(override){
+    // Use the specified group from the override
+    critG=lanes.find(g=>g.group===override.group)||null;
+    const extraSat=(override.extraLanes||1)*SAT_PER_LANE;
+    if(!critG) return icu30base;
+    const totalRatio=lanes.reduce((s,g)=>
+      s+((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0?g.lane_group_flow/g.satd_flow_perm:0),0);
+    if(totalRatio===0) return icu30base;
+    const critOld=critG.lane_group_flow/(critG.satd_flow_perm||1);
+    const critNew=critG.lane_group_flow/((critG.satd_flow_perm||1)+extraSat);
+    const newRatio=totalRatio-critOld+critNew;
+    return +(icu30base*(newRatio/totalRatio)).toFixed(1);
+  }
+
+  // Default: find most loaded group by v/c
+  let maxR=-1;
   for(const g of lanes){
     if((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0){
       const r=g.lane_group_flow/g.satd_flow_perm;
@@ -244,7 +269,6 @@ function computeICU2030_AMX(d){
     }
   }
   if(!critG) return icu30base;
-  // Recompute ICU with new saturation flow
   const totalRatio=lanes.reduce((s,g)=>
     s+((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0?g.lane_group_flow/g.satd_flow_perm:0),0);
   const critOld=critG.lane_group_flow/critG.satd_flow_perm;
@@ -252,7 +276,12 @@ function computeICU2030_AMX(d){
   const newRatio=totalRatio-critOld+critNew;
   return totalRatio>0?+(icu30base*(newRatio/totalRatio)).toFixed(1):icu30base;
 }
+
 function getCritGroupAMX(d){
+  const override=AMX_OVERRIDES[String(d.label)];
+  if(override){
+    return (d.lane_groups||[]).find(g=>g.group===override.group)||null;
+  }
   const lanes=d.lane_groups||[]; let critG=null,maxR=-1;
   for(const g of lanes){
     if((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0){
@@ -261,6 +290,12 @@ function getCritGroupAMX(d){
     }
   }
   return critG;
+}
+
+// Get effective control type for AMX scenario
+function getAMXControlType(d){
+  const override=AMX_OVERRIDES[String(d.label)];
+  return override&&override.newControlType ? override.newControlType : d.control_type;
 }
 
 // ── SATELLITE helpers ─────────────────────────────────────────────────────────
@@ -554,7 +589,7 @@ function buildMarkers(){
       if(activeFilt==='outlier'    &&!isOut) return;
     }
 
-    const ctrl=ctrlGlyph(d.control_type);
+    const ctrl=ctrlGlyph(amxMode ? getAMXControlType(d) : d.control_type);
     const {icu,los,source}=getDisplayLOS(d);
     const col=lc(los);
     let icon, markerRadius;
@@ -608,12 +643,21 @@ function buildMarkers(){
       :`<div class="tt-row"><span>ICU 2030</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`;
     const amxRows=isAMXInt?(()=>{
       const crit=getCritGroupAMX(d);
+      const override=AMX_OVERRIDES[String(d.label)];
       const satOld=crit?crit.satd_flow_perm:0;
+      const extraSat=(override?.extraLanes||1)*SAT_PER_LANE;
       const delta=+(cIcu30rc-cIcu30amx).toFixed(1);
+      const overrideNote=override
+        ?`<div class="tt-row"><span>Ajuste especial</span><b style="color:#69f0ae;font-size:9px">${override.note}</b></div>`
+        :'';
+      const ctrlNote=override?.newControlType
+        ?`<div class="tt-row"><span>Control AMX</span><b style="color:#29b6f6">${override.newControlType} (semaforizado)</b></div>`
+        :'';
       return `<hr class="tt-div">
-        <div style="font-size:9px;color:#69f0ae;font-weight:700;margin-bottom:2px">🟢 Esc. AMX +1 carril</div>
-        <div class="tt-row"><span>Grupo crítico</span><b style="color:#69f0ae">${crit?crit.group:'—'}</b></div>
-        <div class="tt-row"><span>Sat. flow old→new</span><b style="color:#69f0ae">${satOld.toLocaleString()} → ${(satOld+SAT_PER_LANE).toLocaleString()} vph</b></div>
+        <div style="font-size:9px;color:#69f0ae;font-weight:700;margin-bottom:2px">🟢 Esc. AMX +${override?.extraLanes||1} carril</div>
+        ${overrideNote}${ctrlNote}
+        <div class="tt-row"><span>Grupo ajustado</span><b style="color:#69f0ae">${crit?crit.group:'—'}</b></div>
+        <div class="tt-row"><span>Sat. flow old→new</span><b style="color:#69f0ae">${satOld.toLocaleString()} → ${(satOld+extraSat).toLocaleString()} vph</b></div>
         <div class="tt-row"><span>ICU 2030 base</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>
         <div class="tt-row"><span>ICU 2030 AMX</span><b style="color:#69f0ae">${cIcu30AmxSc}% <span style="color:${lc(cLos30AmxSc)}">${cLos30AmxSc}</span></b></div>
         <div class="tt-row"><span>Mejora ICU</span><b style="color:#69f0ae">−${delta}%</b></div>`;
