@@ -643,7 +643,7 @@ function buildMarkers(){
     const col=lc(los);
     let icon, markerRadius;
 
-    if(isVolLayer&&!isAMXOn){
+    if(isVolLayer && amxMode==='off'){
       const r=volToRaw(dispVol); markerRadius=r;
       const sz=r*2+10, vcx=sz/2;
       const vcol=volToColor(dispVol), op=isLow?0.35:0.88;
@@ -774,7 +774,7 @@ function buildMarkers(){
   if(isVolLayer&&!amxMode){
     const tot=items.reduce((s,d)=>s+sumLaneVol(d,useY30),0);
     document.getElementById('stats').textContent=`${markers.length} int. · Vol total: ${(tot/1000).toFixed(1)}k vph`;
-  } else if(isAMXOn){
+  } else if(amxMode !== 'off'){
     const modeLabel = amxMode==='syc' ? 'AMX-SYC (Synchro)' : 'AMX-ICU (calc)';
     document.getElementById('stats').textContent=`Esc. ${modeLabel} 2030 · ${AMX_INTS.size} ints. ajustadas`;
   } else {
@@ -784,7 +784,7 @@ function buildMarkers(){
   // ── CRITICAL / TOP VOL ──
   const cl=document.getElementById('critical-list');
   const hdr=document.getElementById('leg-crit-hdr');
-  if(isAMXOn){
+  if(amxMode !== 'off'){
     hdr.textContent = amxMode==='syc' ? '🔵 Impacto AMX-SYC' : '🟢 Impacto AMX-ICU';
     cl.innerHTML=[...AMX_INTS].map(lbl=>{
       const d=D.intersections.find(x=>String(x.label)===lbl);
