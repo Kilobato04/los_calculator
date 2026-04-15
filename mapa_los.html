@@ -506,6 +506,8 @@ function computeICU2030_AMXSYC(d){
   return +(synIcu30 * scaleFactor).toFixed(1);
 }
 
+let activeSatellite = null;
+
 function clearSatellite(){
   if(activeSatellite){ map.removeLayer(activeSatellite.marker); map.removeLayer(activeSatellite.connector); activeSatellite=null; }
 }
