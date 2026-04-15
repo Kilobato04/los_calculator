@@ -19,6 +19,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
 .layer-btn.active-calc{background:#1b3a1e;color:#4caf50;border-color:#4caf50}
 .layer-btn.active-vol{background:#2a1e3a;color:#ce93d8;border-color:#ce93d8}
 .layer-btn.active-amx{background:#0d2a1a;color:#69f0ae;border-color:#69f0ae}
+.layer-btn.active-amxsyc{background:#0d1e38;color:#29b6f6;border-color:#29b6f6}
 .fbtn{padding:2px 8px;border-radius:3px;border:1px solid transparent;background:transparent;color:#666;font-size:10px;cursor:pointer;transition:all .12s;white-space:nowrap}
 .fbtn:hover{color:#aaa;background:#1a2030}
 .fbtn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
@@ -464,9 +465,46 @@ function buildLaneSVG(d,laneData){
   return s+`</svg>`;
 }
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-let D={intersections:[]}, markers=[], activeFilt='all', activeLayer='synchro', useY30=false, sensMult=1.0;
-let activeSatellite=null, amxMode=false;
+// ── ESCENARIO AMX: estados del toggle ────────────────────────────────────────
+// amxMode: 'off' | 'icu' | 'syc'
+let amxMode = 'off';
+
+// AMX-SYC: Synchro ICU 2025 × factor crecimiento × mejora capacidad (grupo crítico)
+function computeICU2030_AMXSYC(d){
+  const synIcu25 = s25(d).icu_pct;
+  if(synIcu25 == null) return null;
+  const factor = computeGrowthFactor(d) ?? GLOBAL_FACTOR;
+  const synIcu30 = synIcu25 * factor;  // Synchro proyectado 2030
+
+  const isAMX = AMX_INTS.has(String(d.label));
+  if(!isAMX) return +synIcu30.toFixed(1);
+
+  // Apply capacity improvement on critical group (same logic as AMX-ICU)
+  const lanes = d.lane_groups || [];
+  const override = AMX_OVERRIDES[String(d.label)];
+  let critG = null;
+  if(override){
+    critG = lanes.find(g => g.group === override.group) || null;
+  } else {
+    let maxR = -1;
+    for(const g of lanes){
+      if((g.satd_flow_perm||0)>0 && (g.lane_group_flow||0)>0){
+        const r = g.lane_group_flow/g.satd_flow_perm;
+        if(r > maxR){ maxR = r; critG = g; }
+      }
+    }
+  }
+  if(!critG) return +synIcu30.toFixed(1);
+
+  const extraSat = (override?.extraLanes||1) * SAT_PER_LANE;
+  const totalRatio = lanes.reduce((s,g)=>
+    s+((g.satd_flow_perm||0)>0&&(g.lane_group_flow||0)>0?g.lane_group_flow/g.satd_flow_perm:0),0);
+  if(totalRatio === 0) return +synIcu30.toFixed(1);
+  const critOld = critG.lane_group_flow / (critG.satd_flow_perm||1);
+  const critNew = critG.lane_group_flow / ((critG.satd_flow_perm||1) + extraSat);
+  const scaleFactor = (totalRatio - critOld + critNew) / totalRatio;
+  return +(synIcu30 * scaleFactor).toFixed(1);
+}
 
 function clearSatellite(){
   if(activeSatellite){ map.removeLayer(activeSatellite.marker); map.removeLayer(activeSatellite.connector); activeSatellite=null; }
@@ -502,11 +540,17 @@ function resetSens(){ setSens(1.0); }
 function scaledICU(r){ return +(r*sensMult).toFixed(1); }
 
 function getDisplayLOS(d){
-  if(amxMode){
-    const isA=AMX_INTS.has(String(d.label));
-    const raw=isA?(computeICU2030_AMX(d)??0):(computeICU2030(d)??c30(d).icu_pct??0);
-    const icu=scaledICU(raw);
-    return {icu,los:icuLOS(icu),source:isA?'ICU AMX 2030 (+1 carril)':'ICU calc 2030'};
+  const isAMXInt = AMX_INTS.has(String(d.label));
+
+  if(amxMode === 'icu'){
+    const raw = isAMXInt ? (computeICU2030_AMX(d)??0) : (computeICU2030(d)??c30(d).icu_pct??0);
+    const icu = scaledICU(raw);
+    return {icu, los:icuLOS(icu), source: isAMXInt?'ICU AMX 2030 (+cap.)':'ICU calc 2030'};
+  }
+  if(amxMode === 'syc'){
+    const raw = computeICU2030_AMXSYC(d) ?? 0;
+    const icu = scaledICU(raw);
+    return {icu, los:icuLOS(icu), source: isAMXInt?'SYC AMX 2030 (+cap.)':'SYC 2030 (Synchro proj.)'};
   }
   if(activeLayer==='synchro'){
     const raw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
@@ -568,17 +612,18 @@ function buildMarkers(){
     const scaledVol=Math.round(dispVol*(isVolLayer?1:sensMult));
     const isLow=scaledVol<50, isDet=hasDeterioroReal(d);
     const isDisc=hasDiscrepancia(d), isOut=isOutlier(d);
-    const isAMXInt=amxMode&&AMX_INTS.has(String(d.label));
-    const isAMXDim=amxMode&&!AMX_INTS.has(String(d.label));
+  const isAMXOn   = amxMode !== 'off';
+  const isAMXInt  = isAMXOn && AMX_INTS.has(String(d.label));
+  const isAMXDim  = isAMXOn && !AMX_INTS.has(String(d.label));
 
     let activeIcuRaw;
-    if(amxMode)                activeIcuRaw=isAMXInt?(computeICU2030_AMX(d)??0):(computeICU2030(d)??c30(d).icu_pct??0);
+    if(isAMXOn)                  activeIcuRaw = isAMXInt ? (computeICU2030_AMX(d)??0) : (computeICU2030(d)??c30(d).icu_pct??0);
     else if(activeLayer==='synchro') activeIcuRaw=useY30?(s25(d).icu_pct||0)*1.15:(s25(d).icu_pct||0);
     else if(activeLayer==='calc')    activeIcuRaw=useY30?(computeICU2030(d)??c30(d).icu_pct??0):(c25(d).icu_pct||0);
     else                             activeIcuRaw=c25(d).icu_pct||0;
     const activeIcu=scaledICU(activeIcuRaw);
 
-    if(!amxMode){
+    if(!isAMXOn){
       if(activeFilt==='sig'        &&!isSigD(d)) return;
       if(activeFilt==='unsig'      &&(isSigD(d)||d.control_type==='Roundabout')) return;
       if(activeFilt==='roundabout' &&d.control_type!=='Roundabout') return;
@@ -594,7 +639,7 @@ function buildMarkers(){
     const col=lc(los);
     let icon, markerRadius;
 
-    if(isVolLayer&&!amxMode){
+    if(isVolLayer&&!isAMXOn){
       const r=volToRaw(dispVol); markerRadius=r;
       const sz=r*2+10, vcx=sz/2;
       const vcol=volToColor(dispVol), op=isLow?0.35:0.88;
@@ -631,8 +676,13 @@ function buildMarkers(){
     // ── TOOLTIP ──
     const sIcu25=s25(d).icu_pct||0, cIcu25=c25(d).icu_pct||0;
     const cIcu30j=c30(d).icu_pct||0, cIcu30rc=computeICU2030(d)??cIcu30j;
-    const cIcu30amx=computeICU2030_AMX(d)??cIcu30rc;
-    const sIcuSc=scaledICU(sIcu25), cIcuSc=scaledICU(cIcu25);
+    // Precompute both AMX values for tooltip comparison
+    const cIcu30amx    = computeICU2030_AMX(d)??cIcu30rc;
+    const cIcu30syc    = computeICU2030_AMXSYC(d)??scaledICU((s25(d).icu_pct||0)*(computeGrowthFactor(d)??GLOBAL_FACTOR));
+    const cIcu30AmxSc  = scaledICU(cIcu30amx);
+    const cIcu30SycSc  = scaledICU(cIcu30syc);
+    const cLos30AmxSc  = icuLOS(cIcu30AmxSc);
+    const cLos30SycSc  = icuLOS(cIcu30SycSc);
     const cIcu30Sc=scaledICU(cIcu30rc), cIcu30JSc=scaledICU(cIcu30j), cIcu30AmxSc=scaledICU(cIcu30amx);
     const sLosSc=icuLOS(sIcuSc), cLosSc=icuLOS(cIcuSc), cLos30Sc=icuLOS(cIcu30Sc), cLos30AmxSc=icuLOS(cIcu30AmxSc);
     const det=c30(d).deterioro||'estable';
@@ -641,27 +691,26 @@ function buildMarkers(){
     const icu30Row=icuDiff>2
       ?`<div class="tt-row"><span>ICU 2030 JSON</span><b style="color:#666">${cIcu30JSc}%</b></div><div class="tt-row"><span>ICU 2030 recomp.</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`
       :`<div class="tt-row"><span>ICU 2030</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`;
-    const amxRows=isAMXInt?(()=>{
-      const crit=getCritGroupAMX(d);
-      const override=AMX_OVERRIDES[String(d.label)];
-      const satOld=crit?crit.satd_flow_perm:0;
-      const extraSat=(override?.extraLanes||1)*SAT_PER_LANE;
-      const delta=+(cIcu30rc-cIcu30amx).toFixed(1);
-      const overrideNote=override
-        ?`<div class="tt-row"><span>Ajuste especial</span><b style="color:#69f0ae;font-size:9px">${override.note}</b></div>`
-        :'';
-      const ctrlNote=override?.newControlType
-        ?`<div class="tt-row"><span>Control AMX</span><b style="color:#29b6f6">${override.newControlType} (semaforizado)</b></div>`
-        :'';
+    const amxRows = isAMXInt ? (()=>{
+      const crit     = getCritGroupAMX(d);
+      const override = AMX_OVERRIDES[String(d.label)];
+      const satOld   = crit ? crit.satd_flow_perm : 0;
+      const extraSat = (override?.extraLanes||1)*SAT_PER_LANE;
+      const deltaICU = +(cIcu30rc  - cIcu30amx).toFixed(1);
+      const deltaSYC = +(((s25(d).icu_pct||0)*(computeGrowthFactor(d)??GLOBAL_FACTOR)) - cIcu30syc).toFixed(1);
+      const overrideNote = override
+        ? `<div class="tt-row"><span>Ajuste especial</span><b style="color:#69f0ae;font-size:9px">${override.note}</b></div>` : '';
+      const ctrlNote = override?.newControlType
+        ? `<div class="tt-row"><span>Control AMX</span><b style="color:#29b6f6">${override.newControlType} (semaforizado)</b></div>` : '';
       return `<hr class="tt-div">
-        <div style="font-size:9px;color:#69f0ae;font-weight:700;margin-bottom:2px">🟢 Esc. AMX +${override?.extraLanes||1} carril</div>
+        <div style="font-size:9px;color:#69f0ae;font-weight:700;margin-bottom:3px">🟢 Escenario AMX — comparación</div>
         ${overrideNote}${ctrlNote}
-        <div class="tt-row"><span>Grupo ajustado</span><b style="color:#69f0ae">${crit?crit.group:'—'}</b></div>
-        <div class="tt-row"><span>Sat. flow old→new</span><b style="color:#69f0ae">${satOld.toLocaleString()} → ${(satOld+extraSat).toLocaleString()} vph</b></div>
-        <div class="tt-row"><span>ICU 2030 base</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>
-        <div class="tt-row"><span>ICU 2030 AMX</span><b style="color:#69f0ae">${cIcu30AmxSc}% <span style="color:${lc(cLos30AmxSc)}">${cLos30AmxSc}</span></b></div>
-        <div class="tt-row"><span>Mejora ICU</span><b style="color:#69f0ae">−${delta}%</b></div>`;
-    })():'';
+        <div class="tt-row"><span>Grupo ajustado</span><b style="color:#aaa">${crit?crit.group:'—'} · sat ${satOld.toLocaleString()}→${(satOld+extraSat).toLocaleString()} vph</b></div>
+        <div class="tt-row"><span>ICU 2030 base (calc)</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>
+        <div class="tt-row"><span>AMX-ICU (+cap. calc)</span><b style="color:#69f0ae">${cIcu30AmxSc}% <span style="color:${lc(cLos30AmxSc)}">${cLos30AmxSc}</span> <span style="color:#69f0ae">−${deltaICU}%</span></b></div>
+        <div class="tt-row"><span>AMX-SYC (+cap. Synchro)</span><b style="color:#29b6f6">${cIcu30SycSc}% <span style="color:${lc(cLos30SycSc)}">${cLos30SycSc}</span> <span style="color:#29b6f6">−${deltaSYC}%</span></b></div>
+        <div style="font-size:8px;color:#444;margin-top:4px;line-height:1.5">⚠ AMX-SYC = Synchro proj. × ajuste inferido de capacidad<br>Pendiente validación en Synchro 11</div>`;
+    })() : '';
 
     const discWarn=hasDiscrepancia(d)||sLosSc!==cLosSc?`<div class="tt-discr">⚡ Synchro ${sLosSc} (${sIcuSc}%) vs Calc ${cLosSc} (${cIcuSc}%)</div>`:'';
     const detRow=det!=='estable'?`<div class="tt-det">↑ Deterioro 2030: ${det}</div>`:'';
@@ -717,8 +766,9 @@ function buildMarkers(){
   if(isVolLayer&&!amxMode){
     const tot=items.reduce((s,d)=>s+sumLaneVol(d,useY30),0);
     document.getElementById('stats').textContent=`${markers.length} int. · Vol total: ${(tot/1000).toFixed(1)}k vph`;
-  } else if(amxMode){
-    document.getElementById('stats').textContent=`Esc. AMX 2030 · ${AMX_INTS.size} ints. ajustadas · +1 carril grupo crítico`;
+  } else if(isAMXOn){
+    const modeLabel = amxMode==='syc' ? 'AMX-SYC (Synchro)' : 'AMX-ICU (calc)';
+    document.getElementById('stats').textContent=`Esc. ${modeLabel} 2030 · ${AMX_INTS.size} ints. ajustadas`;
   } else {
     document.getElementById('stats').textContent=`${markers.length} int. · ${losE} LOS≥E · ${nDet} det. · ${nDisc} discr. · ${nOut} outliers`;
   }
@@ -726,16 +776,19 @@ function buildMarkers(){
   // ── CRITICAL / TOP VOL ──
   const cl=document.getElementById('critical-list');
   const hdr=document.getElementById('leg-crit-hdr');
-  if(amxMode){
-    hdr.textContent='🟢 Impacto AMX';
+  if(isAMXOn){
+    hdr.textContent = amxMode==='syc' ? '🔵 Impacto AMX-SYC' : '🟢 Impacto AMX-ICU';
     cl.innerHTML=[...AMX_INTS].map(lbl=>{
       const d=D.intersections.find(x=>String(x.label)===lbl);
       if(!d) return '';
-      const base=+(computeICU2030(d)??0).toFixed(1);
-      const amx =+(computeICU2030_AMX(d)??0).toFixed(1);
-      const delta=+(base-amx).toFixed(1);
-      const losB=icuLOS(base), losA=icuLOS(amx);
-      return `<div class="crit-item">• <b>#${lbl}</b> ${losB}→<span style="color:${lc(losA)}">${losA}</span> <span style="color:#69f0ae">−${delta}%</span></div>`;
+      const baseICU  = +(computeICU2030(d)??0).toFixed(1);
+      const amxICU   = +(computeICU2030_AMX(d)??0).toFixed(1);
+      const sycICU   = +(computeICU2030_AMXSYC(d)??0).toFixed(1);
+      const losBase  = icuLOS(baseICU), losAMX=icuLOS(amxICU), losSYC=icuLOS(sycICU);
+      const shown    = amxMode==='syc' ? sycICU : amxICU;
+      const losShown = amxMode==='syc' ? losSYC : losAMX;
+      const col      = amxMode==='syc' ? '#29b6f6' : '#69f0ae';
+      return `<div class="crit-item">• <b>#${lbl}</b> ${losBase}→<span style="color:${lc(losShown)}">${losShown}</span> <span style="color:${col}">−${+(baseICU-shown).toFixed(1)}%</span></div>`;
     }).join('');
   } else if(isVolLayer){
     hdr.textContent='📊 Mayor volumen';
@@ -761,7 +814,7 @@ function buildMarkers(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 function setLayer(l,btn){
-  if(amxMode){ amxMode=false; document.getElementById('leg-amx').style.display='none'; }
+  if(amxMode !== 'off'){ amxMode='off'; document.getElementById('btn-amx').textContent='● Esc. AMX'; document.getElementById('leg-amx').style.display='none'; }
   clearSatellite(); activeLayer=l;
   document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
   btn.classList.add(l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol');
@@ -775,26 +828,40 @@ function setLayer(l,btn){
   buildMarkers();
 }
 function toggleAMX(btn){
-  amxMode=!amxMode;
-  if(amxMode){
-    useY30=true; activeLayer='calc';
-    document.getElementById('yrToggle').checked=true;
-    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
-    btn.classList.add('active-amx');
-    document.getElementById('leg-los').style.display='block';
-    document.getElementById('leg-vol').style.display='none';
-    document.getElementById('leg-amx').style.display='block';
-    document.getElementById('leg-title').textContent='Esc. AMX 2030 — +1 carril';
-    document.getElementById('leg-title').style.color='#69f0ae';
+  // Cycle: off → icu → syc → off
+  if(amxMode === 'off')       amxMode = 'icu';
+  else if(amxMode === 'icu')  amxMode = 'syc';
+  else                        amxMode = 'off';
+
+  const isOn = amxMode !== 'off';
+  if(isOn){
+    useY30 = true; activeLayer = 'calc';
+    document.getElementById('yrToggle').checked = true;
+    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx','active-amxsyc'));
+    if(amxMode==='icu'){
+      btn.textContent='● Esc. AMX · ICU';
+      btn.classList.add('active-amx');
+    } else {
+      btn.textContent='● Esc. AMX · SYC';
+      btn.classList.add('active-amxsyc');
+    }
+    document.getElementById('leg-los').style.display  = 'block';
+    document.getElementById('leg-vol').style.display  = 'none';
+    document.getElementById('leg-amx').style.display  = 'block';
+    document.getElementById('leg-title').textContent  = amxMode==='icu'
+      ? 'Esc. AMX 2030 — ICU (+cap.)' : 'Esc. AMX 2030 — SYC (Synchro)';
+    document.getElementById('leg-title').style.color  = amxMode==='icu'?'#69f0ae':'#29b6f6';
     document.getElementById('sens-group').style.opacity='1';
     document.getElementById('sens-group').style.pointerEvents='auto';
   } else {
-    document.getElementById('leg-amx').style.display='none';
-    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
+    btn.textContent='● Esc. AMX';
+    btn.classList.remove('active-amx','active-amxsyc');
+    document.getElementById('leg-amx').style.display  = 'none';
+    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx','active-amxsyc'));
     document.getElementById('btn-calc').classList.add('active-calc');
-    activeLayer='calc';
-    document.getElementById('leg-title').textContent='LOS ICU — Calculado';
-    document.getElementById('leg-title').style.color='#4a90d9';
+    activeLayer = 'calc';
+    document.getElementById('leg-title').textContent  = 'LOS ICU — Calculado';
+    document.getElementById('leg-title').style.color  = '#4a90d9';
   }
   clearSatellite(); buildMarkers();
 }
