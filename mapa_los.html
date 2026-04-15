@@ -676,17 +676,21 @@ function buildMarkers(){
     // ── TOOLTIP ──
     const sIcu25=s25(d).icu_pct||0, cIcu25=c25(d).icu_pct||0;
     const cIcu30j=c30(d).icu_pct||0, cIcu30rc=computeICU2030(d)??cIcu30j;
-    // Precompute both AMX values for tooltip comparison
-    const cIcu30amx    = computeICU2030_AMX(d)??cIcu30rc;
-    const cIcu30syc    = computeICU2030_AMXSYC(d)??scaledICU((s25(d).icu_pct||0)*(computeGrowthFactor(d)??GLOBAL_FACTOR));
-    const cIcu30AmxSc  = scaledICU(cIcu30amx);
-    const cIcu30SycSc  = scaledICU(cIcu30syc);
-    const cLos30AmxSc  = icuLOS(cIcu30AmxSc);
-    const cLos30SycSc  = icuLOS(cIcu30SycSc);
-    const cIcu30Sc=scaledICU(cIcu30rc), cIcu30JSc=scaledICU(cIcu30j), cIcu30AmxSc=scaledICU(cIcu30amx);
-    const sLosSc=icuLOS(sIcuSc), cLosSc=icuLOS(cIcuSc), cLos30Sc=icuLOS(cIcu30Sc), cLos30AmxSc=icuLOS(cIcu30AmxSc);
-    const det=c30(d).deterioro||'estable';
-    const volDelta=v30-v25, volDS=(volDelta>=0?'+':'')+volDelta.toLocaleString();
+    const cIcu30amx   = computeICU2030_AMX(d)??cIcu30rc;
+    const cIcu30syc   = computeICU2030_AMXSYC(d)??+((s25(d).icu_pct||0)*(computeGrowthFactor(d)??GLOBAL_FACTOR)).toFixed(1);
+    const sIcuSc      = scaledICU(sIcu25);
+    const cIcuSc      = scaledICU(cIcu25);
+    const cIcu30Sc    = scaledICU(cIcu30rc);
+    const cIcu30JSc   = scaledICU(cIcu30j);
+    const cIcu30AmxSc = scaledICU(cIcu30amx);
+    const cIcu30SycSc = scaledICU(cIcu30syc);
+    const sLosSc      = icuLOS(sIcuSc);
+    const cLosSc      = icuLOS(cIcuSc);
+    const cLos30Sc    = icuLOS(cIcu30Sc);
+    const cLos30AmxSc = icuLOS(cIcu30AmxSc);
+    const cLos30SycSc = icuLOS(cIcu30SycSc);
+    const det         = c30(d).deterioro||'estable';
+    const volDelta    = v30-v25, volDS=(volDelta>=0?'+':'')+volDelta.toLocaleString();
     const icuDiff=Math.abs(cIcu30j-cIcu30rc);
     const icu30Row=icuDiff>2
       ?`<div class="tt-row"><span>ICU 2030 JSON</span><b style="color:#666">${cIcu30JSc}%</b></div><div class="tt-row"><span>ICU 2030 recomp.</span><b>${cIcu30Sc}% <span style="color:${lc(cLos30Sc)}">${cLos30Sc}</span></b></div>`
