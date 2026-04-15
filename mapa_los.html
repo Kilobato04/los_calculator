@@ -508,7 +508,7 @@ function computeICU2030_AMXSYC(d){
 
 let D={intersections:[]}, markers=[], activeFilt='all', activeLayer='synchro', useY30=false, sensMult=1.0;
 let activeSatellite=null;
-let amxMode='off';
+
 
 function clearSatellite(){
   if(activeSatellite){ map.removeLayer(activeSatellite.marker); map.removeLayer(activeSatellite.connector); activeSatellite=null; }
