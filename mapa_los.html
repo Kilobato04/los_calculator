@@ -74,7 +74,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1117;color:#e0e0e0;he
     <button id="btn-synchro" class="layer-btn active-synchro" onclick="setLayer('synchro',this)">● Synchro rptd</button>
     <button id="btn-calc"    class="layer-btn" onclick="setLayer('calc',this)">● ICU calc</button>
     <button id="btn-vol"     class="layer-btn" onclick="setLayer('vol',this)">● Aforos</button>
-    <button id="btn-amx"     class="layer-btn" onclick="toggleAMX(this)" title="Escenario AMX: +1 carril en ints. críticas 2030">● Esc. AMX</button>
+  </div>
+  <div class="fgroup">
+    <span class="fgroup-label">Escenario</span>
+    <select id="sel-amx" onchange="setAMX(this.value)"
+      style="background:#1a1f2e;border:1px solid #2a3044;border-radius:4px;color:#888;
+             font-size:10px;font-weight:600;padding:3px 8px;cursor:pointer;outline:none">
+      <option value="off">● Sin escenario</option>
+      <option value="icu">● Esc. AMX · ICU</option>
+      <option value="syc">● Esc. AMX · SYC</option>
+    </select>
   </div>
   <div class="fgroup">
     <span class="fgroup-label">Filtro</span>
@@ -822,7 +831,13 @@ function buildMarkers(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 function setLayer(l,btn){
-  if(amxMode !== 'off'){ amxMode='off'; document.getElementById('btn-amx').textContent='● Esc. AMX'; document.getElementById('leg-amx').style.display='none'; }
+  if(amxMode !== 'off'){ 
+  amxMode='off';
+  document.getElementById('sel-amx').value='off';
+  document.getElementById('sel-amx').style.color='#888';
+  document.getElementById('sel-amx').style.borderColor='#2a3044';
+  document.getElementById('leg-amx').style.display='none';
+}
   clearSatellite(); activeLayer=l;
   document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx'));
   btn.classList.add(l==='synchro'?'active-synchro':l==='calc'?'active-calc':'active-vol');
@@ -835,41 +850,37 @@ function setLayer(l,btn){
   document.getElementById('leg-title').style.color=l==='vol'?'#ce93d8':'#4a90d9';
   buildMarkers();
 }
-function toggleAMX(btn){
-  // Cycle: off → icu → syc → off
-  if(amxMode === 'off')       amxMode = 'icu';
-  else if(amxMode === 'icu')  amxMode = 'syc';
-  else                        amxMode = 'off';
 
+function setAMX(val){
+  amxMode = val;
   const isOn = amxMode !== 'off';
+  const sel  = document.getElementById('sel-amx');
+
+  if(amxMode==='icu')      { sel.style.color='#69f0ae'; sel.style.borderColor='#69f0ae'; }
+  else if(amxMode==='syc') { sel.style.color='#29b6f6'; sel.style.borderColor='#29b6f6'; }
+  else                     { sel.style.color='#888';    sel.style.borderColor='#2a3044'; }
+
   if(isOn){
-    useY30 = true; activeLayer = 'calc';
-    document.getElementById('yrToggle').checked = true;
-    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx','active-amxsyc'));
-    if(amxMode==='icu'){
-      btn.textContent='● Esc. AMX · ICU';
-      btn.classList.add('active-amx');
-    } else {
-      btn.textContent='● Esc. AMX · SYC';
-      btn.classList.add('active-amxsyc');
-    }
-    document.getElementById('leg-los').style.display  = 'block';
-    document.getElementById('leg-vol').style.display  = 'none';
-    document.getElementById('leg-amx').style.display  = 'block';
-    document.getElementById('leg-title').textContent  = amxMode==='icu'
+    useY30=true; activeLayer='calc';
+    document.getElementById('yrToggle').checked=true;
+    document.querySelectorAll('.layer-btn').forEach(b=>
+      b.classList.remove('active-synchro','active-calc','active-vol','active-amx','active-amxsyc'));
+    document.getElementById('leg-los').style.display='block';
+    document.getElementById('leg-vol').style.display='none';
+    document.getElementById('leg-amx').style.display='block';
+    document.getElementById('leg-title').textContent = amxMode==='icu'
       ? 'Esc. AMX 2030 — ICU (+cap.)' : 'Esc. AMX 2030 — SYC (Synchro)';
-    document.getElementById('leg-title').style.color  = amxMode==='icu'?'#69f0ae':'#29b6f6';
+    document.getElementById('leg-title').style.color = amxMode==='icu'?'#69f0ae':'#29b6f6';
     document.getElementById('sens-group').style.opacity='1';
     document.getElementById('sens-group').style.pointerEvents='auto';
   } else {
-    btn.textContent='● Esc. AMX';
-    btn.classList.remove('active-amx','active-amxsyc');
-    document.getElementById('leg-amx').style.display  = 'none';
-    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active-synchro','active-calc','active-vol','active-amx','active-amxsyc'));
+    document.getElementById('leg-amx').style.display='none';
+    document.querySelectorAll('.layer-btn').forEach(b=>
+      b.classList.remove('active-synchro','active-calc','active-vol','active-amx','active-amxsyc'));
     document.getElementById('btn-calc').classList.add('active-calc');
-    activeLayer = 'calc';
-    document.getElementById('leg-title').textContent  = 'LOS ICU — Calculado';
-    document.getElementById('leg-title').style.color  = '#4a90d9';
+    activeLayer='calc';
+    document.getElementById('leg-title').textContent='LOS ICU — Calculado';
+    document.getElementById('leg-title').style.color='#4a90d9';
   }
   clearSatellite(); buildMarkers();
 }
