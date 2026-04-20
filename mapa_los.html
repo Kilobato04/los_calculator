@@ -765,7 +765,7 @@ function buildMarkers(){
     const _d=d,_r=markerRadius;
     mk.on('click',function(e){
       L.DomEvent.stopPropagation(e);
-      if(activeLayer!=='vol'||amxMode){ clearSatellite(); return; }
+      if(activeLayer!=='vol'||amxMode!=='off'){ clearSatellite(); return; }
       if(activeSatellite&&activeSatellite._label===_d.label){ clearSatellite(); return; }
       clearSatellite(); showSatellite(_d,mk.getLatLng(),_r);
     });
